@@ -136,7 +136,7 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
               src={imageSrc}
               alt={imageAlt ?? ""}
               aspectRatio={resolvedAspectRatio}
-              containerClassName="h-full"
+              containerClassName="h-full w-full"
             />
           </div>
         ) : null}
