@@ -122,6 +122,42 @@ not apply here.
   checks, see the "Testing" section above — use the `.violations` array-assertion pattern, not
   `vitest-axe`'s `toHaveNoViolations()` matcher (which doesn't type-check in this repo).
 
+## Templates (Phase 4) — additional notes
+
+Templates are page-level layouts. Per the project brief, they **"define structure only and
+remain content-agnostic"** — concretely, that means a template's own props are named layout
+*slots* (`ReactNode`), not content data:
+
+```tsx
+export interface HomepageProps {
+  hero: ReactNode;       // consumer passes a <HeroStory .../> (or anything else)
+  featured: ReactNode;   // consumer passes a <FeaturedStoryGrid .../>
+  sidebar?: ReactNode;   // consumer passes <MostRead .../>, <Trending .../>, etc.
+}
+```
+
+The template component itself only arranges those slots into a responsive grid (per
+[Grid & Layout](?path=/docs/foundations-grid-layout--docs)) — it never decides what pattern
+fills a slot or what data that pattern shows. That decision belongs to whoever instantiates the
+template (in our case, each Storybook story, which demonstrates a realistic composed page by
+passing real pattern instances with sample content into the slots).
+
+- Location: `src/templates/<TemplateName>/`, same file shape as components/patterns
+  (`Name.tsx`/`.stories.tsx`/`.test.tsx`/`.mdx`/`index.ts`).
+- Storybook title: `Templates/<TemplateName>` (flat — no sub-category, there are only 13).
+- Every template includes the site chrome directly (compose `GlobalHeader` and `Footer` from
+  `src/patterns/*`) rather than treating them as slots — every page needs them, so they aren't
+  a place templates should vary.
+- A template's `.stories.tsx` is where realistic content lives: instantiate real patterns
+  (`HeroStory`, `StoryCard`, `ArticleBody`, etc.) with sample copy and pass them into the
+  template's slots. This is the one place in the whole design system where it's correct to
+  write substantial fake editorial content — it's demonstrating a full page, not documenting a
+  single component's API.
+- Templates may compose patterns and components directly for their own chrome (see previous
+  bullet) but should default to accepting `ReactNode` slots for anything that's actually
+  page-specific content, so the same template works for real CMS-driven pages later without
+  modification.
+
 ## Boundaries — do not edit these as part of building a component
 
 `package.json`, `tailwind.config.ts`, `src/tokens/*`, `src/index.css`, `.storybook/*`,
@@ -130,5 +166,5 @@ needs a change, flag it instead of editing it — these are integrated centrally
 parallel agents clobbering each other.
 
 Each component's `index.ts` is the only cross-component export surface; the top-level
-`src/components/index.ts` / `src/patterns/index.ts` barrels are assembled in a separate
-integration pass.
+`src/components/index.ts` / `src/patterns/index.ts` / `src/templates/index.ts` barrels are
+assembled in a separate integration pass.
