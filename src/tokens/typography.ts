@@ -2,10 +2,13 @@
 // a sans for UI chrome/navigation, and a mono for metadata (timestamps, live-blog ticks).
 //
 // Web font loading: Gloock and Inter are loaded via Google Fonts — see the <link> tags in
-// index.html (app) and .storybook/preview-head.html (Storybook canvas). Gloock ships a single
-// 400 weight, so Heading's `weight="bold"` default relies on browser font-synthesis rather
-// than a real bold cut — acceptable for a display face, but worth a visual check before
-// leaning on `weight="bold"` in new patterns.
+// index.html (app) and .storybook/preview-head.html (Storybook canvas). Inter is requested as
+// its true variable font (`wght@100..900`, one file covering the whole weight axis) rather than
+// a handful of static cuts — fewer bytes over the wire and every fontWeight token renders its
+// exact weight. Gloock has no variable version to request: Google Fonts only ships it as a
+// single static 400 weight, so Heading's `weight="bold"` default still relies on browser
+// font-synthesis for that one family — acceptable for a display face, but worth a visual check
+// before leaning on `weight="bold"` in new patterns.
 
 export const fontFamily = {
   serif: ["Gloock", "Georgia", "Cambria", "'Times New Roman'", "Times", "serif"],
