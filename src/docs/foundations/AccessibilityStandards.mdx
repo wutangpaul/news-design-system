@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Accessibility Standards" />
+
+# Accessibility Standards
+
+**Target: WCAG 2.2 AA**, non-negotiable. This isn't a checklist applied at the end — it's a
+build constraint every component is designed against from the start, because retrofitting
+accessibility into a sealed component API is far more expensive than designing it in.
+
+## Non-negotiables for every component
+
+- **Keyboard operability.** Every interactive element is reachable and operable with Tab,
+  Shift+Tab, Enter, Space, and arrow keys where the
+  [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/) defines a pattern for
+  it (Tabs, Accordion, Dropdown, Menu, Dialog). Components implement the APG pattern, not a
+  bespoke interpretation of it.
+- **Semantic HTML first.** Reach for the native element that already has the right behavior
+  (`<button>`, `<select>`, `<input type="radio">`) before reaching for a `div` plus ARIA. Native
+  elements give keyboard handling, focus management, and AT announcement for free; ARIA is for
+  filling gaps native HTML can't cover, not a replacement for it.
+- **Visible focus.** A global `:focus-visible` ring is defined once in `src/index.css` and
+  inherited by every component automatically. No component suppresses it with `outline-none`
+  without supplying an equally visible replacement.
+- **Color is never the only signal.** Status (error/success/warning), state (selected/disabled),
+  and meaning are always paired with text, an icon, or shape — see Alert and Badge for the
+  reference pattern.
+- **Labels are programmatic, not just visual.** Form fields associate their `<label>` via
+  `htmlFor`/`id` (generated with `useId` when the consumer doesn't supply one); helper and
+  error text are wired through `aria-describedby`, not just placed nearby visually.
+- **Motion respects `prefers-reduced-motion`.** Spinner, Skeleton, and Progress all fall back to
+  a static or non-spinning state — see Spacing & Motion in
+  [Shadows & Motion](?path=/docs/design-tokens-shadows-motion--docs).
+- **Focus management for overlays.** Modal and Drawer trap focus while open, move focus in on
+  open, and return focus to the trigger on close, per the APG Dialog pattern.
+
+## Verification
+
+- Storybook's `addon-a11y` runs axe-core against every story automatically — a clean run is part
+  of "done" for any component, not an optional follow-up.
+- Component tests assert real DOM behavior (roles, `aria-*` attributes, keyboard interaction),
+  not just that something rendered — see any `*.test.tsx` for the pattern.
+
+## Where this is still incomplete
+
+Color contrast for the `success`/`warning`/`error`/`info` semantic tokens has not yet been
+audited against AA contrast ratios in both light and dark mode — see
+[Colors](?path=/docs/design-tokens-colors--docs). Flagged for the next pass before these tokens
+are used in net-new product surfaces beyond Alert/Toast/Badge.

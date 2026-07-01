@@ -1,0 +1,54 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as LinkStories from "./Link.stories";
+
+<Meta of={LinkStories} />
+
+# Link
+
+Wraps a native `<a>` with editorial link styling. Always renders real anchor markup, so
+keyboard focus, activation, and the browser's native context menu ("Open in new tab",
+"Copy link", etc.) all work without extra code.
+
+<Canvas of={LinkStories.Default} />
+<Controls />
+
+## Inline vs standalone
+
+- **inline** (default) — for links that appear mid-sentence in running prose. Always
+  underlined so the link target is identifiable independent of color.
+- **standalone** — for links that *are* the entire interactive element (card titles, nav
+  items). Underline appears only on hover/focus, since the whole element's affordance
+  (cursor, surrounding layout) already signals interactivity.
+
+<Canvas of={LinkStories.Standalone} />
+
+## External links
+
+Set `external` to append an inline external-link icon and force
+`target="_blank" rel="noopener noreferrer"` — `noopener` prevents the new page from
+accessing `window.opener`, and `noreferrer` additionally strips the referrer header.
+
+<Canvas of={LinkStories.External} />
+
+## Visited state
+
+Links use the `visited:` CSS pseudo-class to dim previously-visited links
+(`visited:text-text-tertiary`), a common pattern in news reading UIs to mark "already
+read." Underline offset (`underline-offset-4`) is constant across states so spacing never
+shifts — only the (browser-privacy-safe) color signal changes.
+
+<Canvas of={LinkStories.Visited} />
+
+## Do's and don'ts
+
+- Do use `tone="inline"` for any link embedded in body copy.
+- Do set `external` for any link leaving the current site — never hand-roll
+  `target="_blank"` without `rel="noopener noreferrer"`.
+- Don't rely on color alone for inline links — keep the underline so the link is
+  identifiable to colorblind readers and in print/grayscale contexts.
+
+## Accessibility
+
+- Native `<a>` semantics: keyboard-focusable, activates on Enter, exposed as `role="link"`.
+- Link text should be descriptive out of context (avoid bare "click here").
+- Focus is always visible via the global `:focus-visible` ring.

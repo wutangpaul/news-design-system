@@ -1,0 +1,30 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Patterns/Overview" />
+
+# Patterns
+
+**Status: not yet built.** This section is reserved for Phase 3 — composed editorial
+experiences built from the [Components](?path=/docs/components-button--docs) library, not
+implemented yet.
+
+## Planned
+
+**Editorial** — Article Header, Hero Story, Article Body, Pull Quote, Block Quote, Inline
+Image, Image Gallery, Caption, Byline, Author Card, Reading Progress, Reading Time, Related
+Articles, Newsletter Signup, Social Sharing, Comments, Live Blog Entry, Breaking News Banner,
+Topic Tags, Category Navigation.
+
+**Navigation** — Global Header, Primary Navigation, Secondary Navigation, Mega Menu, Footer,
+Search Experience.
+
+**Content Discovery** — Story Card, Featured Story Grid, Most Read, Trending, Recommended
+Articles, Topic Collections, Video Cards, Podcast Cards.
+
+## Why these are blocked on Components, not parallel to them
+
+Patterns compose multiple core components together (a Story Card is a `Card` + `Image` +
+`Heading` + `Tag` + `Byline`, for instance) — building them before the components they depend
+on existed would have meant duplicating component-level markup that later needs to be
+reconciled. See `CONTRIBUTING.md` for the file-structure/conventions patterns will follow once
+this phase starts.

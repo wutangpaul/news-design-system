@@ -1,0 +1,59 @@
+import { Meta } from "@storybook/blocks";
+import { Close, ChevronDown, ChevronRight, ChevronLeft, Search, Menu, Share, Bookmark, ArrowRight, ExternalLink } from "../../components/Icon";
+
+<Meta title="Foundations/Iconography" />
+
+# Iconography
+
+## Approach
+
+Icons are hand-written inline SVGs, not an icon font or a third-party icon library — keeps the
+bundle lean (no shipping hundreds of unused glyphs) and keeps every icon a real React component
+that inherits `currentColor`, so it always matches the surrounding text/brand color without
+extra props.
+
+The `Icon` component (`src/components/Icon`) is the generic wrapper: it standardizes sizing and
+accessibility (`aria-hidden` by default; becomes `role="img"`/`aria-labelledby` when a `label`
+prop is passed for a *meaningful* icon, e.g. an icon-only button). Named icons are built on top
+of it.
+
+## Current set
+
+<div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
+  {[
+    ["Close", Close],
+    ["ChevronDown", ChevronDown],
+    ["ChevronRight", ChevronRight],
+    ["ChevronLeft", ChevronLeft],
+    ["Search", Search],
+    ["Menu", Menu],
+    ["Share", Share],
+    ["Bookmark", Bookmark],
+    ["ArrowRight", ArrowRight],
+    ["ExternalLink", ExternalLink],
+  ].map(([name, Cmp]) => (
+    <div key={name} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.375rem", width: "72px" }}>
+      <Cmp size="md" />
+      <code style={{ fontSize: "0.65rem" }}>{name}</code>
+    </div>
+  ))}
+</div>
+
+All ten are 24×24 viewBox, single-color, stroke-based where that reads better at small sizes
+(chevrons, close) and fill-based otherwise — see `src/components/Icon/icons.tsx` for the source.
+
+## Adding a new icon
+
+1. Add it to `src/components/Icon/icons.tsx`, following the existing pattern (wrap an inline
+   `<svg>` with the shared `Icon` component, export a named component).
+2. Export it from `src/components/Icon/index.ts`.
+3. Do **not** introduce a new icon library dependency to get one extra glyph — hand-author it
+   at 24×24 to match the existing set's visual weight.
+
+## Usage rules
+
+- Decorative icons (most cases — e.g. a chevron inside a Button) stay `aria-hidden`, since the
+  adjacent text already conveys meaning.
+- Icon-only interactive elements (no visible text label) must pass an accessible name via the
+  underlying control's `aria-label`, not via the icon's `label` prop alone — see
+  [Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs).

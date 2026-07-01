@@ -1,0 +1,54 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as SwitchStories from "./Switch.stories";
+
+<Meta of={SwitchStories} />
+
+# Switch
+
+An on/off boolean control (dark mode, notification preferences, autoplay).
+
+<Canvas of={SwitchStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+- Follows the same `label`/`helperText`/`errorText` contract as `Input`.
+- `labelPosition` controls which side of the switch the label renders on (`"right"`
+  default, or `"left"`) — useful for settings-list layouts where the label sits at the
+  start of a row and the switch is right-aligned.
+- Works controlled (`checked`/`onChange`) or uncontrolled (`defaultChecked`), exactly
+  like a native checkbox.
+
+## Implementation notes: why `role="switch"`, not "a checkbox styled to look like one"
+
+This is a native `<input type="checkbox" role="switch">`, not a plain checkbox with
+switch-like CSS. That distinction matters for assistive tech: with the explicit
+`role="switch"`, screen readers announce it as "switch, on/off" and its state is read
+from the same `checked` DOM property a checkbox already exposes — so there's no manual
+`aria-checked` bookkeeping, and you keep native keyboard behavior (Space toggles it)
+for free. Skipping `role="switch"` and only changing the visuals would leave the
+control announcing as a checkbox ("checked/not checked"), which is misleading for a
+control that represents an immediate on/off action rather than a form selection.
+
+State is communicated by more than color: the thumb's position (left = off, right =
+on) is a shape/motion cue, paired with a track color change — never color alone.
+
+## Accessibility
+
+- Label is programmatically associated via `htmlFor`/`id` (generated with `useId` if
+  not supplied).
+- `errorText` sets `aria-invalid="true"` and points `aria-describedby` at the error
+  message (`role="alert"`), following the same pattern as every other field in this
+  group.
+- The native input is visually hidden via `opacity-0` (not `display: none`), staying
+  focusable and keyboard-operable; the track and thumb are sibling elements driven by
+  `peer-checked`/`peer-disabled`/`peer-focus-visible`.
+
+## Don't
+
+- Don't use `Switch` for a choice that requires explicit form submission/confirmation
+  (e.g. "I agree to the terms") — use `Checkbox`, whose semantics better match a
+  pending, submittable choice rather than an immediate action.

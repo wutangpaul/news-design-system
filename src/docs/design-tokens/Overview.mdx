@@ -1,0 +1,36 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Design Tokens/Overview" />
+
+# Design Tokens
+
+The single source of truth for this design system's visual language. Every other layer is
+built on top of these — nothing above this layer should hardcode a color, size, or duration.
+
+```
+Design Tokens
+    ↓
+Foundations
+    ↓
+Components
+    ↓
+Patterns
+    ↓
+Templates
+```
+
+- **[Colors](?path=/docs/design-tokens-colors--docs)** — the `ink` neutral scale, the
+  `masthead` brand accent, semantic status colors, and the theme-aware surface/text pairs that
+  drive dark mode.
+- **[Typography](?path=/docs/design-tokens-typography--docs)** — the serif/sans/mono font
+  families and the editorial type scale.
+- **[Spacing & Radius](?path=/docs/design-tokens-spacing-radius--docs)** — the 4px spacing
+  scale and corner-radius scale.
+- **[Shadows & Motion](?path=/docs/design-tokens-shadows-motion--docs)** — elevation shadows
+  and animation durations/easings.
+- **[Breakpoints & Z-Index](?path=/docs/design-tokens-breakpoints-z-index--docs)** — responsive
+  breakpoints and the documented stacking-order scale for overlay components.
+
+All token values live in `src/tokens/*.ts` and are consumed directly by `tailwind.config.ts` —
+these docs render the actual exported values, so they can never drift out of sync with the
+theme.

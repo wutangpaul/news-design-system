@@ -1,0 +1,43 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Grid & Layout" />
+
+# Grid & Layout
+
+## Container & reading measure
+
+A single max-width container (defined at the template level, not yet built — see
+[Templates](?path=/docs/templates-overview--docs)) centers page content. Within it, two
+distinct measures matter:
+
+- **Reading measure**: long-form text (Article Body, Pull Quote) is constrained to roughly
+  `65ch` so line length stays readable regardless of viewport width — see
+  [Responsive Design Principles](?path=/docs/foundations-responsive-design-principles--docs).
+- **Grid measure**: listing/discovery surfaces (Story Card grids, Most Read rails) use the full
+  container width, divided into columns via CSS Grid.
+
+## Column system
+
+Built on Tailwind's grid utilities directly (`grid-cols-*`, `gap-*` from the
+[spacing scale](?path=/docs/design-tokens-spacing-radius--docs)) rather than a custom
+12-column-grid abstraction — content-heavy editorial grids tend to need irregular spans (a
+hero story taking 2 columns next to two single-column secondary stories) that a rigid 12-col
+system fights against more than it helps.
+
+| Viewport | Typical column count |
+| --- | --- |
+| `< 640px` | 1 |
+| `sm`–`md` | 2 |
+| `lg`+ | 3–4, with explicit spanning for hero/featured items |
+
+## Vertical rhythm
+
+Section spacing uses the spacing scale's larger steps (`16`/`24`/`32`) consistently between
+major page sections, and the smaller steps (`2`–`6`) within a component — see
+[Spacing & Radius](?path=/docs/design-tokens-spacing-radius--docs). Patterns and templates
+should not introduce one-off margin values outside this scale.
+
+## Status
+
+This is a foundations-level set of conventions; the actual grid *components* (Featured Story
+Grid, Category Landing template, etc.) are part of Phase 3/4 and have not been built yet.

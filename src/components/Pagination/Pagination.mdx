@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/blocks";
+import * as PaginationStories from "./Pagination.stories";
+
+<Meta of={PaginationStories} />
+
+# Pagination
+
+Navigation for moving between pages of a paginated list (search results, section archives,
+comment threads). Long page ranges are truncated with an ellipsis, always keeping the first page,
+last page, and a window around the current page reachable.
+
+## Usage
+
+```tsx
+import { Pagination } from "@/components/Pagination";
+
+function Example() {
+  const [page, setPage] = useState(1);
+  return <Pagination page={page} pageCount={42} onPageChange={setPage} />;
+}
+```
+
+`Pagination` is fully controlled — you own the current `page` state and pass it back in via
+`onPageChange`. Use `siblingCount` to widen or narrow the window of pages shown around the
+current page (default `1`), and `hidePrevNext` to render only the page-number list.
+
+## Do
+
+- Keep `Pagination` controlled by a single source of truth for `page` (e.g. a URL query param)
+  so navigation, the back button, and deep links stay in sync.
+
+## Don't
+
+- Don't compute `pageCount` as `0` — pass `1` for a single, non-paginated page; `Pagination`
+  treats any `pageCount < 1` as `1`.
+
+## Accessibility notes
+
+- The root `nav` has `aria-label="Pagination"` so it's distinguishable from other navigation
+  landmarks.
+- The active page button has `aria-current="page"`.
+- Previous/Next are native `<button disabled>` elements at the bounds. A disabled button is
+  already removed from the tab order and the accessibility tree's interactive set, so the
+  paired `aria-disabled="true"` is redundant for assistive tech — it's included anyway as an
+  explicit, robust signal for any tooling (and visual styling) that inspects ARIA state rather
+  than the native `disabled` property.
+- Ellipsis markers are decorative (`aria-hidden="true"`) and are not focusable.

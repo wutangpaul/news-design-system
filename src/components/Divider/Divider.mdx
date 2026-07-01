@@ -1,0 +1,38 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as DividerStories from "./Divider.stories";
+
+<Meta of={DividerStories} />
+
+# Divider
+
+A horizontal or vertical rule for separating content, with an optional centered label
+(e.g. "OR" between two actions, or a section label like "MORE FROM THIS SECTION").
+
+<Canvas of={DividerStories.Default} />
+<Controls />
+
+## Vertical
+
+Set `orientation="vertical"` inside a flex row with a defined height (the divider fills
+`h-full` of its container).
+
+<Canvas of={DividerStories.Vertical} />
+
+## With a label
+
+<Canvas of={DividerStories.WithLabel} />
+<Canvas of={DividerStories.SectionLabel} />
+
+## Do's and don'ts
+
+- Do use a labelled divider for "OR" splits between alternative actions (e.g. sign-in
+  options) instead of plain text next to a rule.
+- Don't use `Divider` purely for visual spacing — use layout/gap utilities for that, and
+  reserve `Divider` for content that genuinely separates two sections.
+
+## Accessibility
+
+- Unlabelled dividers are purely decorative and `aria-hidden="true"`, since the visual
+  rule conveys no information assistive tech needs to announce.
+- Labelled dividers use `role="separator"` with the label as the accessible name (via
+  `aria-label` for string labels), so screen reader users hear the section boundary.

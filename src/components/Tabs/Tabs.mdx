@@ -1,0 +1,54 @@
+import { Meta } from "@storybook/blocks";
+import * as TabsStories from "./Tabs.stories";
+
+<Meta of={TabsStories} />
+
+# Tabs
+
+A set of layered sections of content — known as tab panels — that display one panel at a time.
+Implements the [WAI-ARIA Authoring Practices Guide "Tabs" pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/).
+
+## Usage
+
+```tsx
+import { Tabs, TabsList, TabsTab, TabsPanel } from "@/components/Tabs";
+
+<Tabs defaultValue="world">
+  <TabsList aria-label="News sections">
+    <TabsTab value="world">World</TabsTab>
+    <TabsTab value="business">Business</TabsTab>
+  </TabsList>
+  <TabsPanel value="world">…</TabsPanel>
+  <TabsPanel value="business">…</TabsPanel>
+</Tabs>;
+```
+
+Use `value`/`defaultValue`/`onValueChange` on `Tabs` for controlled or uncontrolled active-tab state.
+
+## Keyboard interaction
+
+- **Tab**: moves focus into the tablist, landing on the active tab (roving tabindex — only the
+  active tab is in the page tab order).
+- **ArrowRight / ArrowLeft**: move focus (and selection) to the next/previous tab, wrapping at
+  the ends. Use ArrowDown/ArrowUp instead when `orientation="vertical"`.
+- **Home / End**: jump focus (and selection) to the first/last tab.
+- Disabled tabs are skipped during arrow-key navigation and are not selectable.
+
+## Do
+
+- Always give `TabsList` an `aria-label` (or `aria-labelledby`) describing the group of tabs.
+- Keep tab labels short — they should read as section names, not sentences.
+
+## Don't
+
+- Don't put interactive widgets that need to be reachable independently of the tab inside a
+  `TabsTab` — the tab itself is the only focusable element in the tablist.
+- Don't rely on `TabsPanel` content unmounting; panels stay in the DOM (hidden via the `hidden`
+  attribute) so state isn't lost when switching tabs.
+
+## Accessibility notes
+
+- `TabsList` renders `role="tablist"`; each `TabsTab` is `role="tab"`; each `TabsPanel` is
+  `role="tabpanel"`, labelled by its tab via `aria-labelledby`.
+- Only the selected tab is focusable via Tab key (`tabIndex=0`); inactive tabs are `tabIndex=-1`
+  and reachable only via arrow keys, per the APG roving-tabindex recommendation.

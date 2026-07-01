@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Theme variables — RGB channel triples (no `rgb()` wrapper) so Tailwind's
+ * `rgb(var(--x) / <alpha-value>)` pattern can apply opacity modifiers
+ * (e.g. bg-surface-canvas/50). Values are sourced from src/tokens/colors.ts;
+ * keep the two in sync if the palette changes.
+ */
+@layer base {
+  :root {
+    --surface-canvas: 255 255 255;
+    --surface-raised: 247 247 245;
+    --surface-sunken: 238 238 236;
+    --surface-border: 220 220 216;
+    --surface-border-strong: 191 191 185;
+
+    --text-primary: 24 24 19;
+    --text-secondary: 87 86 78;
+    --text-tertiary: 117 116 106;
+    --text-on-brand: 255 255 255;
+    --text-inverse: 255 255 255;
+  }
+
+  .dark {
+    --surface-canvas: 13 13 10;
+    --surface-raised: 24 24 19;
+    --surface-sunken: 0 0 0;
+    --surface-border: 40 39 33;
+    --surface-border-strong: 63 62 56;
+
+    --text-primary: 247 247 245;
+    --text-secondary: 191 191 185;
+    --text-tertiary: 151 150 141;
+    --text-on-brand: 255 255 255;
+    --text-inverse: 24 24 19;
+  }
+
+  body {
+    @apply bg-surface-canvas text-text-primary font-sans antialiased;
+  }
+}
+
+/* Visible focus ring for keyboard navigation — WCAG 2.2 AA 2.4.11 (Focus Not Obscured). */
+@layer base {
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-masthead-500;
+  }
+}

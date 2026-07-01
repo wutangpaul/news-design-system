@@ -1,0 +1,49 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as InputStories from "./Input.stories";
+
+<Meta of={InputStories} />
+
+# Input
+
+A single-line text field for short, free-form entry (headlines, search, email, names).
+Built on the native `<input>` element so browser autofill, validation, and mobile
+keyboard hints (`type`, `inputMode`, `autoComplete`) all work for free.
+
+<Canvas of={InputStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+- Always pass a `label`. If you must omit a visible label (e.g. a search box inside a
+  toolbar that already has visible context), pass `aria-label` instead — never ship an
+  unlabeled input.
+- Use `helperText` for guidance that should be visible before the user makes a mistake.
+- Use `errorText` for validation failures. When `errorText` is set, it **replaces**
+  `helperText` in both the visible UI and `aria-describedby` — don't show both at once,
+  it's confusing for screen reader users to hear stale guidance after an error.
+- `leadingIcon`/`trailingIcon` accept any `ReactNode`. They're purely decorative
+  (`aria-hidden`), so if the icon conveys meaning on its own, say it in `label` or
+  `helperText` too.
+
+## Accessibility
+
+- Label is programmatically associated via `htmlFor`/`id`. If you don't pass an `id`,
+  one is generated with `useId` so it's still unique and stable across server/client
+  renders.
+- `errorText` sets `aria-invalid="true"` and points `aria-describedby` at the error
+  message, which also renders with `role="alert"` so assistive tech announces it as it
+  appears.
+- The error message is never color-only: it pairs the error-colored text with a warning
+  icon.
+- Disabled and read-only states use the native `disabled`/`readOnly` attributes, so
+  assistive tech announces them correctly without extra ARIA.
+
+## Don't
+
+- Don't rely on placeholder text as a replacement for `label` — placeholders disappear
+  on input and have poor contrast/AT support.
+- Don't show `errorText` for a field the user hasn't interacted with yet; wire it to
+  your form library's touched/submitted state.

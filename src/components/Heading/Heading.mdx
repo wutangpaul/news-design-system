@@ -1,0 +1,51 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as HeadingStories from "./Heading.stories";
+
+<Meta of={HeadingStories} />
+
+# Heading
+
+Polymorphic editorial heading (`h1`-`h6`) set in the serif typeface used for headline
+voice across the system. `level` controls the rendered tag for a correct document
+outline; `visualSize` lets the visual scale diverge from that level when layout demands
+it (e.g. a card deep in the DOM that still needs hero-sized type).
+
+<Canvas of={HeadingStories.Default} />
+<Controls />
+
+## All levels
+
+<Canvas of={HeadingStories.AllLevels} />
+
+## Decoupling visual size from semantic level
+
+Set `visualSize` to any level (or `"display"`) independent of `level`. This keeps the
+document outline correct for assistive tech and SEO while letting visual design diverge
+— e.g. a secondary headline in a rail that must stay an `h2` in outline order but should
+look smaller than the design system's default `h2` size.
+
+<Canvas of={HeadingStories.DecoupledVisualSize} />
+
+## Display size
+
+<Canvas of={HeadingStories.Display} />
+
+## Weights
+
+<Canvas of={HeadingStories.Weights} />
+
+## Do's and don'ts
+
+- Do choose `level` based on document structure first — where the heading sits in the
+  outline relative to surrounding headings — then adjust `visualSize` for layout.
+- Don't skip heading levels to "get" a smaller size (e.g. using `h4` where `h2` is
+  correct just because `h4` looks smaller) — use `visualSize` instead.
+- Don't use `Heading` for non-heading emphasis text; use `Text` with a `weight`/`size`
+  override.
+
+## Accessibility
+
+- Renders genuine `h1`-`h6` elements, so screen reader users can navigate by heading
+  level/outline as expected.
+- Keeping `level` semantically correct (even when `visualSize` differs) is what makes
+  this decoupling safe — never use `visualSize` as an excuse to pick the wrong `level`.

@@ -1,0 +1,49 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as IconStories from "./Icon.stories";
+
+<Meta of={IconStories} />
+
+# Icon
+
+A generic SVG wrapper used both directly for one-off icons and as the foundation for the
+design system's curated icon set. Size follows the `xs`/`sm`/`md`/`lg`/`xl` token scale (or
+an arbitrary pixel number), and color always inherits from `currentColor`, so icons follow
+surrounding text color and theme automatically.
+
+<Canvas of={IconStories.Default} />
+<Controls />
+
+## Curated set
+
+Ten hand-written 24x24 icons cover the chrome this design system needs most: `Close`,
+`ChevronDown`, `ChevronRight`, `ChevronLeft`, `Search`, `Menu`, `Share`, `Bookmark`,
+`ArrowRight`, `ExternalLink`. They're built on top of `Icon`, so every prop (`size`,
+`label`, `className`, ...) behaves identically.
+
+<Canvas of={IconStories.CuratedSet} />
+
+```tsx
+import { Search } from "@/components/Icon";
+
+<Search size="md" />;
+```
+
+## Accessibility
+
+- **Decorative by default.** Icons render `aria-hidden="true"` unless a `label` prop is
+  passed. Use this for icons paired with visible text (e.g. inside a `Button`).
+- **Pass `label` for meaningful, standalone icons.** This sets `role="img"` and
+  `aria-label`, so screen reader users get an accessible name. Use this when the icon is
+  the *only* content conveying meaning (e.g. an icon-only button — though in that case,
+  prefer labeling the interactive parent element itself rather than the icon).
+- Never rely on color alone to convey icon meaning — pair with text or shape where the
+  meaning matters (e.g. status icons).
+
+## Do's and don'ts
+
+- Do reuse the curated set instead of inlining new SVGs across the codebase.
+- Do pass `label` when an icon is the sole content of an interactive element without other
+  visible text.
+- Don't add new npm icon dependencies — extend `icons.tsx` with another hand-written path
+  if a new icon is genuinely needed.
+- Don't set a fixed `color` — icons should always inherit via `currentColor`.

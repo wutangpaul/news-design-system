@@ -1,0 +1,50 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as CheckboxStories from "./Checkbox.stories";
+
+<Meta of={CheckboxStories} />
+
+# Checkbox
+
+A binary or tri-state (checked/unchecked/indeterminate) selection control, typically
+used standalone (terms acceptance) or in a list ("select all" + per-item checkboxes).
+
+<Canvas of={CheckboxStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+- Follows the same `label`/`helperText`/`errorText` contract as `Input`.
+- For "select all" UIs, set `indeterminate` when some-but-not-all children are
+  checked. See the `Indeterminate` story for the full pattern.
+
+## Implementation notes
+
+- The native `<input type="checkbox">` is visually hidden with `opacity-0` and
+  absolutely positioned over the custom box — **not** `display: none` or
+  `visibility: hidden`, both of which would remove it from the accessibility tree and
+  tab order. It stays focusable, keyboard-operable (Space toggles it), and is what
+  screen readers actually describe.
+- The custom box, checkmark, and dash icon are sibling `<span>`/`<svg>` elements
+  driven entirely by Tailwind's `peer-checked` / `peer-indeterminate` / `peer-disabled`
+  / `peer-focus-visible` variants — no JS-driven class toggling for visual state.
+- `indeterminate` is a DOM-only property (there's no `indeterminate` HTML attribute),
+  so it's applied imperatively via a `ref` callback in a `useEffect`, merged with any
+  ref passed in from a consumer.
+
+## Accessibility
+
+- Checked/unchecked/indeterminate state is exposed natively by the browser to
+  assistive tech (no manual ARIA state management needed).
+- Selection state is never color-only: a checkmark or dash icon renders inside the
+  box in addition to the fill color change.
+- Focus is visible via `peer-focus-visible` ring on the custom box, matching where
+  the (invisible) native input actually sits.
+
+## Don't
+
+- Don't wrap multiple checkboxes that represent a single grouped question (e.g. "I
+  agree to A, B, and C") without a fieldset/legend or equivalent group label — that's
+  outside this component's scope, group your own `Checkbox` instances accordingly.

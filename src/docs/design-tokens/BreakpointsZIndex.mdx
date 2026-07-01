@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/blocks";
+import { breakpoints, zIndex } from "../../tokens/spacing";
+
+<Meta title="Design Tokens/Breakpoints & Z-Index" />
+
+# Breakpoints & Z-Index
+
+## Breakpoints
+
+Matches Tailwind's `screens` config directly — `min-width` breakpoints used with the standard
+`sm:`/`md:`/`lg:` etc. utility prefixes.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ textAlign: "left" }}>Token</th>
+      <th style={{ textAlign: "left" }}>Min-width</th>
+    </tr>
+  </thead>
+  <tbody>
+    {Object.entries(breakpoints).map(([token, value]) => (
+      <tr key={token}>
+        <td><code>{token}</code></td>
+        <td>{value}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+See [Responsive Design Principles](?path=/docs/foundations-responsive-design-principles--docs)
+for how these map to layout behavior.
+
+## Z-Index
+
+A documented stacking scale — overlay components reference these **names** via Tailwind's
+`z-*` utilities (e.g. `z-modal`), never raw numbers, so stacking order stays predictable as new
+overlay components get added.
+
+<table>
+  <thead>
+    <tr>
+      <th style={{ textAlign: "left" }}>Layer</th>
+      <th style={{ textAlign: "left" }}>Value</th>
+      <th style={{ textAlign: "left" }}>Used by</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>base</code></td><td>{zIndex.base}</td><td>default document flow</td></tr>
+    <tr><td><code>raised</code></td><td>{zIndex.raised}</td><td>Card hover/elevated states</td></tr>
+    <tr><td><code>stickyHeader</code></td><td>{zIndex.stickyHeader}</td><td>Global Header (planned pattern)</td></tr>
+    <tr><td><code>dropdown</code></td><td>{zIndex.dropdown}</td><td>Dropdown menu</td></tr>
+    <tr><td><code>overlay</code></td><td>{zIndex.overlay}</td><td>backdrop scrims</td></tr>
+    <tr><td><code>drawer</code></td><td>{zIndex.drawer}</td><td>Drawer</td></tr>
+    <tr><td><code>modal</code></td><td>{zIndex.modal}</td><td>Modal</td></tr>
+    <tr><td><code>toast</code></td><td>{zIndex.toast}</td><td>Toast</td></tr>
+    <tr><td><code>tooltip</code></td><td>{zIndex.tooltip}</td><td>Tooltip (always on top)</td></tr>
+  </tbody>
+</table>

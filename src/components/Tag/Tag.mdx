@@ -1,0 +1,58 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TagStories from "./Tag.stories";
+
+<Meta of={TagStories} />
+
+# Tag
+
+Editorial topic/category pill (e.g. "Climate", "Politics"). Static by default; opt into
+`interactive` for a clickable filter chip and/or `removable` for a dismissible chip with
+a close button.
+
+<Canvas of={TagStories.Default} />
+<Controls />
+
+## Tones
+
+<Canvas of={TagStories.Tones} />
+
+## Removable
+
+Set `removable` to show a trailing close button. It's a real `<button>`, so it's
+keyboard-focusable and activates on Enter/Space; `onRemove` fires on activation.
+
+<Canvas of={TagStories.Removable} />
+
+## Interactive (filter chip)
+
+Set `interactive` to render the label as a real `<button>` (e.g. toggling a topic
+filter). Pass `selected` to reflect the active state, exposed as `aria-pressed`.
+
+<Canvas of={TagStories.Interactive} />
+
+## Interactive + removable
+
+When both `interactive` and `removable` are set, the label button and the remove button
+are rendered as **sibling** controls inside a shared pill, not one nested inside the
+other — nesting a `<button>` inside a `<button>` is invalid HTML and unreachable for
+keyboard/AT users. Each control gets its own focus stop.
+
+<Canvas of={TagStories.InteractiveAndRemovable} />
+
+## Do's and don'ts
+
+- Do use `interactive` for filter-style chips (e.g. a topic picker) and `removable` for
+  dismissible chips (e.g. "selected filters" summary, recipient lists).
+- Do supply `removeLabel` when the tag's visible text alone wouldn't make a good
+  accessible name (e.g. very short or icon-only labels).
+- Don't nest a `Tag` inside another interactive element (button/link) — `Tag` already
+  renders its own interactive controls when `interactive`/`removable` are set.
+
+## Accessibility
+
+- The remove control is always a real `<button>` with an `aria-label` derived from the tag's
+  label by default (e.g. "Remove Climate"), so it's independently keyboard-operable and
+  announced correctly even though it's icon-only.
+- `interactive` chips use `aria-pressed` (the toggle-button pattern from the APG) rather
+  than `aria-selected`, since they behave as independent on/off toggles, not members of a
+  single-select listbox.

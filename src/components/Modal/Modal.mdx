@@ -1,0 +1,58 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ModalStories from "./Modal.stories";
+
+<Meta of={ModalStories} />
+
+# Modal
+
+A modal dialog that interrupts the current task and demands a response before the user can
+return to the page underneath. Implements the [WAI-ARIA APG Dialog (Modal)
+pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+
+<Canvas of={ModalStories.Default} />
+<Controls />
+
+## Behavior
+
+- Focus moves into the dialog when it opens (the first focusable element, or the panel itself
+  if it contains none) and **returns to the element that opened it** when it closes.
+- Tab/Shift+Tab are trapped inside the dialog while it's open — focus never escapes to the page
+  behind it.
+- `Escape` closes the dialog.
+- Clicking the backdrop closes the dialog; clicking inside the panel does not.
+- Body scroll is locked while the dialog is open.
+
+## Usage
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<Modal
+  open={open}
+  onClose={() => setOpen(false)}
+  title="Delete article"
+  description="This action cannot be undone."
+>
+  <p>The draft and all of its revision history will be permanently removed.</p>
+</Modal>;
+```
+
+- `title` is required — it's rendered as the dialog heading and wired to `aria-labelledby`.
+  Don't omit it for a "simpler" look; use `hideCloseButton` instead if you need a bare panel.
+- `description`, when provided, is wired to `aria-describedby`.
+- `size` accepts `sm` / `md` / `lg` / `fullscreen`.
+
+## Do
+
+- Put the primary action last in your footer button order, but make sure the first focusable
+  element in the dialog is a sensible place for focus to land (usually the close button or the
+  first input).
+- Keep dialog content focused on a single task.
+
+## Don't
+
+- Don't nest a Modal inside another Modal — prefer a single dialog with sequential steps.
+- Don't suppress the close button (`hideCloseButton`) without another obvious way to close the
+  dialog (e.g. explicit Cancel/Confirm actions).
+- Don't put the trigger element somewhere it might unmount while the dialog is open — focus
+  return will silently no-op.

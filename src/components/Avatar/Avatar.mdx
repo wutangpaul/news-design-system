@@ -1,0 +1,44 @@
+import { Meta, Controls } from "@storybook/blocks";
+import * as AvatarStories from "./Avatar.stories";
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+A circular author/user image with a graceful fallback to initials, used for
+bylines, comment threads, and profile chrome.
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Avatar } from "@/components/Avatar";
+
+<Avatar name="Jane Doe" src="/authors/jane-doe.jpg" size="md" status="online" />;
+```
+
+`name` is always required, even when `src` is provided — it drives the
+initials fallback and is the avatar's accessible name (exposed via a
+visually-hidden label), since the underlying image is treated as decorative
+(`alt=""`).
+
+## Fallback behavior
+
+If `src` is omitted, or the image fails to load (`onError`), Avatar shows up
+to two initials derived from `name` (first letter of the first and last
+words). This means a flaky image URL never leaves a blank or broken-image
+icon in the layout.
+
+## Status dot
+
+`status="online" | "offline"` renders a small dot in the bottom-right corner.
+Because color is never the only signal, the dot is paired with a
+visually-hidden "Online"/"Offline" label for assistive tech.
+
+## Accessibility
+
+- The image itself is decorative (`alt=""`); `name` is exposed via a
+  `sr-only` span so screen readers announce the person's name once, not an
+  image filename.
+- Status is communicated by an accompanying text label, not color alone.

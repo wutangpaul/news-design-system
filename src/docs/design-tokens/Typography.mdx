@@ -1,0 +1,37 @@
+import { Meta } from "@storybook/blocks";
+import { fontFamily, fontSize, fontWeight } from "../../tokens/typography";
+import { FontSpecimen, TypeScaleRow } from "../_shared/TokenSwatches";
+
+<Meta title="Design Tokens/Typography" />
+
+# Typography
+
+Three font roles, each doing one job — see
+[Brand & Editorial Typography](?path=/docs/foundations-brand-editorial-typography--docs) for
+the usage philosophy behind this split.
+
+<FontSpecimen label="serif — headlines & long-form reading" family={fontFamily.serif.join(", ")} />
+<FontSpecimen label="sans — UI chrome & navigation" family={fontFamily.sans.join(", ")} />
+<FontSpecimen
+  label="mono — metadata, timestamps, live-blog ticks"
+  family={fontFamily.mono.join(", ")}
+  sample="12:04 ET — UPDATED"
+/>
+
+## Type scale
+
+A 1.25 modular scale, named for editorial intent (`h1`–`h6`, `display`) rather than raw pixel
+values, so usage stays semantic. Rendered here in the serif family at each size's actual
+line-height/letter-spacing.
+
+{Object.entries(fontSize).map(([name, [size, opts]]) => (
+  <TypeScaleRow key={name} name={name} size={size} lineHeight={opts.lineHeight} />
+))}
+
+## Weights
+
+{Object.entries(fontWeight).map(([name, value]) => (
+  <p key={name} style={{ fontWeight: value, margin: "0.25rem 0" }}>
+    {name} ({value})
+  </p>
+))}

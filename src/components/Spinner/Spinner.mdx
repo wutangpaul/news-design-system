@@ -1,0 +1,37 @@
+import { Meta, Controls } from "@storybook/blocks";
+import * as SpinnerStories from "./Spinner.stories";
+
+<Meta of={SpinnerStories} />
+
+# Spinner
+
+A small inline loading indicator for buttons, inline fetches, and other
+moments too brief to warrant a full `Skeleton` layout.
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Spinner } from "@/components/Spinner";
+
+<Spinner size="sm" label="Submitting comment" />;
+```
+
+## Accessibility
+
+- The root element has `role="status"` with an `aria-label` (default
+  `"Loading"`, override via `label` for context-specific messaging, e.g.
+  `"Submitting comment"`).
+- The visual glyph (SVG or dot) is `aria-hidden` — the label on the `status`
+  role is the single source of truth for assistive tech, so nothing is
+  announced twice.
+
+## Reduced motion
+
+By default Spinner rotates a ring via `animate-spin`. Continuous rotation is
+one of the animation styles most frequently flagged by users with vestibular
+disorders, so under `prefers-reduced-motion` the rotating ring is hidden
+(`motion-reduce:hidden`) and replaced with a pulsing dot
+(`motion-reduce:block` + `animate-pulse`) — still indicates activity, without
+the spin.

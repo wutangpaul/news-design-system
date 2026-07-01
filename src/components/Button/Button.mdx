@@ -1,0 +1,61 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ButtonStories from "./Button.stories";
+
+<Meta of={ButtonStories} />
+
+# Button
+
+The primary interactive control for actions ("Subscribe", "Save article", "Submit").
+Renders a native `<button>` and forwards `ref` to the DOM node, so it composes cleanly
+with forms, dialogs, and other native APIs.
+
+<Canvas of={ButtonStories.Default} />
+<Controls />
+
+## Variants
+
+- **primary** — masthead brand color, used for the one primary action on a screen.
+- **secondary** — bordered, neutral surface; for secondary actions alongside a primary.
+- **ghost** — no fill/border until hovered; for low-emphasis actions (toolbar, inline).
+- **destructive** — for irreversible/destructive actions (delete, unsubscribe).
+
+<Canvas of={ButtonStories.Variants} />
+
+## Sizes
+
+<Canvas of={ButtonStories.Sizes} />
+
+## Icons
+
+Pass `leadingIcon` / `trailingIcon` (typically a component from `@/components/Icon`).
+Icons are automatically hidden while `isLoading` is true.
+
+<Canvas of={ButtonStories.WithIcons} />
+
+## Loading state
+
+Set `isLoading` to show an inline spinner, mark the button `aria-busy`, and disable
+interaction. The spinner is a hand-rolled inline SVG — Button has no dependency on the
+`Icon` component for its built-in states.
+
+<Canvas of={ButtonStories.Loading} />
+
+## Disabled
+
+<Canvas of={ButtonStories.Disabled} />
+
+## Do's and don'ts
+
+- Do use exactly one `primary` button per view/section for the main call to action.
+- Do pass a clear, verb-led label ("Save changes", not "OK").
+- Don't disable a button without explaining why elsewhere on the page — disabled controls
+  are invisible to screen reader users browsing by role until focused.
+- Don't use `ghost` for the only action in a flow; it's too low-contrast to be the sole
+  affordance.
+
+## Accessibility
+
+- Native `<button>` semantics give Enter/Space activation and keyboard focus for free.
+- `disabled` removes the control from the tab order, consistent with platform conventions.
+- `isLoading` sets `aria-busy="true"` so assistive tech is aware of the pending state.
+- Focus is always visible via the global `:focus-visible` ring — never overridden here.

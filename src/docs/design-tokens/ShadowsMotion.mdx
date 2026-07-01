@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/blocks";
+import { shadow, motion } from "../../tokens/spacing";
+import { ShadowRow } from "../_shared/TokenSwatches";
+
+<Meta title="Design Tokens/Shadows & Motion" />
+
+# Shadows & Motion
+
+## Shadows
+
+A 5-step elevation scale (`sm` → `xl`), used to separate raised surfaces (Card, Dropdown,
+Modal, Tooltip) from the canvas. Subtle by design — this is an editorial product, not a
+material-design app, so shadows read as a soft lift rather than a dramatic drop.
+
+{Object.entries(shadow).map(([token, value]) => (
+  <ShadowRow key={token} token={token} value={value} />
+))}
+
+## Motion
+
+### Durations
+
+{Object.entries(motion.duration).map(([token, value]) => (
+  <p key={token} style={{ fontFamily: "monospace", fontSize: "0.85rem", margin: "0.25rem 0" }}>
+    <strong>{token}</strong> — {value}
+  </p>
+))}
+
+### Easings
+
+{Object.entries(motion.easing).map(([token, value]) => (
+  <p key={token} style={{ fontFamily: "monospace", fontSize: "0.85rem", margin: "0.25rem 0" }}>
+    <strong>{token}</strong> — {value}
+  </p>
+))}
+
+All interactive components must respect `prefers-reduced-motion` (see
+[Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs)) — durations
+and easings above describe the *default* motion, not a requirement that every component
+animate.

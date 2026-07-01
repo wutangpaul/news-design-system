@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Responsive Design Principles" />
+
+# Responsive Design Principles
+
+## Breakpoint philosophy
+
+This system is **mobile-first**: base styles target the smallest viewport, and `sm:`/`md:`/
+`lg:`/`xl:`/`2xl:` Tailwind prefixes layer on enhancements for wider viewports. See
+[Breakpoints & Z-Index](?path=/docs/design-tokens-breakpoints-z-index--docs) for the exact
+values — they're deliberately Tailwind's defaults rather than a custom scale, so the breakpoint
+behavior contributors already know from Tailwind transfers directly.
+
+| Range | Primary use |
+| --- | --- |
+| `< 640px` | single-column reading, full-width media, bottom-sheet-style Drawer navigation |
+| `640–1024px` (`sm`–`md`) | tablet: 2-column grids for Story Cards, condensed navigation |
+| `≥ 1024px` (`lg`+) | desktop: multi-column homepage/section grids, persistent navigation, sidebar rails |
+
+## Component-level responsibility
+
+Core components (Phase 2) are responsive by default but layout-agnostic — Button, Card, Input
+etc. don't know about the page grid they sit in. Responsive *layout* (column counts, grid
+gaps, container widths) is a **pattern/template** concern (Phase 3/4), composed from these
+primitives. This keeps a component reusable across a 1-column mobile card list and a 4-column
+desktop grid without forking it.
+
+## Content-heavy considerations
+
+This is a publishing platform, not a dashboard — most pages are long-form reading or dense
+listing grids, so responsive decisions optimize for:
+
+- **Reading width**: Article Body content should never stretch edge-to-edge on wide viewports;
+  long line lengths hurt readability. Templates should constrain prose to roughly 60–75
+  characters per line regardless of viewport width.
+- **Image weight**: `Image` defaults to `loading="lazy"` (see the Image component docs) so
+  below-the-fold media on long article/listing pages doesn't block initial paint — directly
+  serves the Core Web Vitals objective in the project brief.
+- **Touch targets**: interactive elements maintain a minimum ~44×44px hit area on small
+  viewports (Button, Tag's remove control, Pagination's prev/next), even where the visual size
+  is smaller.
+
+## Testing responsiveness
+
+Every component story should be checked in Storybook's viewport addon at `xs`, `md`, and `xl`
+at minimum before being considered done — not just the default desktop canvas.

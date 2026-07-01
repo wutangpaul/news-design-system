@@ -1,0 +1,39 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TextareaStories from "./Textarea.stories";
+
+<Meta of={TextareaStories} />
+
+# Textarea
+
+A multi-line text field for longer free-form entry (summaries, captions, editorial
+notes). Resizable vertically by default — don't disable resizing unless the
+surrounding layout genuinely can't accommodate it.
+
+<Canvas of={TextareaStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+- Follows the same `label`/`helperText`/`errorText` contract as `Input` — see the
+  Input docs for the full rationale.
+- Pass `maxLength` and `showCount` together to surface a live "current/max" counter.
+  The counter id is appended to `aria-describedby` alongside helper/error text, so
+  screen reader users hear remaining length along with any guidance or error.
+- The counter reflects `value` when controlled, or `defaultValue` on first render when
+  uncontrolled; it only updates live for controlled usage.
+
+## Accessibility
+
+- Same label association, `aria-invalid`, and `aria-describedby` behavior as `Input`.
+- `aria-describedby` can reference multiple ids (helper/error + counter), which is
+  valid per the ARIA spec — assistive tech announces them in order.
+- Resize handles are native browser UI and are keyboard-operable in browsers that
+  support it; we don't suppress that.
+
+## Don't
+
+- Don't use `Textarea` for single-line values like names or emails — use `Input`.
+- Don't set `showCount` without `maxLength`; there's nothing to count down from.

@@ -1,0 +1,55 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as RadioStories from "./Radio.stories";
+
+<Meta of={RadioStories} />
+
+# Radio
+
+A mutually-exclusive set of options (delivery frequency, layout density, sort order)
+using the `RadioGroup` + `Radio` compound pattern.
+
+<Canvas of={RadioStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+```tsx
+<RadioGroup label="Delivery frequency" value={value} onChange={setValue}>
+  <Radio value="daily" label="Daily" />
+  <Radio value="weekly" label="Weekly" />
+  <Radio value="monthly" label="Monthly" />
+</RadioGroup>
+```
+
+- `RadioGroup` owns `name`, the selected `value`, and `onChange`; it shares them with
+  every child `Radio` via context, so individual `Radio`s only need a `value` and
+  `label`. A `Radio` rendered outside a `RadioGroup` throws — it has nothing to read
+  shared state from.
+- Works controlled (`value`/`onChange`) or uncontrolled (`defaultValue`).
+- `name` is auto-generated with `useId` if you don't pass one — only set it explicitly
+  if you need a stable name for a native `<form>` submission.
+- `helperText`/`errorText` are rendered at the **group** level (this is a single
+  field — "which frequency" — not N independent fields), following the same contract
+  as `Input`.
+
+## Accessibility
+
+- The group renders `role="radiogroup"` with `aria-labelledby` pointing at the visible
+  group label, and `aria-describedby`/`aria-invalid` for helper/error text — giving
+  assistive tech one coherent "field" rather than N unrelated radios.
+- Arrow-key navigation between options is native, free behavior: all `Radio` inputs in
+  a group share one `name`, so the browser handles Up/Down/Left/Right roving focus and
+  selection without any custom keyboard handling in this component.
+- Like `Checkbox`, each native `<input type="radio">` is visually hidden via
+  `opacity-0` (not `display: none`) and overlaid with a custom-styled circle, so it
+  stays focusable and keyboard-operable. Selection state pairs a filled dot with a
+  border-color change — never color alone.
+
+## Don't
+
+- Don't render `Radio` outside a `RadioGroup` — it has no group context to read
+  `name`/`value`/`onChange` from and will throw.
+- Don't use `Radio` for a single yes/no toggle — use `Checkbox` or `Switch`.

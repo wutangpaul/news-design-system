@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/blocks";
+import * as BreadcrumbsStories from "./Breadcrumbs.stories";
+
+<Meta of={BreadcrumbsStories} />
+
+# Breadcrumbs
+
+Shows the reader's location within the site hierarchy as a trail of links from the home page (or
+section root) down to the current page.
+
+## Usage
+
+```tsx
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+
+<Breadcrumbs
+  items={[
+    { label: "Home", href: "/" },
+    { label: "World", href: "/world" },
+    { label: "Article headline goes here" },
+  ]}
+/>;
+```
+
+The last item in `items` is treated as the current page by default — render it without an `href`
+and it will display as plain text instead of a link. To mark a different item as current (or to
+be explicit), set `current: true` on the relevant item.
+
+## Do
+
+- Keep labels short; truncate long headline labels with CSS rather than passing a long string
+  that wraps awkwardly.
+- Provide an `href` for every item except the current page.
+
+## Don't
+
+- Don't make the current page a clickable link — re-loading the current page is rarely useful
+  and ambiguous for screen reader users.
+- Don't rely on color alone to distinguish the current crumb; it also carries `aria-current="page"`
+  and a distinct font weight.
+
+## Accessibility notes
+
+- The `nav` element has `aria-label="Breadcrumb"` so it's distinguishable from other navigation
+  landmarks (e.g. the main site nav) by assistive technology.
+- The trail is marked up as an ordered list (`ol` > `li`), reflecting that crumb order is
+  meaningful.
+- The current page is `aria-current="page"` and is not a link.
+- Visual separators between crumbs are `aria-hidden="true"` so they aren't announced.

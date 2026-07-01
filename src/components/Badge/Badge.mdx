@@ -1,0 +1,47 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as BadgeStories from "./Badge.stories";
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+A small status or count indicator. Color variants map to semantic intent
+(neutral/success/warning/error/info) plus a `brand` variant for editorial emphasis
+("Editor's pick").
+
+<Canvas of={BadgeStories.Default} />
+<Controls />
+
+## Variants
+
+<Canvas of={BadgeStories.Variants} />
+
+## Sizes
+
+<Canvas of={BadgeStories.Sizes} />
+
+## Dot-only mode
+
+Set `dot` to render a small solid indicator instead of a text pill — e.g. an unread or
+"live" marker placed next to other content. Always pair a dot with adjacent visible text
+(as in the example below); color alone should never be the only signal. If you do pass
+`children` while `dot` is set, it's kept in the DOM as visually-hidden text for screen
+readers rather than dropped.
+
+<Canvas of={BadgeStories.DotOnly} />
+
+## Do's and don'ts
+
+- Do pair `dot`-mode badges with visible adjacent text — never ship a bare color dot as
+  the sole indicator of state.
+- Do use `brand` sparingly, for genuinely editorial distinctions (e.g. "Editor's pick"),
+  not as a generic "important" badge.
+- Don't use badges for interactive actions — they're status indicators, not buttons. Use
+  `Tag` for clickable/removable chips.
+
+## Accessibility
+
+- Badge text remains in the accessible tree by default (no `aria-hidden`), so status is
+  announced to screen readers reading surrounding content.
+- `dot` mode hides label text visually but keeps it available via `sr-only` markup when
+  `children` is provided, satisfying "color is never the only signal."

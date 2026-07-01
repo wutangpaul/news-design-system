@@ -1,0 +1,43 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as AlertStories from "./Alert.stories";
+
+<Meta of={AlertStories} />
+
+# Alert
+
+An inline, **persistent** status banner — unlike [Toast](?path=/docs/components-toast--docs),
+it does not auto-dismiss; the page layout shifts to make room for it and it stays until the
+user (or the surrounding UI) removes it.
+
+<Canvas of={AlertStories.Default} />
+<Controls />
+
+## Behavior
+
+- Four variants — `info`, `success`, `warning`, `error` — each paired with a distinguishing icon
+  so meaning never depends on color alone.
+- `warning` and `error` use `role="alert"` (`aria-live="assertive"`), interrupting the user;
+  `info` and `success` use `role="status"` (`aria-live="polite"`).
+- The optional dismiss button is only rendered when `dismissible` is set; activating it calls
+  `onDismiss` and then removes the alert from the DOM.
+
+## Usage
+
+```tsx
+<Alert variant="warning" title="Unsaved changes" dismissible onDismiss={() => track("alert_dismissed")}>
+  This draft has edits that haven't been published yet.
+</Alert>
+```
+
+## Do
+
+- Use `error`/`warning` sparingly — every assertive alert competes for the same interrupt
+  budget.
+- Keep the `title` to a few words; put detail in the body.
+
+## Don't
+
+- Don't use Alert for transient confirmations ("Saved!") that should disappear on their own —
+  use [Toast](?path=/docs/components-toast--docs) instead.
+- Don't rely on the background tint alone to convey severity; the icon and text must carry the
+  same meaning for colorblind and low-vision users.

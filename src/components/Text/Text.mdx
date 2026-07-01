@@ -1,0 +1,49 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TextStories from "./Text.stories";
+
+<Meta of={TextStories} />
+
+# Text
+
+Polymorphic body-copy component for editorial text — article paragraphs, captions,
+metadata, and other non-heading prose. Size variants map directly to the typography
+tokens; color variants use the theme-aware `text-*` utilities so they flip automatically
+in dark mode.
+
+<Canvas of={TextStories.Default} />
+<Controls />
+
+## Sizes
+
+`lead` / `body` / `small` / `caption`, sourced from `src/tokens/typography.ts`.
+
+<Canvas of={TextStories.Sizes} />
+
+## Colors
+
+`primary` / `secondary` / `tertiary` — always theme-aware; never reach for raw `ink-*`
+text colors in component code.
+
+<Canvas of={TextStories.Colors} />
+
+## Polymorphic `as`
+
+Renders a `<p>` by default. Pass `as="span"` for inline runs or `as="div"` when a block
+container without paragraph semantics is needed (e.g. wrapping multiple inline elements).
+
+<Canvas of={TextStories.PolymorphicAs} />
+
+## Do's and don'ts
+
+- Do use `Text`, not raw `<p>`/`<span>`, for any body copy so sizing/coloring stays on
+  the token system.
+- Do reach for `Heading` instead of `Text` with a large `weight`/`size` when the content
+  is structurally a heading — `Text` never renders heading elements.
+- Don't nest a `Text` with `as="p"` inside another `Text` with `as="p"` — invalid HTML.
+  Use `as="span"` for the inner one.
+
+## Accessibility
+
+- Defaults to semantic `<p>`; choose `as` deliberately to keep the DOM meaningful for
+  screen reader navigation (e.g. `as="span"` for inline emphasis runs).
+- Color variants meet WCAG 2.2 AA contrast against `surface-canvas` in both themes.

@@ -1,0 +1,26 @@
+import { Meta } from "@storybook/blocks";
+import { spacing, radius } from "../../tokens/spacing";
+import { SpacingRow, RadiusRow } from "../_shared/TokenSwatches";
+
+<Meta title="Design Tokens/Spacing & Radius" />
+
+# Spacing & Radius
+
+## Spacing
+
+A 4px base scale (Tailwind's default unit), shared by padding, margin, gap, and the layout
+grid — so vertical/horizontal rhythm stays consistent everywhere instead of components
+inventing their own one-off values.
+
+{Object.entries(spacing).map(([token, value]) => (
+  <SpacingRow key={token} token={token} value={value} />
+))}
+
+## Radius
+
+Mostly sharp/small corners by default — editorial UI reads as more authoritative with less
+rounding than a typical consumer app. `full` is reserved for pills (Tag, Badge, Avatar).
+
+{Object.entries(radius).map(([token, value]) => (
+  <RadiusRow key={token} token={token} value={value} />
+))}

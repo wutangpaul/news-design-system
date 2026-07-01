@@ -1,0 +1,78 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ToastStories from "./Toast.stories";
+
+<Meta of={ToastStories} />
+
+# Toast
+
+A transient, **auto-dismissing** notification — the opposite of [Alert](?path=/docs/components-alert--docs),
+which is persistent. Toast ships as a visual component plus a small manager (`ToastProvider` +
+`useToast` + `ToastViewport`) built on React context, so any component can trigger a toast
+without prop-drilling or a mutable global singleton.
+
+<Canvas of={ToastStories.Default} />
+<Controls />
+
+## Setup
+
+Render `ToastProvider` once near the app root, with a single `ToastViewport` inside it:
+
+```tsx
+// e.g. main.tsx / App.tsx
+import { ToastProvider, ToastViewport } from "@/components/Toast";
+
+export function App() {
+  return (
+    <ToastProvider>
+      <YourApp />
+      <ToastViewport />
+    </ToastProvider>
+  );
+}
+```
+
+Then, from anywhere beneath the provider:
+
+```tsx
+import { useToast } from "@/components/Toast";
+
+function SaveButton() {
+  const { toast } = useToast();
+  return (
+    <button
+      onClick={() =>
+        toast({ title: "Saved", description: "Your draft was saved.", variant: "success" })
+      }
+    >
+      Save
+    </button>
+  );
+}
+```
+
+<Canvas of={ToastStories.LiveDemo} />
+
+## Behavior
+
+- Each toast auto-dismisses after `duration` ms (default `5000`); pass `Infinity` to require
+  manual dismissal.
+- Hovering or focusing a toast **pauses** its timer; leaving/blurring resumes it for the
+  remaining time (not the full duration) — WCAG 2.2 SC 2.2.1 requires users be able to stop or
+  extend time limits.
+- The close button and `Escape` (while the toast itself is focused) both dismiss it.
+- `error`-variant toasts use `role="alert"`/`aria-live="assertive"`; all others use
+  `role="status"`/`aria-live="polite"`.
+- State lives in `ToastProvider`'s React state — there's no module-level mutable singleton, so
+  multiple roots/tests stay isolated.
+
+## Do
+
+- Keep toast copy short and skimmable; they're glanced at, not read closely.
+- Use `error` toasts for failures the user can act on immediately; for anything that should
+  persist on the page, use Alert instead.
+
+## Don't
+
+- Don't render more than one `ToastViewport` per provider — toasts would be duplicated.
+- Don't put a toast's only dismiss mechanism behind a long auto-dismiss timer for `error`
+  toasts — give the user time, or use `duration: Infinity`.

@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Dark Mode Strategy" />
+
+# Dark Mode Strategy
+
+## Mechanism
+
+Class-based: Tailwind's `darkMode: "class"` (see `tailwind.config.ts`) toggles a `.dark` class
+on `<html>`. `src/index.css` defines two sets of CSS custom properties — one under `:root`, one
+under `.dark` — for every theme-aware color:
+
+```css
+:root { --surface-canvas: 255 255 255; --text-primary: 24 24 19; /* … */ }
+.dark { --surface-canvas: 13 13 10; --text-primary: 247 247 245; /* … */ }
+```
+
+`tailwind.config.ts` exposes these as `surface-*`/`text-*` utility classes
+(`rgb(var(--surface-canvas) / <alpha-value>)`), so `bg-surface-canvas` and `text-text-primary`
+resolve to the right value automatically — components never write `dark:` variants for these,
+they just use the semantic utility and the CSS variable does the switching.
+
+## What themes and what doesn't
+
+- **Themes automatically**: anything using `surface-*`/`text-*` utilities — backgrounds,
+  borders, body/heading text. This is almost everything.
+- **Does not theme**: `masthead-*` (brand red) and the raw `ink-*` scale when used directly —
+  these are fixed-identity colors (the masthead is the masthead in any theme). Components
+  should reach for `surface-*`/`text-*` by default and only drop to `ink-*`/`masthead-*` for
+  genuinely fixed-brand elements (see [Colors](?path=/docs/design-tokens-colors--docs)).
+- **Semantic status colors** (`success`/`warning`/`error`/`info`) currently use the same fixed
+  shade in both themes with an opacity modifier in dark mode (`dark:bg-error-500/10`) rather
+  than a dedicated dark palette — a known gap, see
+  [Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs).
+
+## Storybook
+
+The preview toolbar's "Theme" control toggles `.dark` on `document.documentElement` for the
+whole canvas (see `.storybook/preview.tsx`) — every story should be checked in both states.
+
+## Adding a new theme-aware color
+
+1. Add the light/dark hex pair to `src/tokens/colors.ts`.
+2. Add the corresponding `--token-name: R G B` pairs to both `:root` and `.dark` in
+   `src/index.css`.
+3. Expose it in `tailwind.config.ts`'s `theme.extend.colors` using the
+   `rgb(var(--token-name) / <alpha-value>)` pattern.
+
+Do this centrally — component-level PRs should never invent a new CSS variable inline.

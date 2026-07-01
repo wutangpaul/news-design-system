@@ -1,0 +1,56 @@
+import { Meta, Controls } from "@storybook/blocks";
+import * as SkeletonStories from "./Skeleton.stories";
+
+<Meta of={SkeletonStories} />
+
+# Skeleton
+
+A loading placeholder block in `text`, `circle`, or `rect` shapes. Use it to
+hold the visual space of content that hasn't arrived yet, instead of a blank
+layout-shifting gap.
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Skeleton } from "@/components/Skeleton";
+
+<div className="flex flex-col gap-3">
+  <Skeleton shape="rect" className="h-40 w-full" />
+  <Skeleton shape="text" className="h-5 w-3/4" />
+  <Skeleton shape="circle" className="h-8 w-8" />
+</div>;
+```
+
+Skeleton doesn't take explicit `width`/`height` props — size it with
+`className` (`h-*`, `w-*`) so every dimension stays a real Tailwind utility
+rather than an inline style.
+
+## Reduced motion
+
+The shimmer (`animate-pulse`) is disabled under `prefers-reduced-motion`
+(`motion-reduce:animate-none`), falling back to a static, low-opacity block
+(`motion-reduce:opacity-70`) rather than an animation a user can't stop.
+
+## Accessibility — read this before using Skeleton
+
+**Skeleton is always `aria-hidden="true"` and announces nothing on its
+own.** It has no idea what content it's standing in for, so it cannot
+produce a meaningful accessible name or status message by itself.
+
+This means **the parent component using Skeleton is responsible for the
+loading announcement.** Wrap your skeleton group in a live region with a
+visually-hidden description, e.g.:
+
+```tsx
+<div role="status" aria-live="polite" className="flex flex-col gap-3">
+  <span className="sr-only">Loading article…</span>
+  <Skeleton shape="rect" className="h-40 w-full" />
+  <Skeleton shape="text" className="h-5 w-3/4" />
+</div>
+```
+
+Without this wrapper, screen reader users get no indication that content is
+loading — only sighted users see the shimmer. Don't ship a bare `<Skeleton />`
+in a real loading state without this context from the caller.

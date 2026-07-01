@@ -1,0 +1,45 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as DrawerStories from "./Drawer.stories";
+
+<Meta of={DrawerStories} />
+
+# Drawer
+
+An edge-anchored panel that slides in over the page — typically used for mobile navigation or
+filter panels. Shares the same dialog semantics and focus-management behavior as
+[Modal](?path=/docs/components-modal--docs): the [WAI-ARIA APG Dialog (Modal)
+pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+
+<Canvas of={DrawerStories.Default} />
+<Controls />
+
+## Behavior
+
+- Focus moves into the drawer on open and **returns to the triggering element** on close.
+- Tab/Shift+Tab are trapped inside the panel while it's open.
+- `Escape` closes the drawer.
+- Clicking the backdrop closes the drawer; clicking inside the panel does not.
+- Body scroll is locked while the drawer is open.
+- Slides in from the edge given by `side` (`left` / `right` / `top` / `bottom`, default `right`).
+
+## Usage
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<Drawer open={open} onClose={() => setOpen(false)} title="Filter articles" side="right">
+  {/* filter form */}
+</Drawer>;
+```
+
+## Do
+
+- Use a Drawer for secondary, dismissible content tied to the current page (filters,
+  navigation, contextual settings).
+- Keep the `title` short — it's the dialog's accessible name.
+
+## Don't
+
+- Don't use Drawer for content the user must act on before doing anything else — prefer Modal,
+  which centers focus and intent more strongly.
+- Don't stack multiple drawers; close the current one before opening another.

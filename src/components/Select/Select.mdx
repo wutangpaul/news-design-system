@@ -1,0 +1,46 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as SelectStories from "./Select.stories";
+
+<Meta of={SelectStories} />
+
+# Select
+
+A dropdown for choosing one value from a known list (sections, bylines, sort order).
+
+<Canvas of={SelectStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+- Pass native `<option>`/`<optgroup>` elements as `children` — `Select` is a thin
+  wrapper around the native `<select>`, not a value/label-array API, so anything valid
+  inside a `<select>` works (including disabled options, option groups, etc.).
+- Follows the same `label`/`helperText`/`errorText` contract as `Input`.
+- The chevron affordance is a self-contained inline SVG; the native arrow is removed
+  with `appearance-none` and padding reserves space so text never runs under it.
+
+## Why a native `<select>` instead of a custom listbox
+
+A custom combobox/listbox needs its own roving-tabindex, typeahead, and screen-reader
+wiring to match what the browser already gives a native `<select>` for free — full
+keyboard support (arrow keys, typeahead, Home/End), correct AT announcements across
+every screen reader/browser combination, and working mobile picker UI. For a
+content-heavy news site with plain "pick one of these options" needs, that's the right
+tradeoff. Reach for a custom combobox only when you need things native `<select>`
+can't do (rich option content, async search, multi-select with chips).
+
+## Accessibility
+
+- Same label association, `aria-invalid`, and `aria-describedby` behavior as `Input`.
+- The chevron SVG is `aria-hidden` and `pointer-events-none` — it's purely decorative,
+  the native `<select>` already communicates "this is a dropdown" to assistive tech.
+
+## Don't
+
+- Don't disable the native arrow without supplying a visual replacement (we do this
+  for you — don't override it away).
+- Don't use `Select` for fewer than ~4 mutually exclusive options where all options
+  should be visible at once — prefer `RadioGroup` in that case.

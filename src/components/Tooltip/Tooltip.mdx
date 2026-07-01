@@ -1,0 +1,48 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TooltipStories from "./Tooltip.stories";
+
+<Meta of={TooltipStories} />
+
+# Tooltip
+
+A small label that appears next to an element to describe it. Implements the [WAI-ARIA APG
+Tooltip pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/).
+
+<Canvas of={TooltipStories.Default} />
+<Controls />
+
+## Behavior
+
+- Shown on **mouse hover** (after a short delay, `delayMs`, default 200ms) **and on keyboard
+  focus** of the trigger (immediately, no delay) — the most commonly-missed requirement for
+  tooltips is forgetting the keyboard-focus case.
+- Hidden on mouse leave, blur, or `Escape`.
+- `aria-describedby` is added to the trigger element only while the tooltip is visible, pointing
+  at the tooltip's `id`.
+- Positioned via `side` (`top` / `right` / `bottom` / `left`); flips to the opposite side with a
+  lightweight collision check if the preferred side would overflow the viewport, then clamps
+  within the viewport as a final guard.
+
+## Usage
+
+```tsx
+<Tooltip content="Published 2 hours ago" side="top">
+  <button>Hover or focus me</button>
+</Tooltip>
+```
+
+`children` must be a single element that can receive focus (a button, link, or similar) — it's
+the element hover/focus is attached to and that `aria-describedby` is applied to.
+
+## Do
+
+- Keep tooltip content short — a label or brief clarification, not instructions or critical
+  information (anything required to complete a task shouldn't live only in a tooltip).
+- Use it to label icon-only controls.
+
+## Don't
+
+- Don't put interactive content (links, buttons) inside a tooltip — APG tooltips are
+  non-interactive; reach for a Popover-style pattern instead if you need that.
+- Don't rely on tooltips as the only way to convey essential information — keyboard and touch
+  users may not trigger hover at all.

@@ -1,0 +1,68 @@
+import { Meta } from "@storybook/blocks";
+import * as DropdownStories from "./Dropdown.stories";
+
+<Meta of={DropdownStories} />
+
+# Dropdown
+
+A generic menu-button primitive: a trigger button that opens a popup menu of actions. Implements
+the [WAI-ARIA Authoring Practices Guide "Menu Button" pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/).
+
+This is a low-level building block — it accepts arbitrary trigger content and arbitrary menu
+items, with no built-in notion of what the menu is *for*. Higher-level patterns (like a Mega
+Menu) are expected to compose on top of it rather than duplicate its keyboard handling.
+
+## Usage
+
+```tsx
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSeparator } from "@/components/Dropdown";
+
+<Dropdown>
+  <DropdownTrigger>Sort by</DropdownTrigger>
+  <DropdownMenu>
+    <DropdownItem onSelect={() => setSort("newest")}>Newest first</DropdownItem>
+    <DropdownItem onSelect={() => setSort("oldest")}>Oldest first</DropdownItem>
+    <DropdownSeparator />
+    <DropdownItem disabled>Most read (unavailable)</DropdownItem>
+  </DropdownMenu>
+</Dropdown>;
+```
+
+`Dropdown` manages open state internally by default; pass `open`/`onOpenChange` to control it
+externally (e.g. to close it from outside in response to some other action). Use `align="end"`
+on `DropdownMenu` to right-align the popup against the trigger.
+
+## Keyboard interaction
+
+- **Enter / Space / click** on the trigger: opens the menu and moves focus to the first item.
+- **ArrowDown** on the trigger: opens the menu and moves focus to the first item.
+- **ArrowUp** on the trigger: opens the menu and moves focus to the *last* item.
+- **ArrowDown / ArrowUp** within the menu: move focus to the next/previous item, wrapping at the
+  ends. Disabled items are skipped.
+- **Home / End**: jump focus to the first/last item.
+- **Escape**: closes the menu and returns focus to the trigger.
+- **Tab**: closes the menu (focus then proceeds to wherever it would have gone next in the
+  page's natural tab order) — per the APG, Tab is not used to navigate within an open menu.
+- Clicking outside the trigger/menu closes it without moving focus.
+
+## Do
+
+- Pass any trigger content you need (icon-only, avatar, text+chevron, etc.) — `DropdownTrigger`
+  forwards `...rest`, so add your own `aria-label` if the trigger has no visible text.
+- Use `DropdownSeparator` to group related items.
+
+## Don't
+
+- Don't put non-actionable content inside `DropdownItem` — it's a `menuitem`, so assistive
+  technology announces it as an action. For static or read-only content, render it outside the
+  `DropdownMenu`'s item list.
+
+## Accessibility notes
+
+- The trigger is `aria-haspopup="menu"` with `aria-expanded` reflecting open state, and
+  `aria-controls` pointing at the menu's `id`.
+- The menu is `role="menu"`, labelled by the trigger via `aria-labelledby`, and uses the
+  documented `z-dropdown` stacking layer (`zIndex.dropdown` in `tailwind.config.ts`) so it
+  layers correctly above page content.
+- Menu items are `role="menuitem"` with `tabIndex={-1}` — focus is managed programmatically
+  (roving focus), not via the Tab key, per the APG Menu pattern.

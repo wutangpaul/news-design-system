@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Print Styles" />
+
+# Print Styles
+
+## Status
+
+Not yet implemented — no `@media print` rules exist anywhere in the codebase yet. This page
+records the intended approach so it's scoped correctly when built, rather than improvised
+per-page later.
+
+## Intended approach
+
+- A single `print.css` (or a `@media print` layer in `src/index.css`) applied globally, not
+  per-component — print formatting is a cross-cutting template concern, not something each
+  component should own independently.
+- **Strip**, on print: navigation (Global Header, Primary/Secondary Navigation, Mega Menu),
+  interactive chrome (Button, Dropdown, Toast, Modal/Drawer if open), and anything
+  `aria-hidden`/decorative.
+- **Keep**, on print: Article Header, Byline, Article Body, Pull Quotes, Captions — the actual
+  editorial content a reader would print an article for.
+- **Adapt**: `masthead`/brand colors and `surface-*` backgrounds collapse to print-safe black
+  text on white (no reliance on background color for meaning, consistent with
+  [Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs) already
+  requiring that for screen). External links could append their href visibly
+  (`a[href]::after { content: " (" attr(href) ")" }`) since the underlined link styling alone
+  is meaningless on paper.
+
+## Why it's deferred
+
+Print styles depend on the Article template (Phase 4) existing first, since the right scope is
+"what does a printed article look like," not "what does the design system look like in
+print" — there isn't a meaningful template-agnostic print stylesheet to write yet. Revisit once
+the Article template is built.

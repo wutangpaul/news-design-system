@@ -1,0 +1,9 @@
+node_modules
+dist
+storybook-static
+*.local
+*.local.json
+.claude/settings.local.json
+*.tsbuildinfo
+.DS_Store
+coverage

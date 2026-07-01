@@ -1,0 +1,48 @@
+import { Meta } from "@storybook/blocks";
+import * as AccordionStories from "./Accordion.stories";
+
+<Meta of={AccordionStories} />
+
+# Accordion
+
+A vertically stacked set of interactive headings that each reveal an associated section of
+content. Implements the
+[WAI-ARIA Authoring Practices Guide "Accordion" pattern](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/).
+
+## Usage
+
+```tsx
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/Accordion";
+
+<Accordion type="single" defaultValue="item-1">
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Question one</AccordionTrigger>
+    <AccordionContent>Answer one.</AccordionContent>
+  </AccordionItem>
+</Accordion>;
+```
+
+Set `type="single"` to allow only one item open at a time (use `collapsible={false}` if the open
+item should not be closable), or `type="multiple"` to allow several items open simultaneously.
+
+## Do
+
+- Use `level` on `AccordionTrigger` (default `3`) to match the surrounding document outline —
+  e.g. `level={2}` if the accordion sits directly under an `<h1>` page title.
+- Keep one `Accordion` per logical group; nest a fresh `Accordion` for sub-groups rather than
+  reusing the same `value` namespace.
+
+## Don't
+
+- Don't place non-text interactive controls inside `AccordionTrigger` — the trigger button is a
+  single focus stop and nested interactive elements are not reliably operable.
+
+## Accessibility notes
+
+- Each `AccordionTrigger` renders a `<button>` inside a heading element (`<h3>` by default),
+  satisfying the APG requirement that headers be both a heading and a button.
+- `aria-expanded` reflects open state; `aria-controls`/`id` link the trigger to its content
+  region, and the content region is labelled by the trigger via `aria-labelledby`.
+- Collapsed content is hidden with the native `hidden` attribute, removing it from the
+  accessibility tree and tab order without unmounting (so internal state, like scroll position
+  or form input, survives toggling).

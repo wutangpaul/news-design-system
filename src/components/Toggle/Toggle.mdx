@@ -1,0 +1,79 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ToggleStories from "./Toggle.stories";
+
+<Meta of={ToggleStories} />
+
+# Toggle
+
+A segmented, button-style toggle group for view switches ("Article / Photos") or
+independent filter chips ("Sports", "Politics", "Culture").
+
+<Canvas of={ToggleStories.ViewSwitcher} />
+
+## Props
+
+<Controls />
+
+## Interpretation: why `aria-pressed` buttons, not `role="tablist"`
+
+The spec for this component allowed two valid implementations: `role="tablist"`/
+`role="tab"` (if it's switching visible content panels) or a toggle-button-group with
+`aria-pressed` (if each option is an independent on/off choice). This implementation
+picked **`aria-pressed`**, for both `type="single"` and `type="multiple"`:
+
+- The tabs pattern (APG) is for switching between content **panels** that the tablist
+  itself owns and discloses (`aria-controls` pointing at a `role="tabpanel"`, roving
+  `tabindex`, automatic-or-manual activation). `Toggle` doesn't render or manage any
+  panel content — callers just get a `value`/`onChange` and decide what to render
+  themselves. Wiring up real tab/panel semantics over a control that doesn't own the
+  panel would be ARIA theater, not a genuine tabs widget.
+- `aria-pressed` toggle buttons (APG "Button" pattern) accurately describe what's
+  happening either way: "this option is currently pressed/active," whether there's
+  exactly one (`type="single"`, exclusivity enforced in this component's own state
+  logic) or many (`type="multiple"`).
+- If you outgrow this — e.g. you need `Toggle` to literally show/hide adjacent panel
+  content with full tab semantics — reach for a dedicated `Tabs` component instead of
+  repurposing this one.
+
+## Usage
+
+```tsx
+// Single-select view switcher
+<Toggle
+  aria-label="View"
+  options={[{ label: "Article", value: "article" }, { label: "Photos", value: "photos" }]}
+  value={view}
+  onChange={setView}
+/>
+
+// Multi-select filter chips
+<Toggle
+  aria-label="Filter by section"
+  type="multiple"
+  options={sections}
+  value={selectedSections}
+  onChange={setSelectedSections}
+/>
+```
+
+- `aria-label` is required — there's no visible `<label>` element for a button group,
+  so the accessible name must be supplied explicitly.
+- `type="single"` (default) keeps exactly one option pressed; `type="multiple"` allows
+  any number, including zero.
+- Each option can be individually disabled via `options[].disabled`, independent of
+  the group-level `disabled` prop.
+
+## Accessibility
+
+- Selected state is communicated via `aria-pressed` (not color alone): selected
+  options also get a filled background **and** a bolder font weight.
+- Every option is a native `<button type="button">`, so it's a normal tab stop with
+  native Enter/Space activation — no custom keydown handling needed.
+- The group itself is `role="group"` with `aria-label`, so assistive tech announces it
+  as a coherent set of options rather than unrelated buttons.
+
+## Don't
+
+- Don't omit `aria-label` — without it the group has no accessible name.
+- Don't use `type="multiple"` for mutually exclusive choices — use the default
+  `type="single"`, or `RadioGroup` if native radio semantics fit better.

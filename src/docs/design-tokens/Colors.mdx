@@ -1,0 +1,39 @@
+import { Meta } from "@storybook/blocks";
+import { ink, masthead, semantic } from "../../tokens/colors";
+import { ColorScale } from "../_shared/TokenSwatches";
+
+<Meta title="Design Tokens/Colors" />
+
+# Colors
+
+Three scales, each with a distinct job. Components should reach for `surface-*`/`text-*`
+Tailwind utilities (theme-aware, defined in `src/index.css`) rather than these raw scales
+whenever the value needs to flip between light and dark mode — see
+[Dark Mode Strategy](?path=/docs/foundations-dark-mode-strategy--docs).
+
+## ink — neutral scale
+
+Text, surfaces, and borders. `ink-0` is pure white, `ink-1000` is pure black; everything else
+sits on a warm, slightly desaturated gray ramp chosen to read as "newsprint" rather than
+clinical UI gray.
+
+<ColorScale name="ink" scale={ink} />
+
+## masthead — brand accent
+
+The paper's brand red. Used sparingly and deliberately: links, primary CTAs, the active state
+of navigation, breaking-news treatment. It is **not** theme-aware — it stays the same color in
+light and dark mode, since it's a fixed brand mark rather than a UI surface.
+
+<ColorScale name="masthead" scale={masthead} />
+
+## semantic — status colors
+
+<ColorScale name="success" scale={semantic.success} />
+<ColorScale name="warning" scale={semantic.warning} />
+<ColorScale name="error" scale={semantic.error} />
+<ColorScale name="info" scale={semantic.info} />
+
+Used by Alert, Toast, Badge, and form validation states. Per
+[Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs), color is
+never the only signal for these — they're always paired with an icon and/or text.

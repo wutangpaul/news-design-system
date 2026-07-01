@@ -1,0 +1,69 @@
+import { Meta, Controls } from "@storybook/blocks";
+import * as ProgressStories from "./Progress.stories";
+
+<Meta of={ProgressStories} />
+
+# Progress
+
+A linear progress bar with determinate (`value`/`max`) and indeterminate
+modes, size and color variants.
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Progress } from "@/components/Progress";
+
+// Determinate
+<Progress label="Upload progress" value={60} max={100} />
+
+// Indeterminate — omit value, or pass indeterminate explicitly
+<Progress label="Loading" indeterminate />
+```
+
+## Determinate vs. indeterminate
+
+- **Determinate**: pass `value` (and optionally `max`, default `100`).
+  Renders `role="progressbar"` with `aria-valuenow`/`aria-valuemin`/
+  `aria-valuemax`. `value` is clamped to `[0, max]`.
+- **Indeterminate**: omit `value`, or pass `indeterminate` explicitly (it
+  wins even if `value` is also set — useful when a determinate progress
+  temporarily becomes unknown). Per the
+  [WAI-ARIA progressbar pattern](https://www.w3.org/WAI/ARIA/apg/patterns/meter/),
+  `aria-valuenow` is omitted entirely and `aria-valuetext="Loading"` is set
+  instead, so assistive tech doesn't announce a stale or fabricated number.
+
+## A note on the fill width
+
+The determinate fill's `width` is set via an inline style:
+
+```tsx
+style={{ width: `${percentage}%` }}
+```
+
+This is a deliberate, narrow exception to the "Tailwind classes only" rule: a
+progress percentage is computed application data, not a design token
+(color/spacing/radius/shadow/font) — there's no finite set of `w-[...]`
+classes that could be enumerated in source for Tailwind's JIT scanner to
+discover, since the value comes from runtime props. Every other styleable
+surface (track, fill color, size) uses theme-backed Tailwind classes as
+usual.
+
+## Reduced motion
+
+The indeterminate fill uses `animate-pulse` to indicate ongoing activity.
+Under `prefers-reduced-motion` it falls back to a static, low-opacity bar
+(`motion-reduce:animate-none motion-reduce:opacity-70`) instead of a
+continuously animating one.
+
+## Accessibility
+
+- `role="progressbar"` with the correct `aria-value*` triplet in determinate
+  mode, and `aria-valuetext="Loading"` (no `aria-valuenow`) in indeterminate
+  mode.
+- Always pass `label` — it becomes the bar's `aria-label` so screen reader
+  users know *what* is progressing, not just that something is.
+- Color is never the only signal: pair `color` variants with a visible
+  `label` in surrounding UI (e.g. "Upload failed" text near an `error`
+  colored bar), since color alone doesn't convey state to colorblind users.

@@ -1,0 +1,83 @@
+import { Meta, Controls } from "@storybook/blocks";
+import * as CardStories from "./Card.stories";
+
+<Meta of={CardStories} />
+
+# Card
+
+A generic content container for article teasers, summaries, and grouped UI —
+flat/outlined/elevated surfaces, padding density, and an optional interactive
+hover treatment.
+
+<Controls />
+
+## Composition API
+
+Card uses a compound-component pattern: `Card`, `Card.Header`, `Card.Body`,
+and `Card.Footer`. We chose dot-notation subcomponents (over separate named
+exports like `CardHeader`) because:
+
+- It reads as one cohesive widget at the call site (`<Card><Card.Body>…`),
+  mirroring how the parts are conceptually nested.
+- Padding density is set once on `Card` (`padding="compact" | "comfortable" |
+  "spacious"`, default `"comfortable"`) and propagates to every subpart via
+  context, so header/body/footer padding never drifts out of sync.
+- Each subpart is still a plain `forwardRef` component under the hood and is
+  exported as a type (`CardSectionProps`) if you want to build your own
+  variant.
+
+```tsx
+import { Card } from "@/components/Card";
+
+<Card variant="outlined" padding="comfortable">
+  <Card.Header>
+    <p className="text-caption text-text-tertiary">Politics</p>
+    <h3 className="text-h6">Headline goes here</h3>
+  </Card.Header>
+  <Card.Body>
+    <p className="text-small text-text-secondary">Summary copy…</p>
+  </Card.Body>
+  <Card.Footer>
+    <span className="text-caption text-text-tertiary">5 min read</span>
+  </Card.Footer>
+</Card>;
+```
+
+Any subset of subparts is fine — a teaser card might use only `Card.Body`.
+
+## Variants
+
+`variant`: `"flat"` (raised surface, no border/shadow), `"outlined"` (canvas
+surface + 1px border), `"elevated"` (raised surface + `shadow-md`).
+
+## Interactive cards
+
+`interactive` adds hover/focus-visible shadow affordance classes only — Card
+never renders a click handler, `role="button"`, or wraps itself in an
+anchor. **Compose the clickable behavior yourself**, typically by wrapping
+the whole card in your own `<a>` or router `<Link>`:
+
+```tsx
+<a href="/story/123" className="block rounded-lg">
+  <Card interactive variant="outlined">
+    <Card.Body>…</Card.Body>
+  </Card>
+</a>
+```
+
+This keeps Card framework-agnostic (no dependency on a particular router) and
+keeps the accessible name/keyboard semantics owned by the real interactive
+element, rather than reimplemented with ARIA on a `div`.
+
+## `as` prop
+
+`as` swaps the root element (default `"div"`) — use it for `"section"`,
+`"article"`, `"li"`, etc. when the surrounding semantics call for it.
+
+## Accessibility
+
+- Card renders no implicit interactive semantics, so it never creates a
+  keyboard trap or a div pretending to be a button — composition with a real
+  `<a>`/`<button>` keeps focus order and `Enter`/`Space` activation native.
+- Borders (`outlined`) and shadows (`elevated`) meet contrast requirements
+  against both `surface-canvas` and `surface-raised` in light and dark mode.

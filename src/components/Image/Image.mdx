@@ -1,0 +1,76 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ImageStories from "./Image.stories";
+
+<Meta of={ImageStories} />
+
+# Image
+
+A wrapper around the native `<img>` element for editorial photography: a
+mandatory `alt`, an optional aspect-ratio crop, lazy loading by default, and a
+self-contained shimmer placeholder for the loading and error states.
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Image } from "@/components/Image";
+
+<Image
+  src="/uploads/skyline.jpg"
+  alt="Aerial view of the city skyline at dusk"
+  aspectRatio="16/9"
+/>;
+```
+
+## `alt` is mandatory
+
+`alt` is a required prop at the type level — there is no default and no
+optional fallback. If an image is purely decorative, say so explicitly:
+
+```tsx
+<Image src="/uploads/divider-texture.jpg" alt="" />
+```
+
+This forces every call site to make a conscious choice instead of silently
+shipping an unlabeled image.
+
+## Aspect ratio
+
+`aspectRatio` accepts a fixed set of editorial presets (`"16/9"`, `"4/3"`,
+`"3/2"`, `"1/1"`, `"9/16"`, `"21/9"`) and crops with `object-cover`. These are
+mapped to static `aspect-[...]` Tailwind classes so the JIT compiler can find
+them at build time — Tailwind cannot generate CSS for arbitrary-value classes
+assembled from runtime strings it never sees in source. If you need a ratio
+outside this set, compose your own `aspect-[...]` utility via `className`.
+
+## Loading & error states
+
+While the image is loading, a shimmer placeholder (`animate-pulse`) covers the
+space the image will occupy, so layout doesn't shift on load. The shimmer
+respects `prefers-reduced-motion`: it falls back to a static, low-opacity
+block (`motion-reduce:animate-none motion-reduce:opacity-70`) instead of an
+animation that can't be paused.
+
+If the image fails to load, the same placeholder area shows a small icon plus
+the `alt` text, so the caption-like context isn't lost even when the photo
+itself is unavailable.
+
+## Accessibility
+
+- `alt` is required by the type system — decorative images must pass `""`
+  explicitly.
+- The loading/error placeholder is `aria-hidden`; the underlying `<img>`
+  remains in the accessibility tree throughout (with `alt` set), so assistive
+  tech never sees a moment with no accessible name.
+- Shimmer animation respects `prefers-reduced-motion`.
+
+## Do / Don't
+
+- **Do** pass real, specific alt text ("Firefighters battling a blaze on Main
+  Street"), not filenames or "image of...".
+- **Do** use `aspectRatio` for grid/list layouts where consistent card heights
+  matter.
+- **Don't** use `Image` for purely decorative background textures inside
+  already-labeled containers without setting `alt=""` — an empty string is
+  the explicit, intentional choice, omission is not allowed.

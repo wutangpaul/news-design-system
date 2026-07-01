@@ -1,0 +1,51 @@
+import { Meta } from "@storybook/blocks";
+
+<Meta title="Foundations/Brand & Editorial Typography" />
+
+# Brand & Editorial Typography
+
+## Brand voice in UI
+
+This is a *premium* journalism product — the visual language should read as authoritative and
+calm, not as a generic SaaS dashboard. Concretely that means:
+
+- Restrained color: the `masthead` brand red is used deliberately and sparingly (links, primary
+  actions, breaking-news), not as a decorative accent throughout the UI. See
+  [Colors](?path=/docs/design-tokens-colors--docs).
+- Minimal rounding: small/no border radius by default — see
+  [Spacing & Radius](?path=/docs/design-tokens-spacing-radius--docs) — sharp corners read as
+  more editorial than the heavily-rounded "friendly app" aesthetic.
+- Generous whitespace and a clear type hierarchy over dense, boxed UI chrome.
+
+## Why a serif/sans split
+
+- **Serif (`Gloock`)** is reserved for headlines — `Heading`, and any headline-scale moment in
+  a future pattern (Hero Story, Article Header, Breaking News Banner). Gloock is a display
+  serif, chosen for its distinctive, masthead-appropriate character at large sizes rather than
+  as a dense-paragraph reading face — it signals "this is the editorial voice," distinguishing
+  headlines visually from interface chrome. It ships a single 400 weight; browsers synthesize
+  bold for `Heading`'s `weight="bold"` default, which is an acceptable tradeoff for a display
+  face used at headline sizes. Whether Article Body (Phase 3, not yet built) also uses a serif
+  for body-length copy, or stays sans for readability at paragraph scale, is an open decision
+  for when that pattern is built — Gloock itself is not intended for dense body text.
+- **Sans (`Inter`)** is reserved for UI — navigation, buttons, form labels, metadata chrome. The
+  goal is that a reader can tell, just from the typeface, whether they're looking at *the
+  story* or *the interface around the story*.
+- **Mono (`IBM Plex Mono`)** is reserved for timestamps and live-data — bylines' publish time,
+  live-blog tick marks — where tabular alignment and a clearly "data, not prose" visual signal
+  matters.
+
+This split is enforced at the component level: `Heading` defaults to serif, `Text` defaults to
+sans, and patterns shouldn't override either without a specific editorial reason (document it
+in that pattern's MDX if so). See [Typography](?path=/docs/design-tokens-typography--docs) for
+the full scale.
+
+## Headline writing in the type scale
+
+The named scale (`h1`...`h6`, `display`) intentionally decouples *semantic* heading level from
+*visual* size — see the `Heading` component's `level` vs `visualSize` props. This exists
+specifically for editorial layouts: a Hero Story's headline might need `display`-sized type
+while still being the page's single `<h1>`, while a Related Articles list needs visually small
+headlines that are still real `<h3>`s for document outline/screen-reader navigation purposes.
+Always pick the semantic level for document structure first, then the visual size for the
+layout — never use heading level purely for visual sizing.
