@@ -4,23 +4,24 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Templates
 
-**Status: not yet built.** This section is reserved for Phase 4 — page-level layouts composed
-from [Patterns](?path=/docs/patterns-overview--docs), which are complete (34 patterns across
-Editorial, Navigation, and Content Discovery). Templates define structure only and remain
-content-agnostic, per the project brief.
+Phase 4 of the design system — 13 page-level layouts composed from the
+[Patterns](?path=/docs/patterns-overview--docs) library, complete and verified (typecheck,
+lint, tests, Storybook build all green).
 
-## Planned
-
-Homepage, Article, Live Blog, Opinion, Features, Category Landing, Author Profile, Search
+Homepage, Category Landing, Article, Opinion, Live Blog, Features, Author Profile, Search
 Results, Newsletter Landing, Video, Podcast, Archive, Error Pages.
 
-## Dependency chain
+Templates are structure-only and content-agnostic: their own props are named `ReactNode`
+slots (e.g. `hero`, `body`, `sidebar`), not content data — a template never decides what
+pattern fills a slot or what data it shows. The one fixed piece every template owns directly is
+the site chrome (`GlobalHeader`/`Footer`, composed via `header`/`footer` prop bags), since every
+real page needs it. Each template's own docs page (in the sidebar below) covers its slot
+contract and composition rationale — see `CONTRIBUTING.md` at the project root for the full
+convention.
+
+This completes all four phases from the original project brief:
 
 ```
 Design Tokens → Foundations → Components → Patterns → Templates
+     (6 docs)     (8 docs)    (31, done)   (34, done)  (13, done)
 ```
-
-Templates are the last layer and depend on everything above being in place — in particular
-the page-level grid conventions described in
-[Grid & Layout](?path=/docs/foundations-grid-layout--docs), which are documented but not yet
-implemented as reusable layout components.

@@ -1,0 +1,86 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as NewsletterLandingStories from "./NewsletterLanding.stories";
+
+<Meta of={NewsletterLandingStories} />
+
+# Newsletter Landing
+
+A dedicated subscribe page for a single newsletter product — the kind of page a reader lands
+on from a link like "Subscribe to The Weekly Ledger" in an article footer or a promo unit.
+Unlike the multi-region hub templates (`Homepage`, `Video`), this template is deliberately
+narrow and single-purpose: it exists to convert a visitor into a subscriber, so it carries
+exactly one primary call to action and nothing competing for attention next to it.
+
+<Canvas of={NewsletterLandingStories.Default} />
+<Controls />
+
+## Structure, not content
+
+Like every Phase 4 template, `NewsletterLanding` only arranges layout — it has no opinion on
+the newsletter's name, description, or cadence, and no opinion on what fills the signup slot.
+Those decisions belong to whoever instantiates the template. The template itself owns three
+things:
+
+1. The fixed site chrome (`GlobalHeader` and `Footer`), rendered directly rather than accepted
+   as a slot — every real page needs them, so they aren't a place this template varies.
+2. A single centered column (narrower than a hub page's) that keeps the reader's focus on the
+   conversion goal.
+3. The order of three content slots: `intro`, then `signup`, then the optional `sampleIssues`.
+
+## Slot contract
+
+- `header` / `footer` — configuration objects forwarded as-is to `GlobalHeader` and `Footer`.
+- `intro` (required) — describes the newsletter itself: its name, what it covers, and its
+  cadence (e.g. "every Friday morning"). Typically a short stack of `Heading`/`Text`/`Badge`.
+- `signup` (required) — the conversion centerpiece, typically a `NewsletterSignup` pattern
+  instance. Rendered inside a visually distinct panel so it reads as the page's focal point.
+- `sampleIssues` (optional) — a "what you'll get" preview: a short list of what the newsletter
+  covers, or call-outs of a couple of past issues. Omit it for the leanest possible page.
+- `mainId` (optional, default `main-content`) — id applied to the `<main>` landmark, used as
+  the skip-link target.
+
+## Usage
+
+```tsx
+import { NewsletterLanding } from "@/templates/NewsletterLanding";
+import { NewsletterSignup } from "@/patterns/NewsletterSignup";
+import { Heading, Text, Badge } from "@/components";
+
+<NewsletterLanding
+  header={{ logo: <a href="/">The Daily Ledger</a> }}
+  footer={{ logo: "The Daily Ledger", groups: sectionGroups }}
+  intro={
+    <>
+      <Badge variant="brand">Weekly newsletter</Badge>
+      <Heading level={1} visualSize={2}>The Weekly Ledger</Heading>
+      <Text size="lead">Every Friday morning, before your coffee's gone cold.</Text>
+    </>
+  }
+  signup={<NewsletterSignup heading="Get The Weekly Ledger" onSubmit={handleSubmit} />}
+/>;
+```
+
+## Do
+
+- Keep `intro` short — a name, a one-sentence description, and the cadence is usually enough.
+  This page converts on clarity, not on selling copy.
+- Put the real, working `NewsletterSignup` (wired to an actual subscription request) in
+  `signup`, not a static mock — this page has no other purpose.
+- Use `sampleIssues` sparingly, as supporting evidence below the fold, never above `signup`.
+
+## Don't
+
+- Don't add a secondary rail or unrelated promo content next to `signup` — this template has
+  no sidebar slot on purpose, to avoid competing with the one action that matters.
+- Don't skip `header`/`footer` — every page still needs site chrome, even a focused landing
+  page, so a reader always has a way back to the rest of the site.
+
+## Accessibility notes
+
+- A skip link (visually hidden until focused) jumps straight to the `<main>` landmark, ahead of
+  the header's navigation.
+- The `intro`, `signup`, and optional `sampleIssues` regions are each wrapped in a labeled
+  `<section>`, so screen-reader users navigating by landmark can jump directly to the signup
+  form.
+- `NewsletterSignup` itself owns the form's labeling, validation messaging, and focus
+  management — this template only decides where that form sits on the page.

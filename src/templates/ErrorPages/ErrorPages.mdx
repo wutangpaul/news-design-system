@@ -1,0 +1,110 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ErrorPagesStories from "./ErrorPages.stories";
+
+<Meta of={ErrorPagesStories} />
+
+# Error Pages
+
+Full-page error states — page not found (404), server error (500), and offline — for whenever
+a reader lands somewhere that isn't a normal content page. Structurally different from
+content templates like Archive: there's no story listing, just chrome, a large code/heading,
+calm supporting copy, and a recovery action.
+
+<Canvas of={ErrorPagesStories.NotFound} />
+<Controls />
+
+<Canvas of={ErrorPagesStories.ServerError} />
+<Canvas of={ErrorPagesStories.Offline} />
+
+## One component, not three
+
+This design system builds `ErrorPages` as a single component with a `variant` prop
+(`"not-found" | "server-error" | "offline"`) rather than three separate components
+(`NotFoundPage`, `ServerErrorPage`, `OfflinePage`). The reasoning:
+
+- All three share an identical structural shape — chrome, code/eyebrow, heading, description,
+  recovery action — and only the copy, icon, and default recovery action differ. Three
+  components would mean three copies of the same layout code to keep in sync.
+  `variant` picks a small config object (code/heading/description/icon/default action) instead.
+- Every prop that isn't the `variant` selector is still overridable (`code`, `heading`,
+  `description`, `action`), so a consumer isn't locked into the default copy — a single 404 page
+  can be reworded per-section (see `NotFoundWithCustomCopy` below) without a new component.
+- If a fourth error condition (e.g. a paywall/subscription-required state) is ever needed, adding
+  another variant entry is a smaller change than authoring a fourth near-duplicate component.
+
+The one deliberate exception to strict template content-agnosticism (see the Templates section
+of `CONTRIBUTING.md`): `variant` *does* select real default copy, rather than every string being
+a required slot. Error pages are simple, mostly-static pages where sensible, on-brand defaults
+are the point — a consumer using the default `not-found` variant gets a complete, calm, helpful
+404 page for free. All of it remains overridable via `code`/`heading`/`description`/`action` for
+sites that want their own wording.
+
+<Canvas of={ErrorPagesStories.NotFoundWithCustomCopy} />
+
+## Slot contract
+
+- `header` / `footer` (required) — passed straight through to `GlobalHeader` and
+  `Footer`, same as every other template in this system.
+- `variant` (required) — `"not-found"` (404), `"server-error"` (500), or `"offline"`. Selects the
+  default code, heading, description, icon, and recovery action described above.
+- `code` (optional, `ReactNode`) — overrides the small eyebrow above the heading (defaults to
+  `"404"` / `"500"` / `"Offline"`).
+- `heading` (optional, `ReactNode`) — overrides the variant's default heading. Always rendered as
+  the page's single `<h1>` regardless of override.
+- `description` (optional, `ReactNode`) — overrides the variant's default supporting copy.
+- `action` (optional, `ReactNode`) — overrides the entire default recovery action. Defaults to a
+  real "Back to homepage" link for `not-found`, or a "Try again" button (reloads the page)
+  alongside a "Back to homepage" link for `server-error`/`offline`.
+- `homeHref` (optional, `string`, default `"/"`) — the `href` used by the default "Back to
+  homepage" link, in case a consumer's homepage isn't at the root path (e.g. a locale prefix).
+
+## Usage
+
+```tsx
+import { ErrorPages } from "@/templates/ErrorPages";
+
+<ErrorPages header={header} footer={footer} variant="not-found" />;
+```
+
+Overriding copy for a section-specific 404:
+
+```tsx
+<ErrorPages
+  header={header}
+  footer={footer}
+  variant="not-found"
+  heading="That story has moved"
+  description="We recently reorganized our Politics coverage. Try searching, or browse the section from the homepage."
+/>;
+```
+
+## Do
+
+- Use `server-error`/`offline`'s default "Try again" action for conditions that are plausibly
+  transient (a failed request, a dropped connection) — reloading is a genuinely useful recovery
+  step there.
+- Override `action` with your own retry callback (rather than a full page reload) if your app can
+  retry the failed request in place without a full navigation.
+- Keep any overridden `heading`/`description` in the same calm, specific, editorial voice as the
+  defaults — see [Brand & Editorial Typography](?path=/docs/foundations-brand-editorial-typography--docs).
+  Avoid generic placeholder tone ("Oops!", "Yikes!").
+
+## Don't
+
+- Don't use `not-found`'s default (a plain "Back to homepage" link, no "Try again") for
+  `server-error`/`offline` — those conditions are worth offering a retry for; a 404 generally
+  isn't (retrying the same broken URL won't fix it).
+- Don't swap the recovery link for a `<button onClick={...}>` when it's a genuine navigation —
+  keep real navigations as real links (`Link`/`<a href>`) so browser features (open in new tab,
+  bookmark, middle-click) keep working, matching what the default `not-found` action already does.
+
+## Accessibility notes
+
+- `heading` always renders as a real `<h1>` via `Heading`, so the page has exactly one top-level
+  heading and a correct document outline even though the page has no other content.
+- The default recovery link is a real `<a href>` (via the existing `Link` component), not a
+  `<div onClick>` — full keyboard and screen-reader support come from the underlying anchor
+  element for free.
+- Icons (compass/server/wifi-off) are purely decorative (`aria-hidden="true"`); the heading and
+  description text carry all the meaning, so the page remains fully understandable to
+  screen-reader users and with images/CSS disabled.

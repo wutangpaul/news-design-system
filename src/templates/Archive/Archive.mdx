@@ -1,0 +1,103 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ArchiveStories from "./Archive.stories";
+
+<Meta of={ArchiveStories} />
+
+# Archive
+
+A date/filter-driven listing page — "Browse articles from March 2026", "All Politics coverage
+since 2020", or any other filtered slice of the archive. Structure-only: Archive arranges site
+chrome, a title, an optional filter slot, the story listing (or a built-in empty state), and
+pagination, but never decides what fills the listing or what the filter controls look like.
+
+<Canvas of={ArchiveStories.Default} />
+<Controls />
+
+## Slot contract
+
+- `header` / `footer` (required) — passed straight through to `GlobalHeader` and
+  `Footer`. Every template includes this chrome directly rather than treating it as a slot,
+  since every real page needs it.
+- `title` (required, `string`) — the page's own heading, rendered as the single `<h1>`. This is
+  plain content rather than a `ReactNode` slot because it plays a fixed structural role (the
+  page heading), not an arbitrary composed pattern.
+- `description` (optional, `ReactNode`) — supporting copy under the title, e.g. a date-range or
+  section description.
+- `filters` (optional, `ReactNode`) — reserved space for the actual filter/date-range UI. This
+  design system doesn't yet have a date-picker or filter-form component, so Archive only
+  reserves the slot rather than building filter controls from scratch. The `Default` story fills
+  it with a small sample form built from `Input`/`Button` to demonstrate the shape.
+- `listing` (optional, `ReactNode`) — the story listing itself, typically a
+  `<FeaturedStoryGrid stories={...} />` from `src/patterns/FeaturedStoryGrid` (which itself
+  composes `StoryCard`). Any list/grid pattern works here — Archive has no opinion on layout
+  beyond giving it a max-width container.
+- `isEmpty` (optional, `boolean`, default `false`) — when set, Archive renders its own empty
+  state instead of `listing`/`pagination`. "Nothing matched the filter" is a real structural
+  state every archive page needs, so it's handled once, here, rather than left to every consumer
+  to reimplement slightly differently. See `emptyStateTitle`/`emptyStateDescription` to
+  customize the copy per use case (e.g. naming the specific date range that came up empty).
+- `pagination` (optional, `ReactNode`) — typically a `<Pagination page={...} pageCount={...}
+  onPageChange={...} />` from `src/components/Pagination`, wired up to whatever paging/routing
+  the consumer uses. Automatically hidden when `isEmpty` is set.
+
+## Usage
+
+```tsx
+import { Archive } from "@/templates/Archive";
+import { FeaturedStoryGrid } from "@/patterns/FeaturedStoryGrid";
+import { Pagination } from "@/components/Pagination";
+
+<Archive
+  header={header}
+  footer={footer}
+  title="Politics — March 2026"
+  description="All Politics coverage published between March 1 and March 31, 2026."
+  filters={<DateRangeFilters />}
+  listing={<FeaturedStoryGrid stories={marchPoliticsStories} />}
+  pagination={<Pagination page={page} pageCount={6} onPageChange={setPage} />}
+/>;
+```
+
+## Empty state
+
+Pass `isEmpty` whenever the consumer's data layer returns zero results for the current
+filter/date range — don't render `listing` as an empty grid and rely on it "just looking empty."
+The built-in empty state gives readers a clear, calm explanation and implicitly invites them to
+change the filter, rather than silently showing nothing:
+
+```tsx
+<Archive
+  header={header}
+  footer={footer}
+  title="Politics — August 2026"
+  isEmpty
+  emptyStateTitle="No stories found for this range"
+  emptyStateDescription="Try a different date range — nothing published matches August 2026."
+/>;
+```
+
+## Do
+
+- Keep `title` a single line — it's rendered at `display` visual size as the page's one `<h1>`.
+- Use `FeaturedStoryGrid` (or an equivalent grid of `StoryCard`s) for `listing` so archive pages
+  share the same visual rhythm as other listing surfaces in the system.
+- Pass `isEmpty` rather than passing an empty array into your own grid component and letting it
+  render nothing — the template's empty state is the one every archive page should share.
+
+## Don't
+
+- Don't build bespoke filter UI as a one-off inside a page that uses this template — even
+  though `filters` is a slot today, a real date-range/filter pattern should eventually be built
+  in `src/patterns/*` and reused here, not duplicated per page.
+- Don't pass both `isEmpty` and a non-empty `listing`/`pagination` expecting both to show —
+  `isEmpty` always wins and suppresses both.
+
+## Accessibility notes
+
+- `title` renders a real `<h1>` via `Heading`, so the page has exactly one top-level heading
+  regardless of what `listing` itself renders internally.
+- The empty state's heading is a real `<h2>`, keeping the document outline correct even when
+  there's no listing content.
+- Chrome landmarks (`banner`/`contentinfo`) come from `GlobalHeader`/`Footer` themselves; Archive
+  adds a `<main>` landmark around the title/filters/listing/pagination area so the page has a
+  complete landmark structure (banner, main, contentinfo) out of the box.

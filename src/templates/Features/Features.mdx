@@ -1,0 +1,85 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as FeaturesStories from "./Features.stories";
+
+<Meta of={FeaturesStories} />
+
+# Features
+
+A page-level layout for a rich, long-form, heavily-visual "digital feature" — the
+interactive-narrative treatment newsrooms reach for on major investigative or visual stories.
+Like every template in this design system, `Features` defines structure only: every prop is a
+layout slot, and the template never decides what pattern fills a slot or what content it shows.
+The `.stories.tsx` file demonstrates a realistic composed page with sample copy; the template
+component itself stays content-agnostic.
+
+<Canvas of={FeaturesStories.Default} />
+
+## Slot contract
+
+- **`header`** (`GlobalHeaderProps`, required) — forwarded as-is to a `GlobalHeader` composed
+  directly by this template. Every real page needs the same site chrome, so `Features` doesn't
+  treat "whether to render a header" as optional — only its content is left to the consumer.
+- **`footer`** (`FooterProps`, required) — forwarded as-is to a `Footer`, composed directly for
+  the same reason.
+- **`hero`** (`ReactNode`, required) — a large, full-width hero/header treatment rendered above
+  the constrained reading column, typically a bigger-scale `HeroStory` or `ArticleHeader`. This
+  template gives it the full page width and no opinion on what fills it.
+- **`body`** (`ReactNode`, required) — the story's long-form content, typically an `ArticleBody`
+  composing paragraphs alongside heavier visual moments (`ImageGallery`, `InlineImage`,
+  `PullQuote`). Rendered inside a constrained reading column; the template does not inspect or
+  rewrite its children.
+- **`socialSharing`** (`ReactNode`, optional) — share-this-story controls, typically
+  `SocialSharing`, shown directly below the body. Omit it for a piece that isn't meant to be
+  shared (a gated preview, an internal draft preview, etc).
+
+## How Features differs from Article
+
+This design system also has a plain `Article` template for standard news stories (see
+`src/templates/Article`). Both share the same site chrome and the same basic top-to-bottom
+shape — hero/header, then body, then sharing — but they target different kinds of stories:
+
+- **Article** is the dense, default reading page: a compact `ArticleHeader`, a text-first
+  `ArticleBody` with the occasional single image, optimized for getting a reader through a
+  standard news story quickly.
+- **Features** leans into a magazine-like visual rhythm instead. Its `hero` slot is expected to
+  be a large, full-bleed treatment (edge-to-edge, not capped to the reading column the way
+  `Article`'s header is), and its `body` is expected to carry noticeably more visual weight —
+  multiple `ImageGallery` carousels, inset `InlineImage`s that break the text flow, and repeated
+  `PullQuote` moments spaced through a much longer piece, rather than a single supporting photo.
+
+In other words: the slot *names* are similar because both are long-form editorial templates, but
+`Features` is the template to reach for when a story's own visual treatment is part of the
+storytelling — an investigation, a photo essay, an anniversary retrospective — rather than a
+same-day news write-up.
+
+## Structure this template owns
+
+- Layout order: header, full-width `hero`, constrained-width `body`, optional `socialSharing`,
+  footer.
+- The `hero` slot sits in a full-width wrapper with no horizontal padding, so a `HeroStory` (or
+  any other full-bleed treatment) can run edge-to-edge. The `body`/`socialSharing` area sits in a
+  padded, `max-w-3xl` column matching this system's Grid & Layout foundations for long-form
+  reading content.
+
+## Do's and don'ts
+
+- Do reach for `ImageGallery`/`InlineImage`/`PullQuote` liberally inside `body` — that visual
+  density is the point of this template, distinguishing it from `Article`.
+- Do pass a full-bleed-appropriate hero (a large image, a strong headline) into `hero` — it's
+  rendered at full page width, so a small/inset treatment will look sparse.
+- Don't reuse `Features` for a routine, text-only news story — that's what `Article` is for; this
+  template's whole reason to exist is the heavier visual treatment.
+
+## Composed patterns
+
+`Features` composes `GlobalHeader` and `Footer` for chrome. The `.stories.tsx` sample page also
+demonstrates `HeroStory`, `ArticleBody`, `ImageGallery`, `InlineImage`, `PullQuote`, `Byline`,
+`SocialSharing`, `PrimaryNavigation`, and `SearchExperience` filling the remaining slots — none of
+those are required by the template itself, they're realistic choices for what a real feature
+story page would use.
+
+<Controls />
+
+## Dark mode
+
+<Canvas of={FeaturesStories.DarkMode} />

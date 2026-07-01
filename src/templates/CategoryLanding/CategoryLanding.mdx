@@ -1,0 +1,84 @@
+import { Meta, Controls, Canvas } from "@storybook/addon-docs/blocks";
+import * as CategoryLandingStories from "./CategoryLanding.stories";
+
+<Meta of={CategoryLandingStories} />
+
+# Category Landing
+
+A section-front page — "Politics", "Business", "Weather", any top-level section of the site.
+Same fixed `GlobalHeader`/`Footer` chrome as `Homepage`, plus a `categoryNavigation` slot near
+the top so readers can jump to sibling sections, a plain-text `categoryName` heading, and two
+content slots (`featured`, `stories`) with an optional `pagination` slot underneath.
+
+<Canvas of={CategoryLandingStories.Default} />
+
+## The slot contract
+
+```tsx
+interface CategoryLandingProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  categoryName: string;
+  description?: ReactNode;
+  categoryNavigation: ReactNode;
+  featured: ReactNode;
+  stories: ReactNode;
+  pagination?: ReactNode;
+  mainId?: string;
+}
+```
+
+- **`categoryName`** — the section's display name (`"Politics"`, `"Business"`, ...), rendered
+  as the page's own `<h1>`. This is a plain `string` prop rather than a `ReactNode` slot:
+  unlike `hero` or `featured`, there's no pattern being composed here, just text, so wrapping
+  it in a slot would add indirection without adding flexibility.
+- **`description`** — an optional one-line summary of the section, shown under the heading.
+  Also plain content, accepted as `ReactNode` only so callers can include inline formatting
+  if they want it.
+- **`categoryNavigation`** — a rendered pattern (typically
+  [Category Navigation](?path=/docs/patterns-navigation-category-navigation--docs)), so it's a
+  genuine `ReactNode` slot, not a plain prop. Placed directly below the header and above the
+  page's own heading, matching how section fronts are conventionally laid out: readers land on
+  "Politics" already able to jump sideways to "Business" or "World" without scrolling back up
+  through the global header.
+- **`featured`** — this category's own lead story. The story above passes a single `StoryCard`
+  sized up with `headingLevel={2}`; a `HeroStory` would work identically for a section that
+  wants the full-bleed treatment.
+- **`stories`** — the rest of the category's stories. The story above passes a
+  `FeaturedStoryGrid`; a plain list of `StoryCard`s works just as well since the template has
+  no opinion on how those stories are arranged internally.
+- **`pagination`** — fully optional. The `Default` story wires up a real
+  [Pagination](?path=/docs/components-pagination--docs) with local page state; the
+  `SparseSection` story below omits it entirely for a short, non-paginated listing.
+
+## Why `categoryNavigation` is a slot but `categoryName` isn't
+
+The rule of thumb from `Homepage`'s MDX applies here too: anything that's a rendered *pattern*
+(with its own markup, behavior, and content shape) is a `ReactNode` slot; anything that's
+"genuinely just text" is a plain prop. `CategoryNavigation` has real behavior — horizontal
+scroll on narrow viewports, an `aria-current` convention for the active section — so it's a
+slot. `categoryName` is a string with no behavior of its own, so a plain prop is simpler and no
+less content-agnostic.
+
+## Sparse section, no pagination
+
+Not every section has a full page of stories.
+`pagination` is genuinely optional — omit it rather than passing a single-page `Pagination`:
+
+<Canvas of={CategoryLandingStories.SparseSection} />
+
+<Controls />
+
+## Accessibility
+
+- A visually-hidden "Skip to main content" link is the first focusable element, targeting the
+  `<main id={mainId}>` landmark (`mainId` defaults to `"main-content"`).
+- `GlobalHeader`/`Footer` render as the page's `banner`/`contentinfo` landmarks;
+  `categoryNavigation` sits between them and the `main` landmark rather than inside it, since
+  it's cross-page navigation rather than this page's own content.
+- `featured` and `stories` are wrapped in `section`s labeled with the current `categoryName`
+  (e.g. `"Featured in Politics"`, `"More in Politics"`) so screen-reader users navigating by
+  landmark get section-specific labels instead of generic ones.
+- The `categoryName` heading is a real semantic `<h1>` — see `CategoryNavigation`'s own MDX for
+  how the active-section link in that slot is marked `aria-current="page"` rather than
+  duplicating the page title as a link.

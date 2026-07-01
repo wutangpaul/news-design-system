@@ -1,0 +1,87 @@
+import { Meta, Controls, Canvas } from "@storybook/addon-docs/blocks";
+import * as HomepageStories from "./Homepage.stories";
+
+<Meta of={HomepageStories} />
+
+# Homepage
+
+The site's front page: fixed `GlobalHeader`/`Footer` chrome wrapped around three content
+slots — `hero`, `featured`, and an optional `sidebar`. Like every template in this system,
+`Homepage` defines structure only — it has no opinion on what news is on the page today.
+
+<Canvas of={HomepageStories.Default} />
+
+## The slot contract
+
+```tsx
+interface HomepageProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  hero: ReactNode;
+  featured: ReactNode;
+  sidebar?: ReactNode;
+  mainId?: string;
+}
+```
+
+- **`hero`** — the lead story, rendered full-width above everything else. The story above
+  passes a `HeroStory`, but the template only renders whatever node it receives.
+- **`featured`** — the day's top stories. The story above passes a `FeaturedStoryGrid`, but a
+  hand-rolled list of `StoryCard`s would work identically.
+- **`sidebar`** — one or more secondary rails (`MostRead`, `Trending`, a newsletter promo,
+  anything else). This is genuinely optional and genuinely plural: pass a fragment with
+  several patterns stacked if you need more than one rail, or omit it for a two-region page.
+- **`header`/`footer`** — *not* slots in the same sense. `Homepage` always renders a real
+  `GlobalHeader` and `Footer` (imported directly from `src/patterns/*`) because every page on
+  this site needs that chrome and it isn't something a template should let vary. What *is*
+  still fully open is the content going into that chrome: both props are typed as the
+  patterns' own prop interfaces (`GlobalHeaderProps`, `FooterProps`), which are themselves
+  already slot-shaped (`primaryNavigation`, `search`, `actions`, `newsletterSlot`, etc.) — so
+  the template stays content-agnostic without treating "which component is the header" as a
+  variable.
+
+## Why the template never imports HeroStory or FeaturedStoryGrid
+
+Per the project brief, templates arrange slots — they don't decide what fills them. A future
+CMS-driven page can pass a completely different pattern into `featured` (or a skeleton loading
+state, or an ad unit) without any change to `Homepage` itself. The realistic composition you
+see in the `Default` story above lives in `Homepage.stories.tsx`, not in `Homepage.tsx`.
+
+## Layout
+
+Built on Tailwind's grid utilities directly, per
+[Grid & Layout](?path=/docs/foundations-grid-layout--docs) — no custom 12-column system:
+
+- `< lg`: everything stacks in a single column, in slot order (`hero`, then `featured`, then
+  `sidebar`).
+- `lg`+: `hero` stays full-width above the fold; `featured` and `sidebar` split into a 2:1
+  column grid (`lg:grid-cols-3`, `featured` spanning 2), giving the day's top stories more
+  visual weight than the rail without the rail disappearing.
+
+## Two-region layout
+
+`sidebar` is optional — omit it for a simpler hero + featured page:
+
+<Canvas of={HomepageStories.WithoutSidebar} />
+
+## Sparse content
+
+Templates have to hold up on a slow news day too, not just a fully-stocked one. Passing
+fewer items into `featured`/`sidebar` reflows correctly since the grid is driven entirely by
+however many items the slot's own contents render — the template adds no fixed item count:
+
+<Canvas of={HomepageStories.SparseContent} />
+
+<Controls />
+
+## Accessibility
+
+- A visually-hidden "Skip to main content" link is the first focusable element on the page,
+  targeting the `<main id={mainId}>` landmark (`mainId` defaults to `"main-content"`) — this
+  is a template-level concern, not something any individual pattern owns.
+- `GlobalHeader` renders as the page's `banner` landmark and `Footer` as its `contentinfo`
+  landmark; `hero`/`featured`/`sidebar` are wrapped in labeled `section`/`aside` landmarks
+  (`"Top story"`, `"Featured stories"`, `"More stories"`) so screen-reader users can jump
+  between regions.
+- Heading levels are the responsibility of whatever pattern fills a slot (see each pattern's
+  own MDX), not of `Homepage` — the template renders no headings of its own.

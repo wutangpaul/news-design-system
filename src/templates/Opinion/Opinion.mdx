@@ -1,0 +1,105 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as OpinionStories from "./Opinion.stories";
+
+<Meta of={OpinionStories} />
+
+# Opinion
+
+The reading page for opinion/op-ed content: same reading-progress-plus-chrome-plus-reading-
+column shape as `Article` (it's still long-form reading), but with two structural
+differences that mark the piece as author-driven commentary rather than straight reporting.
+
+<Canvas of={OpinionStories.Default} />
+
+<Controls />
+
+## How this differs from Article, and why
+
+`Opinion` is deliberately *not* a copy of `Article` with a different name — if the two ever
+converge to being near-identical, that's a sign the opinion-specific treatment below has
+been lost and needs restoring. The differences, and the editorial reasoning behind each one:
+
+1. **An `eyebrow` label above the headline.** Reporting and opinion are held to different
+   standards (a columnist is arguing a case, not reporting neutrally), and readers deserve an
+   unambiguous, unmissable signal of which one they're looking at before they read a word of
+   the headline — not a label buried in a byline or a tag at the bottom. `Article` has no
+   equivalent prop; straight reporting doesn't need a category label competing with the
+   headline for attention.
+2. **A required, prominent `authorCard` slot placed immediately after the headline**, before
+   the body copy even starts. In `Article`, author detail beyond the byline is optional and
+   folded into the end-of-page `related` slot (an "about the reporter" aside is a nice-to-
+   have, not the point of the piece). In `Opinion`, who is making the argument is a
+   substantial part of evaluating the argument itself, so the full author call-out — photo,
+   title/beat, bio, contact/social links via `AuthorCard` — runs at the top, not the bottom.
+   That's also why `authorCard` is a required prop on `Opinion` (unlike `Article`'s optional
+   `related`): every opinion piece needs this treatment, by construction.
+
+Everything else is intentionally identical to `Article`: the same reading-progress bar
+tracking the same content column, the same `GlobalHeader`/`Footer` chrome, the same ~65ch
+reading measure, and the same optional `socialSharing`/`related`/`comments` slots in the
+same relative order after the body. Opinion pieces are still long-form reading pages first —
+diverging further (a different chrome, a different reading measure, a different comment
+experience) would be inventing distinctions the content itself doesn't call for.
+
+## Slot contract
+
+```tsx
+export interface OpinionProps {
+  header: GlobalHeaderProps;   // forwarded as-is to GlobalHeader
+  footer: FooterProps;         // forwarded as-is to Footer
+  eyebrow?: ReactNode;         // defaults to "Opinion"
+  articleHeader: ReactNode;    // typically <ArticleHeader byline={<Byline .../>} />
+  authorCard: ReactNode;       // required — typically <AuthorCard />, rendered right after the headline
+  body: ReactNode;             // typically <ArticleBody>...</ArticleBody>
+  socialSharing?: ReactNode;   // typically <SocialSharing />
+  related?: ReactNode;         // typically <RelatedArticles /> (further reading, not author info)
+  comments?: ReactNode;        // typically <Comments />
+}
+```
+
+## Usage
+
+```tsx
+import { Opinion } from "@/templates/Opinion";
+import { ArticleHeader, ArticleBody, Byline, AuthorCard, SocialSharing, RelatedArticles } from "@/patterns";
+
+<Opinion
+  header={{ logo: <Logo /> }}
+  footer={{ groups: footerLinkGroups }}
+  eyebrow="Opinion"
+  articleHeader={
+    <ArticleHeader
+      title="Congestion Pricing Is Working. That's Exactly Why People Hate It."
+      byline={<Byline authors={[{ name: "Thomas Okonjo" }]} publishedAt="2026-06-29" />}
+    />
+  }
+  authorCard={
+    <AuthorCard
+      name="Thomas Okonjo"
+      title="Contributing Columnist, Urban Policy"
+      bio="Thomas writes twice weekly on transportation and urban policy."
+    />
+  }
+  body={<ArticleBody><p>Opening paragraph…</p></ArticleBody>}
+  related={<RelatedArticles heading="More from Opinion" articles={otherColumns} />}
+/>
+```
+
+## Custom eyebrow labels
+
+`eyebrow` defaults to "Opinion" but accepts any `ReactNode`, so a section can use "Editorial"
+for house-position pieces or "Op-Ed" for guest contributions without needing a separate
+template.
+
+<Canvas of={OpinionStories.CustomEyebrow} />
+
+## Accessibility
+
+- Same landmark structure as `Article`: a `banner` header, a real `<main>` for the content
+  column, and a `contentinfo` footer.
+- The eyebrow is plain visible text (not color-only) rendered ahead of the headline in
+  reading order, so it's announced before the headline by assistive tech in the same order
+  sighted readers encounter it.
+- `authorCard`'s heading level should be set one level under the page's own headline (see
+  `AuthorCard`'s own `headingLevel` prop) so the document outline stays correct with the
+  author call-out appearing this early in the page.

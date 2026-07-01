@@ -1,0 +1,91 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as AuthorProfileStories from "./AuthorProfile.stories";
+
+<Meta of={AuthorProfileStories} />
+
+# Author Profile
+
+A journalist's bio/archive page: the site's `GlobalHeader` and `Footer` chrome wrapped around a
+prominent author intro and that author's list of stories, with an optional pagination slot
+below it. Like every template in this design system, `AuthorProfile` defines structure only —
+it has no opinion on what fills a slot, and no editorial content of its own. The realistic
+sample copy in the story below (the author bio, the story headlines) lives in
+`AuthorProfile.stories.tsx`, not in the template component.
+
+<Canvas of={AuthorProfileStories.Default} />
+
+## Slot contract
+
+```tsx
+interface AuthorProfileProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  authorIntro: ReactNode;
+  storyList: ReactNode;
+  pagination?: ReactNode;
+}
+```
+
+- **`header`** / **`footer`** — props forwarded straight through to `GlobalHeader` and `Footer`.
+  Every real page needs this chrome, so the template composes those two patterns directly
+  rather than accepting them as a pre-built `ReactNode` the consumer could swap out entirely —
+  but their actual content (logo, navigation, search trigger, footer link columns) still comes
+  from whatever `GlobalHeaderProps`/`FooterProps` object the consumer passes in. The template
+  never hardcodes a wordmark or a set of footer links.
+- **`authorIntro`** — the bio/photo block at the top of the page. Typically an `AuthorCard`
+  instance with `headingLevel={1}`, since the author's name is this page's main heading. The
+  template wraps whatever is passed here in a `<section aria-label="About the author">`
+  landmark; it doesn't render any bio fields itself.
+- **`storyList`** — the author's bylined stories. Typically a `FeaturedStoryGrid` for a fuller
+  archive, or a plain vertical stack of `StoryCard`s (`layout="horizontal"`) for a short one —
+  see the second story below. The template only reserves the layout region for it, under a
+  template-owned "Latest stories" heading that keeps the page's document outline correct
+  regardless of what's inside the slot.
+- **`pagination`** *(optional)* — page navigation for the story list, typically a `<Pagination
+  page={...} pageCount={...} onPageChange={...} />` instance. An author can have hundreds of
+  stories, so this template reserves a spot for pagination controls below the list — but it
+  owns none of the paging logic itself. Fetching the right page of stories and tracking the
+  current page number is a page-level, data-fetching concern; this template just renders
+  whatever pagination control (or nothing) the consumer passes in.
+
+## Why pagination is a slot, not a built-in behavior
+
+A content-agnostic template can't know how many stories an author has, how they're fetched, or
+what "page 2" even means for a given backend (offset pagination, cursors, etc.) — all of that
+depends on decisions outside this template's scope. Rather than reimplement paging state, the
+template accepts the current page's `storyList` and an already-wired `pagination` control as
+plain slots. The existing `Pagination` component (`src/components/Pagination`) already handles
+the page-number UI and truncation; the page that instantiates `AuthorProfile` is responsible for
+owning the current-page state and re-fetching `storyList` when `onPageChange` fires.
+
+## A short archive: few stories, no bio yet
+
+New contributors may have only a couple of bylined stories and no bio written yet.
+`AuthorProfile` doesn't need any special-case handling for this — `AuthorCard`'s own `bio` prop
+is already optional, and the `storyList` slot happily accepts as few items as needed (or a
+different composition entirely, like a plain list instead of a grid) with no `pagination` slot
+at all:
+
+<Canvas of={AuthorProfileStories.NewContributorFewStories} />
+
+<Controls />
+
+## Accessibility
+
+- The author intro renders inside a labeled `<section>` region (`aria-label="About the
+  author"`), distinct from the story list section below it.
+- The story list sits in its own `<section>`, labeled via `aria-labelledby` pointing at the
+  template-owned "Latest stories" heading — screen-reader users navigating by landmark or
+  heading get a correctly structured page regardless of what's inside `storyList`.
+- The whole page content sits inside one `<main>` landmark, between the `GlobalHeader`'s
+  `<header>` and the `Footer`'s `<footer>` (`contentinfo`) landmarks.
+- Storybook's a11y addon reports no violations on the default story.
+
+## Do / Don't
+
+- **Do** pass `headingLevel={1}` to the `AuthorCard` (or equivalent) used for `authorIntro` —
+  it's this page's main heading.
+- **Do** omit `pagination` entirely for authors with a short enough archive that paging
+  wouldn't be reachable anyway.
+- **Don't** have the template fetch or track pagination state — that belongs to the page-level
+  code that instantiates it.

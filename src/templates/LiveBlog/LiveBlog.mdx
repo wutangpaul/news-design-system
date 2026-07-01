@@ -1,0 +1,101 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as LiveBlogStories from "./LiveBlog.stories";
+
+<Meta of={LiveBlogStories} />
+
+# Live Blog
+
+A page-level layout for a running feed of timestamped updates covering a breaking or ongoing
+event — an election night, a sports match, a developing news story. Like every template in this
+design system, `LiveBlog` defines structure only: every prop is a layout slot, and it never
+decides what pattern fills a slot or what content that pattern shows. The `.stories.tsx` file is
+where the realistic sample copy lives, not the template itself.
+
+<Canvas of={LiveBlogStories.Default} />
+
+## Slot contract
+
+- **`header`** (`GlobalHeaderProps`, required) — forwarded as-is to a `GlobalHeader` this
+  template composes directly. Every real page needs the same site chrome, so `LiveBlog` doesn't
+  treat "whether to render a header" as something a consumer can opt out of — only its content
+  (logo, navigation, search, actions) is left open.
+- **`footer`** (`FooterProps`, required) — forwarded as-is to a `Footer`, composed directly for
+  the same reason as `header`.
+- **`breakingNewsBanner`** (`ReactNode`, optional) — rendered directly below the header and above
+  the page's own title. Typically a `BreakingNewsBanner`. Omit it entirely on a live blog that
+  isn't currently tied to a separate breaking alert — see the "Without a breaking banner" story.
+- **`pageHeader`** (`ReactNode`, required) — the blog's own title/context block: headline,
+  standfirst, byline, whatever orients the reader on what event this feed covers. This template
+  has no opinion on what's inside it beyond rendering it above the feed.
+- **`feedStatus`** (`ReactNode`, optional) — a small status line between `pageHeader` and the
+  feed, e.g. an entry count and a last-updated time. Left entirely to the consumer since this
+  template doesn't inspect `entries` to compute either value itself.
+- **`entries`** (`ReactNode[]`, required) — the feed itself, one entry per timestamped update,
+  ordered newest-first by whoever assembles the array. Typically `LiveBlogEntry` elements.
+
+## Why `entries` is a plain array, not a fixed set of named slots
+
+A real live blog's defining trait is that its feed length isn't known up front — new entries
+arrive continuously and get prepended to the front. `LiveBlog` reflects that directly in its
+prop shape: `entries` is a plain `ReactNode[]`, and the template always renders exactly what it's
+given, in the order given, with no sorting, caching, or truncation. To add a new update, build a
+fresh array with the new entry unshifted onto the front and pass it back in — the same pattern
+demonstrated in the `SingleEntry` story, which shows the same layout with a feed of one.
+
+The array is rendered directly as the feed container's children rather than being re-wrapped or
+re-keyed by index. That means each element you put into `entries` should carry its own stable
+`key` (an entry ID, a timestamp, whatever is stable across re-renders) — exactly like any other
+keyed React list. Re-keying by array index internally would have quietly broken this for the one
+case that matters most: prepending a new entry shifts every existing item's index, which — if the
+template controlled the keys — would make React think every visible entry changed identity on
+every single update.
+
+## Structure this template owns
+
+- A `role="feed"` region (the WAI-ARIA Authoring Practices Guide's pattern for "a section of a
+  page that loads new sections of content", which is exactly what a live blog is), labeled "Live
+  updates, newest first" so assistive technology understands both what the region contains and
+  the order it's in.
+- Layout order: header, optional breaking banner, `pageHeader`, optional `feedStatus`, the feed,
+  footer — matching how real live blogs are read top to bottom.
+- A constrained reading column (`max-w-3xl`) for the title/feed area, consistent with this
+  system's Grid & Layout foundations for long-form reading content.
+
+## Do's and don'ts
+
+- Do keep `entries` sorted newest-first yourself before passing it in — the template does not
+  sort by timestamp (it has no reliable way to read a timestamp out of an opaque `ReactNode`).
+- Do give each entry a stable `key` when you build the array.
+- Don't rely on this template to compute `feedStatus` (entry counts, "last updated" text) from
+  `entries` — it doesn't inspect the array's contents, only its length as rendered children.
+- Don't omit `pageHeader` — unlike `breakingNewsBanner`, it's a required slot; every live blog
+  needs its own title/context even when nothing dramatic has happened yet.
+
+## Composed patterns
+
+`LiveBlog` composes `GlobalHeader` and `Footer` for chrome. The `.stories.tsx` sample page also
+demonstrates `BreakingNewsBanner`, `LiveBlogEntry`, `Byline`, `Badge`, `PrimaryNavigation`, and
+`SearchExperience` filling the remaining slots — none of those are required by the template
+itself, they're simply realistic choices for what a real live-blog page would use.
+
+<Controls />
+
+## Stories
+
+### Without a breaking banner
+
+Once the tied breaking alert is no longer relevant, the `breakingNewsBanner` slot is simply
+omitted — the rest of the layout is unaffected.
+
+<Canvas of={LiveBlogStories.WithoutBreakingBanner} />
+
+### A feed with a single entry
+
+The feed makes no assumption about a minimum entry count either — a blog that has only just
+started renders correctly with exactly one entry.
+
+<Canvas of={LiveBlogStories.SingleEntry} />
+
+### Dark mode
+
+<Canvas of={LiveBlogStories.DarkMode} />

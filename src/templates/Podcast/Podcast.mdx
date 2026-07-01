@@ -1,0 +1,78 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as PodcastStories from "./Podcast.stories";
+
+<Meta of={PodcastStories} />
+
+# Podcast
+
+The podcast show/episode-listing page: a show-intro region (artwork, title, description)
+alongside a list of episodes. Laid out as an asymmetric column split at `lg`+ — the show intro
+sits in a narrower rail since it's identity/context a visitor reads once, while the episode
+list gets the wider column since it's the part a returning listener scans repeatedly. The same
+asymmetric-column rationale `Homepage` uses for its hero/rail split.
+
+<Canvas of={PodcastStories.Default} />
+<Controls />
+
+## Structure, not content
+
+`Podcast` has no opinion on the show's name, description, artwork, or how many episodes exist —
+it only arranges two regions side by side (stacking to a single column below `lg`): `showIntro`
+and `episodes`.
+
+## Slot contract
+
+- `header` / `footer` — configuration objects forwarded as-is to `GlobalHeader` and `Footer`.
+- `showIntro` (required) — artwork, title, and description of the podcast itself. No dedicated
+  "podcast show" pattern exists yet, so this is typically hand-composed from `Image`,
+  `Heading`, `Text`, and `Badge` (see the story source for a worked example) rather than forced
+  through an author-profile-shaped pattern like `AuthorCard`, which is about a person, not a
+  show.
+- `episodes` (required) — the episode list, typically a `PodcastCards` pattern instance.
+- `mainId` (optional, default `main-content`) — id applied to the `<main>` landmark, used as
+  the skip-link target.
+
+## Usage
+
+```tsx
+import { Podcast } from "@/templates/Podcast";
+import { PodcastCards } from "@/patterns/PodcastCards";
+import { Image, Heading, Text } from "@/components";
+
+<Podcast
+  header={{ logo: <a href="/">The Daily Ledger</a> }}
+  footer={{ logo: "The Daily Ledger", groups: sectionGroups }}
+  showIntro={
+    <>
+      <Image src={show.artworkSrc} alt={`${show.title} show artwork.`} aspectRatio="1/1" />
+      <Heading level={1} visualSize={3}>{show.title}</Heading>
+      <Text color="secondary">{show.description}</Text>
+    </>
+  }
+  episodes={<PodcastCards title="All episodes" episodes={episodes} />}
+/>;
+```
+
+## Do
+
+- Keep `showIntro` focused on the show itself (artwork, title, one short description) — episode
+  detail belongs in `episodes`, not repeated in the intro.
+- Let `episodes` be the long-scrolling region — the column split gives it roughly twice the
+  width of `showIntro` at `lg`+ for exactly that reason.
+
+## Don't
+
+- Don't put an individual episode's own player/detail view inside `showIntro` — that's a
+  separate page (an episode detail page), not part of this listing template.
+- Don't omit `episodes` — a show page with no episode list has nothing for a visitor to do
+  once they've read the description.
+
+## Accessibility notes
+
+- A skip link (visually hidden until focused) jumps straight to the `<main>` landmark.
+- `showIntro` and `episodes` are each wrapped in a labeled `<section>`, so screen-reader users
+  navigating by landmark can jump directly to the episode list without stepping through the
+  show description first.
+- `PodcastCards` owns its own heading and list semantics (including its placeholder waveform
+  glyph for episodes without artwork) — this template only decides where that list sits
+  relative to the show intro.

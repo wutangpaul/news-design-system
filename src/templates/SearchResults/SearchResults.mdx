@@ -1,0 +1,91 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SearchResultsStories from "./SearchResults.stories";
+
+<Meta of={SearchResultsStories} />
+
+# Search Results
+
+A query results page: the site's `GlobalHeader` and `Footer` chrome wrapped around a results
+summary, the matching results list, pagination, and a deliberate empty state for zero matches.
+As with every template here, `SearchResults` defines structure only — the query string, result
+count, results list, and pagination controls all come from the consumer. The sample results and
+copy shown below live in `SearchResults.stories.tsx`, not in the template.
+
+<Canvas of={SearchResultsStories.Default} />
+
+## Slot contract
+
+```tsx
+interface SearchResultsProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  query: string;
+  resultCount: number;
+  resultsList?: ReactNode;
+  pagination?: ReactNode;
+  emptyState?: ReactNode;
+}
+```
+
+- **`header`** / **`footer`** — props forwarded straight through to `GlobalHeader` and `Footer`,
+  composed directly as page chrome (same rationale as every other template — see Author
+  Profile's docs for the fuller writeup). Pass a `search` slot on `header` — typically
+  `<SearchExperience defaultValue={query} .../>` — so the query stays visible and editable from
+  the results page itself.
+- **`query`** / **`resultCount`** — plain values, not `ReactNode` slots, because the template
+  itself renders the results-summary sentence (e.g. "127 results for `transit budget`") and the
+  built-in empty state from them. The template never hardcodes that sentence's wording or
+  count — both always come from the consumer — but it does own the small bit of string
+  formatting (pluralizing "result"/"results", quoting the query) so every page that uses this
+  template gets it consistently.
+- **`resultsList`** *(optional)* — the matching stories, typically a column of `StoryCard`s
+  (`layout="horizontal"`). Rendered only when `resultCount` is greater than `0`.
+- **`pagination`** *(optional)* — page navigation for the results list, typically a
+  `<Pagination page={...} pageCount={...} onPageChange={...} />` instance, following the same
+  "template reserves the slot, the page owns the paging state" split described in Author
+  Profile's docs. Rendered only alongside a non-empty results list.
+- **`emptyState`** *(optional)* — overrides the built-in zero-results message. See below.
+
+## Deciding what renders: results vs. empty state
+
+`resultCount` drives one structural decision the template does make on its own: when it's `0`,
+`resultsList` and `pagination` are not rendered (even if passed) and an empty state renders in
+their place instead. That's a layout decision, not a content decision — whether to show *a*
+results list or *an* empty state is exactly the kind of thing a "content-agnostic" template is
+still allowed to own, the same way it decides where the results summary sits relative to the
+list. What actually fills either area is still entirely up to the consumer.
+
+## The empty state
+
+A zero-results page is a common, expected state for a search page — not an error — so it gets a
+real, deliberate empty state rather than a blank content area. When `emptyState` is omitted, the
+template renders a built-in message referencing the current `query`:
+
+<Canvas of={SearchResultsStories.NoResults} />
+
+The built-in empty state is announced to assistive tech via `role="status"` (a polite live
+region), since it's a normal result of the user's own search rather than an error needing an
+assertive interruption. Pass `emptyState` to fully replace it — for example with a suggested-
+searches list or a link back to the homepage — while the template still handles suppressing
+`resultsList`/`pagination` for you.
+
+<Controls />
+
+## Accessibility
+
+- The page has a single `<h1>` ("Search results"), with the query/count summary as a plain
+  paragraph beneath it — the summary describes the page, it isn't itself a heading.
+- The whole page content sits inside one `<main>` landmark, between the `GlobalHeader`'s
+  `<header>` and the `Footer`'s `<footer>` (`contentinfo`) landmarks.
+- The built-in empty state uses `role="status"` so screen-reader users are told a search
+  completed with no matches, rather than encountering silence.
+- Storybook's a11y addon reports no violations on both the populated and empty-state stories.
+
+## Do / Don't
+
+- **Do** keep `query`/`resultCount` as the real values from your search backend — the summary
+  sentence and empty-state copy are only as accurate as what you pass in.
+- **Do** rely on the built-in empty state for the common case; only pass `emptyState` when you
+  need genuinely different content (e.g. suggested searches).
+- **Don't** pass `resultsList`/`pagination` expecting them to render when `resultCount` is `0` —
+  the template intentionally suppresses both in favor of the empty state.

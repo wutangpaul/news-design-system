@@ -1,0 +1,111 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ArticleStories from "./Article.stories";
+
+<Meta of={ArticleStories} />
+
+# Article
+
+The standard single-story reading page: a reading-progress bar pinned to the top of the
+viewport, the site's `GlobalHeader`, a reading-measure-constrained column of article
+content, and the site's `Footer`.
+
+<Canvas of={ArticleStories.Default} />
+
+<Controls />
+
+## What this template owns
+
+Per the project brief, templates define structure only and stay content-agnostic. `Article`
+owns exactly three things:
+
+- **Fixed chrome.** A `ReadingProgress` bar, a `GlobalHeader`, and a `Footer` are composed
+  directly inside the template (not accepted as slots) — every article page needs all three,
+  so they aren't a place this template should vary. `ReadingProgress` is wired to track
+  scroll through the article's own content column rather than the whole document, so its
+  percentage reflects how far through the story the reader actually is, not how far down a
+  page that also includes header/footer chrome.
+- **The reading column.** Everything between the header and footer sits inside a single
+  column capped at roughly 65 characters wide, per the reading-measure guidance in
+  [Grid & Layout](?path=/docs/foundations-grid-layout--docs). Long-form text is easiest to
+  read at that measure regardless of viewport width, so the template enforces it once at the
+  page level rather than leaving every consumer to reinvent it per pattern.
+- **Slot order.** Header area, then body, then (optionally) social sharing, related/author
+  content, and comments — always in that order, since that's the order a reader encounters
+  them on essentially every real article page.
+
+Everything else — what actually fills each slot — is left to the caller. `Article` never
+imports `ArticleHeader`, `ArticleBody`, `PullQuote`, or any other pattern; it only knows
+about `ReactNode`.
+
+## Slot contract
+
+```tsx
+export interface ArticleProps {
+  header: GlobalHeaderProps;   // forwarded as-is to GlobalHeader
+  footer: FooterProps;         // forwarded as-is to Footer
+  articleHeader: ReactNode;    // typically <ArticleHeader byline={<Byline .../>} />
+  body: ReactNode;             // typically <ArticleBody>...</ArticleBody>
+  socialSharing?: ReactNode;   // typically <SocialSharing />
+  related?: ReactNode;         // typically <AuthorCard /> and/or <RelatedArticles />
+  comments?: ReactNode;        // typically <Comments />
+}
+```
+
+`header` and `footer` are the one exception to "everything is a slot": since the template
+composes `GlobalHeader`/`Footer` itself, these two props are that pattern's own prop type,
+forwarded straight through with a spread. They configure the fixed chrome; they don't change
+what pattern renders it.
+
+## Usage
+
+```tsx
+import { Article } from "@/templates/Article";
+import { ArticleHeader, ArticleBody, Byline, PullQuote, SocialSharing, AuthorCard, Comments } from "@/patterns";
+
+<Article
+  header={{ logo: <Logo />, primaryNavigation: <PrimaryNavigation items={sections} /> }}
+  footer={{ groups: footerLinkGroups }}
+  articleHeader={
+    <ArticleHeader
+      title="Inside the Race to Rebuild the Grid"
+      standfirst="Utilities are racing the clock to harden infrastructure before summer peak."
+      byline={<Byline authors={[{ name: "Elena Vasquez" }]} publishedAt="2026-06-28" />}
+    />
+  }
+  body={
+    <ArticleBody>
+      <p>Opening paragraph…</p>
+      <PullQuote quote="A pulled excerpt from the paragraph above." />
+    </ArticleBody>
+  }
+  socialSharing={<SocialSharing url="https://example.com/article" />}
+  related={<AuthorCard name="Elena Vasquez" bio="Energy & climate reporter." />}
+  comments={<Comments comments={commentThread} />}
+/>
+```
+
+## Why body content isn't a prop
+
+An earlier design considered props like `headline: string` and `paragraphs: string[]`
+directly on the template. That would make `Article` responsible for deciding how a headline
+or a paragraph should be marked up — which pattern to reach for, how quotes or inline images
+interleave with body text — none of which is a "page structure" decision. Keeping
+`articleHeader` and `body` as opaque `ReactNode` slots means the same template works whether
+the real content comes from `ArticleHeader`/`ArticleBody`, a future CMS-driven rich-text
+renderer, or a hand-written test fixture, without any change to this file.
+
+## Optional slots
+
+`socialSharing`, `related`, and `comments` are all optional — a shorter wire piece or a page
+still building out comment moderation can render `Article` with only `articleHeader` and
+`body` and simply omit the rest. Nothing forces every article page to include every slot.
+
+## Accessibility
+
+- The chrome is real landmarks: `GlobalHeader` renders a `banner` region and `Footer` renders
+  a `contentinfo` region (see each pattern's own docs) — this template composes them, it
+  doesn't re-implement or duplicate that markup.
+- The article content sits inside a real `<main>` element, so assistive tech users can jump
+  straight to the story past repeated header navigation.
+- `ReadingProgress` renders an accessible `progressbar` (see that pattern's docs); this
+  template only supplies the scroll target, not the accessible name or visual styling.

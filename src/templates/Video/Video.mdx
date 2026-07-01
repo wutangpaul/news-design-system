@@ -1,0 +1,75 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as VideoStories from "./Video.stories";
+
+<Meta of={VideoStories} />
+
+# Video
+
+The video section/hub page: a full-width featured video above a grid of the rest of the
+section's videos, with an optional area further down for named series or collections (e.g. an
+"Explained" series). Structurally close to `Homepage` — the same fixed chrome and full-width
+container — but a single scanning path rather than a hero/rail split, since a video hub has one
+primary job: get the visitor watching something.
+
+<Canvas of={VideoStories.Default} />
+<Controls />
+
+## Structure, not content
+
+`Video` has no opinion on which videos exist, how many there are, or how they're sourced — it
+only arranges three regions in order: `featured`, `videos`, and the optional `collections`. The
+featured video is deliberately its own slot rather than the first item in `videos`, so a caller
+can give it a distinct, larger visual treatment (bigger thumbnail, headline, a short dek) without
+the grid pattern having to grow a "hero" variant of its own.
+
+## Slot contract
+
+- `header` / `footer` — configuration objects forwarded as-is to `GlobalHeader` and `Footer`.
+- `featured` (required) — the hero video, typically hand-composed from `Card`, `Image`,
+  `Heading`, and `Text` (see the story source for a worked example) since no dedicated
+  "hero video" pattern exists yet — a video hub usually wants a bigger, differently
+  proportioned treatment than a grid card.
+- `videos` (required) — the rest of the section, typically a `VideoCards` pattern instance.
+- `collections` (optional) — named series/topic groupings, typically one or more
+  `TopicCollections` instances (e.g. one per named series). Omit for a single flat grid.
+- `mainId` (optional, default `main-content`) — id applied to the `<main>` landmark, used as
+  the skip-link target.
+
+## Usage
+
+```tsx
+import { Video } from "@/templates/Video";
+import { VideoCards } from "@/patterns/VideoCards";
+import { TopicCollections } from "@/patterns/TopicCollections";
+
+<Video
+  header={{ logo: <a href="/">The Daily Ledger</a> }}
+  footer={{ logo: "The Daily Ledger", groups: sectionGroups }}
+  featured={<FeaturedVideoCard {...heroVideo} />}
+  videos={<VideoCards title="Latest videos" videos={videos} />}
+  collections={<TopicCollections topic="Explained" articles={explainedEpisodes} />}
+/>;
+```
+
+## Do
+
+- Reserve `featured` for genuinely the most important or timely video — it gets the largest,
+  most prominent treatment on the page.
+- Use `collections` for durable, named series (e.g. a recurring "Explained" format), not for an
+  arbitrary second grid of unrelated videos.
+
+## Don't
+
+- Don't put more than one hero-scale video in `featured` — it's a single slot, not a list,
+  precisely so the page keeps one clear entry point.
+- Don't duplicate the featured video inside `videos` as well — callers should filter it out of
+  the grid data before passing it in.
+
+## Accessibility notes
+
+- A skip link (visually hidden until focused) jumps straight to the `<main>` landmark.
+- `featured`, `videos`, and the optional `collections` region are each wrapped in a labeled
+  `<section>`, so screen-reader users navigating by landmark can jump directly to any of the
+  three regions.
+- `VideoCards` and `TopicCollections` each own their own internal heading structure and list
+  semantics — this template only decides where those regions sit on the page.
