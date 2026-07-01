@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ExternalLink, Bookmark } from "@/components/Icon";
 import { SocialSharing, type SocialSharePlatform } from "./SocialSharing";
 

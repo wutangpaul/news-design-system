@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FeaturedStoryGrid } from "./FeaturedStoryGrid";
 import type { FeaturedStoryGridItem } from "./FeaturedStoryGrid";
 

@@ -1,4 +1,4 @@
-import { addons } from "@storybook/manager-api";
+import { addons } from "storybook/manager-api";
 
 addons.setConfig({
   showNav: true, // Show the left sidebar

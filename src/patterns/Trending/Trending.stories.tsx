@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Trending } from "./Trending";
 import type { TrendingItem } from "./Trending";
 

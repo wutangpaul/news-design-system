@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { MostRead } from "./MostRead";
 import type { MostReadItem } from "./MostRead";
 
