@@ -231,6 +231,14 @@ export const DropdownMenu = React.forwardRef<HTMLDivElement, DropdownMenuProps>(
           "bg-surface-raised py-1 shadow-md",
           align === "start" ? "left-0" : "right-0",
           className,
+          // The `hidden` attribute above is enough on its own for a bare DropdownMenu, but a
+          // consumer-supplied `className` that sets its own display utility (e.g. MegaMenu's
+          // `flex`) has the same CSS specificity as the browser's default `[hidden]{display:
+          // none}` rule — and same-specificity author rules always beat user-agent rules
+          // regardless of source order, so that display utility would render even while
+          // `hidden`. Appending this last lets tailwind-merge drop any earlier display utility
+          // from `className` and keeps the menu genuinely hidden when closed.
+          !open && "hidden",
         )}
         {...rest}
       >
