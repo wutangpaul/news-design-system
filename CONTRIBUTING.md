@@ -70,6 +70,49 @@ import finished components from `src/components/*`.
   MDX file *is* the docs page; `tags: ['autodocs']` is only for components that have no custom
   MDX (none currently — every component should have one).
 
+## MDX docs — bugs to avoid (found the hard way in Phase 2)
+
+`yarn build-storybook` succeeding does **not** prove an MDX docs page actually renders — it
+only bundles the JS, it doesn't execute every page. These three mistakes all passed
+`build-storybook` clean and then crashed in the browser:
+
+1. **Bare `{word}` in prose text.** MDX evaluates *any* unescaped `{...}` as a live JS
+   expression, even outside code — writing `` the aria-label is "Remove {label}" `` in plain
+   prose crashes with "label is not defined". If you need to show a literal placeholder like
+   that, wrap it in backtick-delimited inline code, or reword to avoid the brace entirely.
+2. **Nested backticks inside a single-backtick inline code span** (e.g. showing a template
+   literal like `` `style={{ width: \`${x}%\` }}` `` as inline code) breaks MDX's code-span
+   parser, which then falls through to prose mode and evaluates the exposed `{x}` the same way
+   as above. Fix: put any snippet that itself contains backticks into a triple-backtick fenced
+   code block instead — fenced blocks are always raw/safe, inline spans are not once nested.
+3. **`<Controls of={XStories} />`** — passing the whole stories module (a "meta") to `Controls`
+   throws "Invalid value passed to the 'of' prop" (it only accepts a `story`). If the page
+   already has `<Meta of={XStories} />`, just write `<Controls />` with no `of` — it inherits
+   context automatically.
+
+Before considering a new MDX page done, do a quick self-check: strip fenced code blocks and
+inline code spans, and make sure no stray `{`/`}` remains in the leftover prose.
+
+## Patterns (Phase 3) — additional notes
+
+Patterns differ from components in one key way: they **should** compose finished components
+from `src/components/*` rather than reimplementing markup (a Story Card is a `Card` + `Image` +
+`Heading` + `Tag` + `Byline`, not hand-rolled HTML). Import them normally — the "self-contained,
+no cross-imports" rule from Phase 2 was specific to Phase 2's parallel-build constraint and does
+not apply here.
+
+- Location: `src/patterns/<PatternName>/`, same file shape as components
+  (`Name.tsx`/`.stories.tsx`/`.test.tsx`/`.mdx`/`index.ts`).
+- Storybook title: `Patterns/<Category>/<PatternName>` — `Category` is one of `Editorial`,
+  `Navigation`, `Content Discovery` (matching the project brief's own grouping), regardless of
+  which agent/session built it.
+- Patterns take real content via props (title, image src, author name, etc.) — they are not
+  content-agnostic the way Templates (Phase 4) are meant to be. Define a small TS interface per
+  pattern for its content shape; there's no shared "content model" to conform to yet.
+- `cn()` and the `vitest-axe` matcher are already fixed centrally (see git history) — use them
+  normally, no need for the workarounds Phase 2 components had to invent before those fixes
+  landed.
+
 ## Boundaries — do not edit these as part of building a component
 
 `package.json`, `tailwind.config.ts`, `src/tokens/*`, `src/index.css`, `.storybook/*`,
