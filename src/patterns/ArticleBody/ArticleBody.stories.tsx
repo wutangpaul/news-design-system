@@ -74,7 +74,7 @@ export const WithHeadingsAndImage: Story = {
 
 export const DarkMode: Story = {
   name: "Dark mode",
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   render: () => (
     <ArticleBody>
       <Text as="p">

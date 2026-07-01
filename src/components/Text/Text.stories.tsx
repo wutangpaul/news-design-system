@@ -66,7 +66,7 @@ export const PolymorphicAs: Story = {
 };
 
 export const DarkMode: Story = {
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   render: (args) => (
     <div className="flex max-w-prose flex-col gap-2 bg-surface-canvas p-4">
       <Text {...args} color="primary">

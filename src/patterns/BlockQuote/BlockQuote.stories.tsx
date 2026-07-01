@@ -58,7 +58,7 @@ export const InArticleContext: Story = {
 
 export const DarkMode: Story = {
   name: "Dark mode",
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   args: {
     quote: "We knew the levee wouldn't hold, but we didn't have the budget to say so publicly.",
     attribution: "Mara Diallo, town engineer",

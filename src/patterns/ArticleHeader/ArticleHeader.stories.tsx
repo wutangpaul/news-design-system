@@ -61,7 +61,7 @@ export const WithoutByline: Story = {
 
 export const DarkMode: Story = {
   name: "Dark mode",
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   render: () => (
     <ArticleHeader
       className="mx-auto max-w-[65ch]"

@@ -85,7 +85,7 @@ export const Disabled: Story = {
 };
 
 export const DarkMode: Story = {
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   render: (args) => (
     <div className="flex flex-wrap gap-3 bg-surface-canvas p-4">
       <Button {...args} variant="primary">

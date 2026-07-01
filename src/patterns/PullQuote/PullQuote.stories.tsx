@@ -60,7 +60,7 @@ export const InArticleContext: Story = {
 
 export const DarkMode: Story = {
   name: "Dark mode",
-  parameters: { globals: { theme: "dark" } },
+  globals: { theme: "dark" },
   args: {
     quote: "We rebuilt everything twice — once for the flood, once for the flood after that.",
     attribution: "Mara Diallo, town engineer",
