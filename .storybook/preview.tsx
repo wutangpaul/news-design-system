@@ -12,7 +12,7 @@ const ThemeWrapper = ({
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
-  return <div className="bg-surface-canvas p-4">{children}</div>;
+  return <div className="bg-surface-canvas">{children}</div>;
 };
 
 const preview: Preview = {
