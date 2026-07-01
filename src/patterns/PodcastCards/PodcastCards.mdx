@@ -1,0 +1,102 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as PodcastCardsStories from "./PodcastCards.stories";
+
+<Meta of={PodcastCardsStories} />
+
+# Podcast Cards
+
+A list of podcast episode cards — the audio counterpart to Video Cards.
+Each row shows optional show artwork (or a simple decorative waveform
+placeholder when none is supplied), a duration badge, the show name, and the
+episode title.
+
+<Canvas of={PodcastCardsStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { PodcastCards } from "@/patterns/PodcastCards";
+
+<PodcastCards
+  title="Podcasts"
+  episodes={[
+    {
+      id: "1",
+      show: "The Daily Brief",
+      title: "What the jobs report really tells us",
+      href: "/podcasts/jobs-report",
+      duration: "28:41",
+      artworkSrc: "/images/daily-brief.jpg",
+      artworkAlt: "The Daily Brief show artwork",
+    },
+    // an episode with no artwork:
+    {
+      id: "2",
+      show: "On Background",
+      title: "Inside the negotiations, off the record",
+      href: "/podcasts/off-the-record",
+      duration: "35:07",
+    },
+  ]}
+/>;
+```
+
+## Artwork is optional
+
+`artworkSrc` (and its required companion `artworkAlt`) are both optional per
+episode. When artwork is omitted, the card shows a small decorative waveform
+glyph instead — a row of bars built from plain elements, marked
+`aria-hidden`, so it never competes with the episode title as the card's
+accessible name. This design system's curated icon set doesn't currently
+include anything audio-related, and adding one is out of scope for this
+pattern (icons are owned centrally), so the waveform lives as a tiny local
+graphic in this component rather than as a new shared icon.
+
+## One interactive element per card
+
+Same rule as Video Cards: each episode's entire row is a single anchor. The
+artwork/waveform area and the duration badge are both purely decorative or
+informational — neither is a separate focusable control, so keyboard and
+screen-reader users encounter exactly one interactive target per episode,
+not a control nested inside another.
+
+## Content shape
+
+Each episode is a flat object: `id`, `show`, `title`, `href`, a
+pre-formatted `duration` string (e.g. a value like "28:41"), and the optional
+artwork fields. As with Video Cards, formatting a raw seconds count into a
+display string is left to the caller.
+
+## Why it doesn't compose a shared Story Card
+
+Like the other Content Discovery patterns built in this pass, this component
+renders its own row markup directly rather than importing a reusable
+story-summary card pattern that was being built concurrently and wasn't
+stable yet. A future integration pass could revisit whether the artwork +
+title layout is worth sharing once both patterns have landed.
+
+## Layout
+
+Episodes render as a vertical stack of full-width rows rather than a grid —
+podcast listings read better as a scannable list (show name, then title,
+then duration) than as a photo-forward grid, since artwork is optional and
+often just square branding rather than a descriptive photo.
+
+## Empty state
+
+An empty `episodes` array renders a plain "no episodes available" message
+instead of an empty list under the heading.
+
+## Accessibility
+
+- The section heading has a generated id wired to the surrounding section
+  via `aria-labelledby`.
+- Episodes render as a real list (`ul`/`li`), and each card's entire
+  clickable surface is a single anchor.
+- The waveform placeholder is `aria-hidden`; artwork, when present, requires
+  real, specific `artworkAlt` text.
+- The show name renders as small caption text above the title, kept in
+  reading order (not just visual position) so screen readers announce show,
+  then title, then duration in a sensible sequence.

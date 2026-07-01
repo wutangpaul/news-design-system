@@ -1,0 +1,81 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as RelatedArticlesStories from "./RelatedArticles.stories";
+
+<Meta of={RelatedArticlesStories} />
+
+# Related Articles
+
+A small "you might also like" grid at the end of an article — headline, thumbnail, and
+an optional category tag per item.
+
+<Canvas of={RelatedArticlesStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { RelatedArticles } from "@/patterns/RelatedArticles";
+
+<RelatedArticles
+  heading="You might also like"
+  articles={[
+    {
+      id: "1",
+      href: "/articles/transit-overhaul",
+      title: "City council approves downtown transit overhaul",
+      imageSrc: "/images/transit.jpg",
+      imageAlt: "Buses lined up at a downtown transit hub.",
+      category: "Local",
+    },
+    // ...
+  ]}
+/>
+```
+
+Each entry in `articles` is a plain content object (id, href, title, image source/alt,
+optional category) — this pattern is not content-agnostic, it takes real props the way
+every Phase 3 pattern does.
+
+## Custom heading and level
+
+Set `heading` and `headingLevel` to fit the section into the surrounding document
+outline (this block usually follows the article body, so its heading is typically a
+sibling of, or one level under, the article's own headline).
+
+<Canvas of={RelatedArticlesStories.CustomHeading} />
+
+## Category tags are optional
+
+Omit `category` on an entry and its card simply skips the tag — color is never the
+only signal distinguishing entries, so this is a content-density choice, not an
+accessibility one.
+
+<Canvas of={RelatedArticlesStories.WithoutCategories} />
+<Canvas of={RelatedArticlesStories.TwoArticles} />
+
+## A deliberately minimal card, not a reusable component
+
+Each item's markup (`Image` + `Tag` + `Heading`, wrapped in a `Link`) is written
+directly inside `RelatedArticles` rather than factored out into its own reusable card
+component. A general-purpose "Story Card" pattern — covering the same
+image+category+headline shape, likely with a byline/timestamp too — may be built
+separately as part of the Content Discovery pattern group. Building a second
+full-featured card here risked duplicating that work and having the two drift apart.
+
+This is a known tradeoff: once both patterns exist, a future integration pass should
+consider having `RelatedArticles` render `Story Card` internally instead of its own
+bespoke markup, so there's a single source of truth for "what a story summary card
+looks like" across the design system.
+
+## Accessibility
+
+- The section is labelled by its own heading via `aria-labelledby`, so it's
+  discoverable as a named landmark region (`role="region"`) by assistive tech, not just
+  a generic `<div>`.
+- Each card is a single real `<a>` (via `Link`) wrapping the thumbnail, tag, and
+  headline — the whole unit is one focusable, keyboard-activatable target, and its
+  accessible name is the combination of the image alt text and headline (image alt text
+  is intentionally brief/descriptive so it doesn't dominate the announced name).
+- Thumbnails require `imageAlt` — there's no optional/decorative image path here, since
+  every thumbnail in this context is meaningful content, not decoration.

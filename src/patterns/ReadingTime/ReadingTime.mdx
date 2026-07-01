@@ -1,0 +1,75 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ReadingTimeStories from "./ReadingTime.stories";
+
+<Meta of={ReadingTimeStories} />
+
+# Reading Time
+
+A "6 min read"-style estimate for the top of an article. Real content pipelines vary in
+what they have on hand — a CMS might already store a precomputed minutes estimate, or
+only a raw word count — so this pattern accepts either:
+
+- `minutes` — used as-is.
+- `wordCount` — converted to minutes at a documented words-per-minute constant.
+
+Exactly one of the two is required (the TypeScript prop type enforces this — passing
+both, or neither, is a type error).
+
+<Canvas of={ReadingTimeStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { ReadingTime } from "@/patterns/ReadingTime";
+
+// Pre-computed by the content pipeline
+<ReadingTime minutes={6} />
+
+// Derived from a word count
+<ReadingTime wordCount={1450} />
+```
+
+## Deriving minutes from a word count
+
+Word counts are converted using an exported `WORDS_PER_MINUTE` constant (`200`, a
+commonly cited average adult silent-reading speed), rounded up and floored at one
+minute so a very short piece never reports "0 min read":
+
+```ts
+export const WORDS_PER_MINUTE = 200;
+
+export function minutesFromWordCount(wordCount: number): number {
+  return Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
+}
+```
+
+Both the constant and the helper are exported from the pattern's `index.ts` in case a
+consumer wants to precompute the same estimate server-side rather than passing a raw
+word count to the client.
+
+<Canvas of={ReadingTimeStories.FromWordCount} />
+<Canvas of={ReadingTimeStories.ShortRead} />
+
+## Sizes
+
+`size` and `color` pass straight through to the underlying `Text`.
+
+<Canvas of={ReadingTimeStories.Sizes} />
+
+## Why there's no icon
+
+A clock glyph would be the natural icon pairing here, but the curated icon set in
+`src/components/Icon` doesn't currently include one (it has Close, chevrons, Search,
+Menu, Share, Bookmark, ArrowRight, and ExternalLink — no clock/time glyph). Adding a new
+icon is out of this pattern's scope, so `ReadingTime` renders as text-only rather than
+inventing one. If a clock icon is added to the shared icon set in a future pass, this
+component is a natural place to start rendering it alongside the text.
+
+## Accessibility
+
+- Renders as a plain `<span>` of real text via `Text` — the estimate is available to
+  assistive tech exactly as it reads visually, no `aria-label` needed.
+- Uses the theme-aware `text-*` color utilities (`color` prop) so contrast holds up in
+  both light and dark mode.

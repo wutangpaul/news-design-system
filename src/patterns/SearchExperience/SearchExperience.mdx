@@ -1,0 +1,69 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as SearchExperienceStories from "./SearchExperience.stories";
+
+<Meta of={SearchExperienceStories} />
+
+# Search Experience
+
+An icon-only search trigger that reveals a search field. No real search backend is wired up —
+consumers pass an `onSearch` callback and own what happens with the query (navigate to a
+results page, call an API, etc).
+
+<Canvas of={SearchExperienceStories.Default} />
+<Controls />
+
+## Why a Drawer, not a Modal or an inline field
+
+Three ways to reveal the field were considered:
+
+- **Inline** (expanding in place within the header row) was ruled out because it would require
+  the surrounding header to reflow around it, which this pattern can't guarantee — it doesn't
+  know what else is in the header.
+- **Modal** (`src/components/Modal`) centers the dialog and dims the whole page, which suits an
+  interruptive task the user must resolve before doing anything else.
+- **Drawer** (`src/components/Drawer`, `side="top"`) was chosen instead: search is a quick,
+  contextual action tied to the page chrome, not a full-attention interruption, and a panel
+  sliding down from the top edge (near the trigger, typically inside a header) matches the
+  layout most readers expect from news sites. Modal and Drawer share the same focus-trap/
+  Escape/backdrop-click behavior, so this is a positioning choice, not a behavioral one — either
+  would work correctly.
+
+## Usage
+
+```tsx
+import { SearchExperience } from "@/patterns/SearchExperience";
+
+<SearchExperience
+  onSearch={(query) => router.push(`/search?q=${encodeURIComponent(query)}`)}
+  placeholder="Search articles"
+/>;
+```
+
+## Behavior
+
+- Clicking the trigger opens the panel and moves focus into the search field automatically
+  (inherited from `Drawer`'s focus trap).
+- Pressing Enter (or clicking the Search button) submits: the query is trimmed, `onSearch` is
+  called with the result, and the panel closes. A blank/whitespace-only query does not call
+  `onSearch` and does not close the panel.
+- `Escape` closes the panel and returns focus to the trigger button, same as any other Drawer.
+
+## Do
+
+- Always pass `onSearch` — without it, submitting does nothing observable to the user.
+- Keep `placeholder` short; it's a hint, not a label (the field has its own `aria-label`
+  independent of the placeholder).
+
+## Don't
+
+- Don't render more than one `SearchExperience` per page — like any Drawer-based overlay, two
+  open panels at once would be confusing.
+
+## Accessibility notes
+
+- The trigger is icon-only, so it always carries an accessible name via `triggerLabel`
+  (default `"Search"`).
+- The field itself is a native `type="search"` input (exposed with the `searchbox` role) with
+  its own `aria-label`, independent of the visible `placeholder` text.
+- Panel semantics (dialog role, focus trap, Escape-to-close, focus return) are entirely
+  inherited from `Drawer` — this pattern adds no additional focus-management code.

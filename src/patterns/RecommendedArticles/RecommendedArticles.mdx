@@ -1,0 +1,83 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as RecommendedArticlesStories from "./RecommendedArticles.stories";
+
+<Meta of={RecommendedArticlesStories} />
+
+# Recommended Articles
+
+A personalized "recommended for you" grid of story summaries. It looks a lot
+like a related-articles rail, but the framing is different: instead of "more
+on this story," it's "more stories we think you'll want to read," so it takes
+a flat list of articles with no notion of a current/source article driving
+the recommendations.
+
+<Canvas of={RecommendedArticlesStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { RecommendedArticles } from "@/patterns/RecommendedArticles";
+
+<RecommendedArticles
+  title="Recommended for you"
+  articles={[
+    {
+      id: "1",
+      headline: "How newsrooms are rethinking the morning briefing",
+      href: "/articles/morning-briefing",
+      thumbnailSrc: "/images/morning-briefing.jpg",
+      thumbnailAlt: "A newsroom editor reviewing the day's top stories",
+      category: "Media",
+    },
+    // ...
+  ]}
+/>;
+```
+
+## Content shape
+
+Each entry is a small, flat object — `id`, `headline`, `href`, `thumbnailSrc`,
+`thumbnailAlt`, and `category`. There's no recommendation-engine metadata
+(score, reason, etc.) baked into the prop shape; whatever system produces the
+personalized list is expected to resolve it down to plain display fields
+before handing them to this pattern.
+
+## Why it doesn't compose a shared Story Card
+
+A separate pattern in this design system (a reusable story-summary card) is
+being built alongside this one and isn't stable yet. Rather than risk
+importing a half-finished module, this pattern renders its own minimal
+story-summary markup directly: a `Card` with `Image` (16:9 thumbnail), a
+`Tag` for the category, and a `Heading` for the headline. Once both patterns
+have landed, a follow-up integration pass could refactor this to compose the
+shared card component instead of duplicating the summary markup — the visual
+result would be unchanged, only the implementation would be de-duplicated.
+
+## Layout
+
+Articles render in a responsive grid — one column on small screens, two on
+`sm`, four on `lg` — inside a `<ul>` so the collection is exposed to
+assistive tech as a list of the expected length. Each item is a single `<a>`
+wrapping the whole card (per `Card`'s own guidance, `Card` supplies only the
+`interactive` hover/focus styling — the real link semantics come from the
+anchor wrapping it).
+
+## Empty state
+
+Passing an empty `articles` array renders a plain "no recommendations
+available" message instead of an empty grid, so a personalization service
+that hasn't produced results yet doesn't leave a heading floating above
+nothing.
+
+## Accessibility
+
+- The section heading has a generated `id` wired to the `<section>` via
+  `aria-labelledby`, so the region has an accessible name in the page's
+  landmark structure.
+- The article list is a real `<ul>`/`<li>` structure, and each card's entire
+  clickable surface is a single `<a>` — no nested interactive elements, and
+  keyboard/focus behavior is entirely native.
+- Thumbnails require real, specific `thumbnailAlt` text (the same mandatory
+  `alt` contract as the underlying `Image` component).

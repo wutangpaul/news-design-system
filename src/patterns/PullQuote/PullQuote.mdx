@@ -1,0 +1,73 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as PullQuoteStories from "./PullQuote.stories";
+
+<Meta of={PullQuoteStories} />
+
+# Pull Quote
+
+A large, decorative quote pulled from within the article body for visual emphasis —
+the classic magazine/newspaper device of repeating a striking line in big serif type
+to break up a long column of text.
+
+<Canvas of={PullQuoteStories.Default} />
+<Controls />
+
+## Not a `<blockquote>` — and why
+
+`PullQuote` renders a plain `div`, not a semantic `<blockquote>`, and the whole thing is
+`aria-hidden="true"`. That's a deliberate choice, not an oversight — see Accessibility
+below for the full reasoning, and compare with the separate `BlockQuote` pattern, which
+renders a real `<blockquote>` and is fully exposed to assistive tech.
+
+## Optional attribution
+
+<Canvas of={PullQuoteStories.WithoutAttribution} />
+
+## Alignment
+
+`align="center"` is available for a full-width pull quote used as a section break
+rather than a column-adjacent callout.
+
+<Canvas of={PullQuoteStories.Centered} />
+
+## In context
+
+A pull quote is typically dropped between two paragraphs of `ArticleBody`, echoing a
+line already written in the surrounding text (see the excerpt below, which nearly
+matches the quote pulled out — that overlap is the point, not a coincidence).
+
+<Canvas of={PullQuoteStories.InArticleContext} />
+
+## Dark mode
+
+<Canvas of={PullQuoteStories.DarkMode} />
+
+## Do's and don'ts
+
+- Do use `PullQuote` only for lines that are excerpted from (or closely paraphrase)
+  text that already appears in the surrounding `ArticleBody` — that's what makes hiding
+  it from assistive tech safe (see Accessibility).
+- Don't use `PullQuote` as the sole place a quotation appears — if the quoted text
+  doesn't also exist in the readable body copy, a screen reader user would miss it
+  entirely, since `PullQuote` is removed from the accessibility tree. Use `BlockQuote`
+  instead for genuine, non-duplicated quoted material (an interview quote, cited
+  testimony) that must be readable by everyone.
+- Don't reach for `PullQuote` to style a real citation with a source's full name, role,
+  and a link back to the original remarks — that level of detail belongs in
+  `BlockQuote`'s `<cite>`, which stays in the accessibility tree.
+
+## Accessibility
+
+- `PullQuote` is `aria-hidden="true"` in full. The rationale: a pull quote is, by
+  editorial convention, a *repeat* of text the reader already encounters in the main
+  body copy, presented a second time purely for visual rhythm. Exposing it to
+  assistive tech as well would mean a screen reader user hears the same sentence
+  announced twice in a row — once as body text, once as decoration — which is exactly
+  the kind of redundant-repeated-content case `aria-hidden` exists for (the same
+  category as a decorative icon that duplicates adjacent visible text).
+- This reasoning depends entirely on the quote being a genuine duplicate. If your
+  content doesn't guarantee that (e.g. a CMS field that lets editors pull a quote from
+  a *different*, unpublished source), don't use `PullQuote` for it — use `BlockQuote`,
+  which is a real, always-announced `<blockquote>` with a real `<cite>`.
+- Because it's `aria-hidden`, `PullQuote` must never contain the only instance of
+  interactive content (links, buttons) — none of its props support that, by design.

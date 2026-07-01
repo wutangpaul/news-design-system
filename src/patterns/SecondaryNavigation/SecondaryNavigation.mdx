@@ -1,0 +1,74 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as SecondaryNavigationStories from "./SecondaryNavigation.stories";
+
+<Meta of={SecondaryNavigationStories} />
+
+# Secondary Navigation
+
+A lower-emphasis navigation for sub-sections within a category page — for example, a "World"
+landing page linking out to Africa / Americas / Asia / Europe / Middle East.
+
+<Canvas of={SecondaryNavigationStories.Default} />
+<Controls />
+
+## Why a plain nav, not Tabs
+
+This pattern deliberately does **not** compose the `Tabs` component, even though it looks
+tab-like. The reasoning:
+
+- `Tabs` implements the WAI-ARIA APG Tabs pattern: a single page where `role="tab"` triggers
+  swap the visibility of associated `role="tabpanel"` regions via JavaScript. Every tab shares
+  one URL — there's nothing to link to for an individual tab.
+- Sub-section navigation is the opposite case: each item is its own real, bookmarkable,
+  server-renderable page reached by a distinct `href`. Marking those as `role="tab"` would tell
+  assistive technology "these swap content on this page," which is false — they navigate away
+  entirely.
+- Plain anchors already have the exact keyboard contract page navigation needs (Tab moves
+  between them, Enter follows the link) — the roving-tabindex/arrow-key behavior `Tabs`
+  provides solves a different problem (moving within a single composite widget) that doesn't
+  apply here.
+
+So `SecondaryNavigation` is a real `<nav>` containing an ordinary link list, visually styled to
+resemble tabs (an underline under the active item) purely for consistency with how sub-section
+pickers usually look — the semantics underneath are plain navigation, not the Tabs widget.
+
+## Usage
+
+```tsx
+import { SecondaryNavigation } from "@/patterns/SecondaryNavigation";
+
+<SecondaryNavigation
+  ariaLabel="World sub-sections"
+  items={[
+    { label: "Africa", href: "/world/africa" },
+    { label: "Americas", href: "/world/americas", current: true },
+    { label: "Asia", href: "/world/asia" },
+  ]}
+/>;
+```
+
+## Behavior
+
+- The list scrolls horizontally on narrow viewports (`overflow-x-auto`) rather than wrapping,
+  keeping the row a single line.
+- The active item is marked with `current: true`, which renders `aria-current="page"` and an
+  underline — never color alone.
+
+## Do
+
+- Set `current` on the item matching the page the reader is on.
+- Use this for cross-page sub-section pickers (category tabs, section sub-nav).
+
+## Don't
+
+- Don't use this to switch content within the same page without navigating — that's exactly
+  what `Tabs` is for.
+- Don't put more than roughly 6-8 items in the list before considering a different pattern (a
+  dropdown or a "More" overflow); this component doesn't collapse overflow items itself.
+
+## Accessibility notes
+
+- Real `<nav aria-label="Secondary">` (override via `ariaLabel`) with a plain `<ul>`/`<a>` link
+  list — no ARIA roles beyond what native HTML already provides.
+- The active item's `aria-current="page"` is paired with a visible underline, so the state is
+  never conveyed by color alone.

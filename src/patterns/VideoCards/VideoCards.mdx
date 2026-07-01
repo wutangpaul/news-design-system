@@ -1,0 +1,91 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as VideoCardsStories from "./VideoCards.stories";
+
+<Meta of={VideoCardsStories} />
+
+# Video Cards
+
+A grid of video story cards — the video counterpart to a story-summary card.
+Each card shows a thumbnail with a decorative play-button overlay, a duration
+badge, and a headline.
+
+<Canvas of={VideoCardsStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { VideoCards } from "@/patterns/VideoCards";
+
+<VideoCards
+  title="Videos"
+  videos={[
+    {
+      id: "1",
+      title: "Inside the newsroom on election night",
+      href: "/videos/election-night",
+      thumbnailSrc: "/images/election-night.jpg",
+      thumbnailAlt: "Editors gathered around a bank of monitors on election night",
+      duration: "4:32",
+    },
+    // ...
+  ]}
+/>;
+```
+
+## One interactive element per card, not two
+
+Each card's entire surface is a single anchor — the play-button glyph
+overlaid on the thumbnail is purely decorative. It's rendered as a plain
+`span` with `aria-hidden="true"`, never a nested `button`, so activating the
+card (by click or by keyboard) always resolves to exactly one interactive
+target. This is the same rule `Tag` already establishes for its interactive
+and removable variants: the label and the remove control are two real,
+independent elements rather than one control nested inside another, and
+inside a single card that's already fully clickable, a second nested control
+would just create ambiguous focus order and duplicate activation targets. So
+here the answer is simpler still — don't add a second control at all, since
+the whole card already is one.
+
+The duration badge composes the shared `Badge` component with a fixed dark
+scrim background over the thumbnail image, so it stays legible against
+whatever photo is behind it in both light and dark mode — a deliberate
+"fixed, non-theming" treatment (per this design system's `ink-*` usage
+guidance) rather than a `surface-*` token, since the backdrop here is
+arbitrary photography, not a themed UI surface.
+
+## Content shape
+
+Each video is a flat object: `id`, `title`, `href`, `thumbnailSrc`,
+`thumbnailAlt`, and a pre-formatted `duration` string (e.g. a value like
+"4:32"). Formatting seconds into a display string is left to the caller —
+the pattern only renders whatever string it's given.
+
+## Why it doesn't compose a shared Story Card
+
+A separate reusable story-summary card pattern is being built concurrently
+elsewhere in this design system and wasn't stable at the time this pattern
+was written, so this component renders its own thumbnail/heading markup
+directly rather than depending on it. A later integration pass could
+consider whether the underlying summary layout (thumbnail + heading, before
+the video-specific play glyph and duration badge are layered on) is worth
+sharing.
+
+## Empty state
+
+An empty `videos` array renders a plain "no videos available" message
+instead of an empty grid under the heading.
+
+## Accessibility
+
+- The section heading has a generated id wired to the surrounding section
+  via `aria-labelledby`.
+- Videos render as a real list (`ul`/`li`), and each card's entire clickable
+  surface is a single anchor.
+- The play glyph and duration badge are layered over the thumbnail purely
+  visually; they add no separate accessible name, so a screen reader
+  announces the card once, by its headline, rather than reading duplicate or
+  conflicting labels.
+- Thumbnails require real, specific `thumbnailAlt` text describing the video
+  frame — not a generic label like "video thumbnail".

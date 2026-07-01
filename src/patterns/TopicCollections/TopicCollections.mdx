@@ -1,0 +1,81 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TopicCollectionsStories from "./TopicCollections.stories";
+
+<Meta of={TopicCollectionsStories} />
+
+# Topic Collections
+
+A curated collection of stories grouped under a named editorial topic or
+theme — think "2026 Midterms: Full Coverage" or "Wildfire Season" — rather
+than a moment-in-time front page. The section heading names the topic
+itself, with an optional dek-style description, followed by a grid of story
+summaries.
+
+<Canvas of={TopicCollectionsStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { TopicCollections } from "@/patterns/TopicCollections";
+
+<TopicCollections
+  topic="2026 Midterms: Full Coverage"
+  description="Everything our politics desk is reporting ahead of November."
+  articles={[
+    {
+      id: "1",
+      headline: "Five races that could flip control of the Senate",
+      href: "/articles/senate-races",
+      thumbnailSrc: "/images/senate-races.jpg",
+      thumbnailAlt: "A campaign volunteer canvassing a neighborhood",
+      label: "Analysis",
+    },
+    // ...
+  ]}
+/>;
+```
+
+## How this differs from a featured story grid
+
+A front-page "featured stories" grid is anchored to a point in time — it
+answers "what's happening right now." Topic Collections is anchored to a
+subject that persists across many publish dates — it answers "everything
+we've published about X." The layout treatment (heading + responsive grid of
+summary cards) is intentionally similar; the framing and the absence of any
+"as of" timestamp in the heading are what set it apart.
+
+## Content shape
+
+`topic` is the collection's name, `description` is an optional supporting
+sentence, and each entry in `articles` is a flat object (`id`, `headline`,
+`href`, `thumbnailSrc`, `thumbnailAlt`) plus an optional `label` — a small tag
+like "Analysis" or "Explainer" distinguishing a piece's format within the
+collection. Articles without a `label` simply render without a tag; the
+layout doesn't reserve empty space for it.
+
+## Why it doesn't compose a shared Story Card
+
+Like other Content Discovery patterns being built in the same phase, this
+component renders its own minimal story-summary markup (`Card` + `Image` +
+optional `Tag` + `Heading`) instead of importing a reusable story-summary
+card that's being built concurrently elsewhere and wasn't stable at the time
+this pattern was written. A later integration pass could refactor this to
+compose that shared card once both are finished, without changing the
+rendered output.
+
+## Empty state
+
+An empty `articles` array renders a plain message ("no stories have been
+added to this collection yet") instead of a heading floating over nothing —
+useful while a topic page is still being staffed with coverage.
+
+## Accessibility
+
+- The topic heading has a generated `id` wired to the `<section>` via
+  `aria-labelledby`.
+- Stories render as a real `<ul>`/`<li>` list, and each card's entire
+  clickable surface is a single `<a>` — no nested interactive elements.
+- Thumbnails require real, specific `thumbnailAlt` text (the same mandatory
+  `alt` contract as the underlying `Image` component).

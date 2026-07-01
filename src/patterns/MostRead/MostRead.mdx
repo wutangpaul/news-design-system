@@ -1,0 +1,79 @@
+import { Meta, Controls, Canvas } from "@storybook/blocks";
+import * as MostReadStories from "./MostRead.stories";
+
+<Meta of={MostReadStories} />
+
+# Most Read
+
+A numbered list of top stories: rank number, headline, and an optional byline/timestamp —
+a denser treatment than a full [Story Card](?path=/docs/patterns-content-discovery-story-card--docs),
+typically used in a sidebar or rail.
+
+<Canvas of={MostReadStories.Default} />
+
+## Why this doesn't compose Story Card
+
+Story Card's shape is image-forward (thumbnail + category tag + headline + dek). A "most
+read" rail wants the opposite: a rank number first, no dek, and usually no image at all. Bending
+Story Card's props to fit (an optional `rank` field, hiding the dek, collapsing the layout)
+would have meant carrying image/category/dek plumbing that this pattern never uses, and would
+have pushed rank-specific concerns onto a component several other patterns are meant to reuse
+in its current, simple shape. So Most Read renders its own minimal markup instead — composing
+`Heading`, `Text`, `Link`, and (optionally) `Image` directly, not `Story Card`.
+
+## Shared implementation with Trending
+
+Most Read and Trending are structurally the same widget — a numbered list — with a different
+heading/label and framing ("what a lot of people already read" vs. "what's picking up
+attention right now"). Rather than duplicate the list markup in both folders, the actual
+rendering lives in `RankedList` (`src/patterns/MostRead/RankedList.tsx`), and both `MostRead`
+and `Trending` are thin wrappers around it that set a different default `title`. `RankedList`
+was built in this folder (Most Read) since "most read" was the more literal reading of the
+brief's "ranked list" description; `Trending`'s implementation imports `RankedList` from here
+(`../MostRead`) rather than duplicating it. Both patterns remain independently exported per
+their own folder, per this project's file-structure convention — only the internal markup is
+shared.
+
+## Content shape
+
+```tsx
+interface RankedListItem {
+  headline: string;
+  href?: string;
+  byline?: string;
+  timestamp?: string;
+  timestampDateTime?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+}
+```
+
+`MostReadItem` is a plain alias of `RankedListItem` (re-exported from this folder). Rank
+numbers are never part of the data — they're derived from each item's position in the `items`
+array, so re-ordering the array is the only thing needed to re-rank the list.
+
+## Thumbnails
+
+Thumbnails are opt-in via `showImages` (default `false`) rather than being inferred from
+whether `imageSrc` is present — a most-read rail is usually deliberately image-light to stay
+dense, so an explicit switch avoids surprising layout shifts if some items happen to carry an
+`imageSrc` and others don't.
+
+<Canvas of={MostReadStories.WithThumbnails} />
+
+## Custom framing
+
+Override `title` (and optionally `subtitle`) for a different section label without changing
+anything else:
+
+<Canvas of={MostReadStories.CustomTitle} />
+
+<Controls />
+
+## Accessibility
+
+- The list is a real `<ol>`; screen readers already announce each entry's position ("1 of 5"),
+  so the visual rank numeral is marked `aria-hidden` to avoid announcing the number twice.
+- The section is labelled via `aria-labelledby` pointing at the heading, so it's reachable as
+  a named landmark-like region even though `<section>` alone has no implicit accessible name.
+- Only the headline is a link; byline/timestamp text stays outside any interactive element.

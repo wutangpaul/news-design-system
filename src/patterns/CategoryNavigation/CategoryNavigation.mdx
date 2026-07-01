@@ -1,0 +1,52 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as CategoryNavigationStories from "./CategoryNavigation.stories";
+
+<Meta of={CategoryNavigationStories} />
+
+# CategoryNavigation
+
+A horizontal list of top-level section links (World / Politics / Business / Tech / Sports),
+typically placed just below a site's global header. Each item composes the existing `Link`
+component; the current section is marked `aria-current="page"`.
+
+<Canvas of={CategoryNavigationStories.Default} />
+<Controls />
+
+## Narrow viewports
+
+On a viewport too narrow to fit every section, the row scrolls horizontally instead of
+wrapping to a second line, keeping the navigation a single predictable strip.
+
+<Canvas of={CategoryNavigationStories.NarrowViewport} />
+
+## Custom aria-label
+
+<Canvas of={CategoryNavigationStories.CustomAriaLabel} />
+
+## Current-section convention
+
+This follows the same convention as the existing `Breadcrumbs` component: the current item is
+marked with `aria-current="page"` and rendered as plain (non-link) text rather than a
+self-referential link, since there's little value in a link that reloads the page the reader
+is already on.
+
+## Do's and don'ts
+
+- Do set exactly one item's `current` flag per render — this component doesn't infer a
+  "current" item automatically the way `Breadcrumbs` falls back to "the last item," since
+  there's no reliable positional default for a top-level section list.
+- Do give the `nav` a distinct `ariaLabel` when a page already has other navigation landmarks
+  (e.g. a primary site nav, a breadcrumb trail) so assistive technology users can tell them
+  apart.
+- Don't use this pattern for breadcrumb trails — reach for `Breadcrumbs` for hierarchical
+  "where am I" navigation; `CategoryNavigation` is for a flat, top-level list of sections.
+
+## Accessibility
+
+- Rendered as a real `<nav aria-label>` landmark, distinguishable from other navigation regions
+  on the page (e.g. a primary header nav or breadcrumb trail).
+- Items are marked up as a list (`ul`/`li`), reflecting that they're a set of peer destinations.
+- The current section carries `aria-current="page"` and isn't a link, matching `Breadcrumbs`'
+  established convention in this design system.
+- Horizontal overflow scrolls rather than clipping content, so every section stays reachable
+  (via touch swipe or keyboard-focus-driven scrolling) even on narrow viewports.

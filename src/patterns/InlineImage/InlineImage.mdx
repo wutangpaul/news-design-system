@@ -1,0 +1,76 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as InlineImageStories from "./InlineImage.stories";
+
+<Meta of={InlineImageStories} />
+
+# InlineImage
+
+An image embedded within Article Body copy: a `<figure>` composing the design
+system's `Image` (mandatory `alt`, built-in loading/error handling) and
+`Caption`, plus alignment variants for how it sits relative to surrounding
+text.
+
+<Canvas of={InlineImageStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { InlineImage } from "@/patterns/InlineImage";
+
+<InlineImage
+  src="/uploads/skyline.jpg"
+  alt="Aerial view of a city skyline at dusk"
+  caption="The skyline as seen from the harbor bridge on Tuesday evening."
+  credit="Jane Doe/Wire Service"
+  align="full"
+  aspectRatio="16/9"
+/>;
+```
+
+## Alignment
+
+`align` controls how the image sits in the text column:
+
+- `full` — the default. Block-level, full width of its container.
+- `center` — block-level, capped to a readable max width and centered.
+- `inset-left` — floats left (`float-left`) so body text wraps around its
+  right side.
+- `inset-right` — floats right (`float-right`) so body text wraps around its
+  left side.
+
+The inset variants are capped at 45% width on small screens and a fixed max
+width from the `sm` breakpoint up, so a floated image never crowds out the
+wrapping text on narrow viewports.
+
+## Composition, not reimplementation
+
+`InlineImage` does not reimplement `Image`'s loading shimmer, error fallback,
+or `alt` requirement — it renders `Image` directly and only adds the
+`<figure>` wrapper, `Caption`, and alignment variants around it. Likewise it
+does not duplicate `Caption`'s markup; it renders `Caption` as a sibling of
+`Image` inside the `<figure>`, which is exactly the placement `Caption`
+expects (see the Caption docs for why `Caption` doesn't own the `<figure>`
+itself).
+
+## Accessibility
+
+- `alt` is required (forwarded straight through to `Image`'s mandatory `alt`
+  prop) — there is no way to render `InlineImage` without deciding on
+  alternative text.
+- The `<figure>`/`<figcaption>` pairing means assistive tech announces the
+  caption as belonging to the image, not as an unrelated paragraph.
+- Floated images (`inset-left`/`inset-right`) don't change reading order in
+  the accessibility tree — screen reader users still encounter the image and
+  its caption at the point in the document where `InlineImage` is placed, not
+  wherever it visually floats to.
+
+## Do / Don't
+
+- **Do** use `inset-left`/`inset-right` sparingly, for short supporting images
+  next to a few paragraphs — a floated image next to a very short trailing
+  paragraph can visually "hang" past the end of the text.
+- **Do** pass `aspectRatio` for inset images so their height stays predictable
+  next to wrapping text.
+- **Don't** nest `InlineImage` inside another `figure` — it renders its own.

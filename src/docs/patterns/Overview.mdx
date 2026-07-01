@@ -4,11 +4,9 @@ import { Meta } from "@storybook/blocks";
 
 # Patterns
 
-**Status: not yet built.** This section is reserved for Phase 3 — composed editorial
-experiences built from the [Components](?path=/docs/components-button--docs) library, not
-implemented yet.
-
-## Planned
+Phase 3 of the design system — 34 composed editorial experiences built from the
+[Components](?path=/docs/components-overview--docs) library, complete and verified (typecheck,
+lint, tests, Storybook build all green).
 
 **Editorial** — Article Header, Hero Story, Article Body, Pull Quote, Block Quote, Inline
 Image, Image Gallery, Caption, Byline, Author Card, Reading Progress, Reading Time, Related
@@ -21,10 +19,12 @@ Search Experience.
 **Content Discovery** — Story Card, Featured Story Grid, Most Read, Trending, Recommended
 Articles, Topic Collections, Video Cards, Podcast Cards.
 
-## Why these are blocked on Components, not parallel to them
+Each pattern's own docs page (in the sidebar below) covers its content-prop shape, usage
+examples, composition notes, and accessibility rationale. See `CONTRIBUTING.md` at the project
+root for the conventions every pattern follows — in particular, patterns compose finished
+components from `src/components/*` (a Story Card is a `Card` + `Image` + `Heading` + `Tag` +
+byline text, not hand-rolled markup) rather than reimplementing them.
 
-Patterns compose multiple core components together (a Story Card is a `Card` + `Image` +
-`Heading` + `Tag` + `Byline`, for instance) — building them before the components they depend
-on existed would have meant duplicating component-level markup that later needs to be
-reconciled. See `CONTRIBUTING.md` for the file-structure/conventions patterns will follow once
-this phase starts.
+Built on the [Components](?path=/docs/components-overview--docs) layer above. The next layer,
+[Templates](?path=/docs/templates-overview--docs), arranges these patterns into full page
+layouts and has not been built yet.

@@ -34,6 +34,16 @@ function useFocusTrap(
   onClose: () => void,
 ) {
   const triggerRef = useRef<HTMLElement | null>(null);
+  // Consumers typically pass an inline `onClose` (e.g. `onClose={() => setOpen(false)}`), so
+  // its reference changes on every render. Reading it via a ref (kept current by the effect
+  // below, which has no dependency array so it runs after every render) lets the main effect's
+  // dependency array omit `onClose` — otherwise the main effect would re-run on every keystroke
+  // typed into a field inside the trap, re-capturing `document.activeElement` and re-focusing
+  // the first focusable element, yanking focus away from whatever the user just focused.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!active) return undefined;
@@ -49,7 +59,7 @@ function useFocusTrap(
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -78,7 +88,8 @@ function useFocusTrap(
       document.removeEventListener("keydown", handleKeyDown);
       triggerRef.current?.focus?.();
     };
-  }, [active, containerRef, onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active, containerRef]);
 }
 
 /** Locks body scroll while `active`, restoring the previous value on cleanup. */

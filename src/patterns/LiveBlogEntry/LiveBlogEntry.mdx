@@ -1,0 +1,58 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as LiveBlogEntryStories from "./LiveBlogEntry.stories";
+
+<Meta of={LiveBlogEntryStories} />
+
+# LiveBlogEntry
+
+A single timestamped update in a running live-blog feed: a machine-readable timestamp, an
+optional "Breaking"/"Update" badge (composed from `Badge`), a short headline-ish title
+(`Heading`, rendered small regardless of its semantic level), and body content.
+
+<Canvas of={LiveBlogEntryStories.Default} />
+<Controls />
+
+## Badges
+
+Set `label` to `"breaking"` or `"update"` to compose in a `Badge` (mapped to the `error`/`info`
+variants respectively). Leave it unset for a plain update with no badge at all.
+
+<Canvas of={LiveBlogEntryStories.Breaking} />
+<Canvas of={LiveBlogEntryStories.Update} />
+
+## Re-rendering with new content
+
+A real live blog inserts new entries at the top of the feed as they come in over the wire —
+this design system doesn't own that real-time data fetching, so `LiveBlogEntry` itself is kept
+completely stateless. Each render reflects exactly the `timestamp`/`title`/`label`/`children`
+it's given; there's nothing cached internally that could go stale or get "stuck" showing an
+older update. The feed example below stacks several entries, newest first, the way a page
+using this pattern typically would.
+
+<Canvas of={LiveBlogEntryStories.Feed} />
+
+## Heading level vs. visual size
+
+`headingLevel` controls the rendered tag (`h2`-`h6`) so the surrounding page keeps a correct
+document outline — pick whatever level is structurally correct for where this entry sits (e.g.
+`h3` under an `h2` "Live updates" section heading). The visual size is intentionally decoupled
+from that and stays small (`Heading`'s `visualSize={5}`) no matter which level you choose, since
+live-blog entries are dense and shouldn't compete visually with the page's main headline.
+
+## Do's and don'ts
+
+- Do keep `title` short — this is a live-blog update, not a full headline.
+- Do pick `headingLevel` based on document structure, not desired visual size.
+- Don't rely on this component to poll, subscribe to, or otherwise fetch new entries — it only
+  renders the props it's given.
+
+## Accessibility
+
+- The timestamp is a real `<time dateTime>` with a machine-readable ISO value, separate from
+  the human-readable text shown to sighted readers.
+- The badge uses `Badge`'s existing semantic color variants, so status is never conveyed by
+  color alone — the badge text ("Breaking"/"Update") is always present.
+- Because the component never assumes it's mounted only once, screen reader users who have
+  new entries announced by a surrounding live region (owned by the host page, e.g. an
+  `aria-live="polite"` feed container) will hear accurate, current content rather than a stale
+  cached title.

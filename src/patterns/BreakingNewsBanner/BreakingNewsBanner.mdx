@@ -1,0 +1,71 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as BreakingNewsBannerStories from "./BreakingNewsBanner.stories";
+
+<Meta of={BreakingNewsBannerStories} />
+
+# BreakingNewsBanner
+
+An urgent, attention-grabbing full-width banner for a single breaking story — typically pinned
+to the top of the page above the global header or directly beneath it. It composes `Badge` for
+the leading label and `Link` for the headline, rather than reimplementing either.
+
+<Canvas of={BreakingNewsBannerStories.Default} />
+<Controls />
+
+## Custom label
+
+<Canvas of={BreakingNewsBannerStories.CustomLabel} />
+
+## Long headlines
+
+The headline truncates with an ellipsis rather than wrapping to multiple lines, keeping the
+banner a fixed, predictable height.
+
+<Canvas of={BreakingNewsBannerStories.LongHeadline} />
+
+## Why `aria-live="polite"`, not `role="alert"`
+
+This banner uses `role="status"` with `aria-live="polite"` rather than `role="alert"`
+(`aria-live="assertive"`). Assertive live regions are meant for feedback the user's own action
+just triggered and needs immediately — think inline form validation appearing right after
+someone submits. A breaking-news banner is the opposite: it can appear at any moment while the
+reader is in the middle of doing something else entirely (reading an unrelated article,
+filling out a different form). Interrupting that with an assertive announcement would cut off
+whatever the screen reader was already saying, which is a jarring, un-asked-for interruption
+for genuinely passive, non-urgent-to-the-user's-current-task content. Polite announcements queue
+up and are read once the current speech finishes, which respects the reader's own activity while
+still surfacing the update.
+
+## Dismissible by design
+
+The banner is always dismissible via a real `<button>` (keyboard-operable, with a default
+accessible name of "Dismiss breaking news banner"). There's no configuration to make it
+non-dismissible: breaking-news banners are inherently transient — once a reader has seen it,
+forcing it to stay on screen only adds persistent clutter with no ongoing benefit, which runs
+counter to giving the reader control over interruptive content.
+
+Because the dismissed state lives inside the component, mount a fresh banner (e.g. set
+`key={href}` on it from the parent) whenever a genuinely new story should replace the current
+one. As a safety net, the component also resets its own dismissed state whenever the `headline`
+or `href` prop changes on an already-mounted instance, so a prop update alone is enough to bring
+a truly new story back on screen even without a remount.
+
+## Do's and don'ts
+
+- Do keep one banner per genuinely distinct breaking story — don't reuse the same mounted
+  instance to represent two unrelated stories without changing `headline`/`href`.
+- Do pass a real destination `href`; the headline is a navigational link, not a decorative
+  label.
+- Don't nest this banner's `Link` inside another link or button — like `Tag`, it renders its
+  own interactive controls (the headline link and the dismiss button) as independent, focusable
+  siblings.
+
+## Accessibility
+
+- `role="status"` + `aria-live="polite"` announces newly-appearing banners without stealing
+  focus or interrupting whatever the screen reader is already reading (see reasoning above).
+- The dismiss control is a real `<button>` with a descriptive `aria-label`, fully keyboard
+  operable (focusable, activates on Enter/Space).
+- The headline link keeps sufficient contrast against the banner's solid background in both its
+  unvisited and visited states — visited-link dimming (a `Link` default, useful in body copy) is
+  overridden here so a previously-read breaking story never becomes hard to read.

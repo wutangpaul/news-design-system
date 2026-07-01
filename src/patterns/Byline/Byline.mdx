@@ -1,0 +1,90 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as BylineStories from "./Byline.stories";
+
+<Meta of={BylineStories} />
+
+# Byline
+
+The "By [Author Name], [date]" line that credits an article — with an
+optional "Updated [date]" segment. Composes `Avatar` (author photo), `Link`
+(author name, linking to their author page), and a real `<time>` element
+with a machine-readable `dateTime` attribute.
+
+<Canvas of={BylineStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Byline } from "@/patterns/Byline";
+
+<Byline
+  authors={[{ name: "Jane Doe", href: "/authors/jane-doe", avatarSrc: "/authors/jane-doe.jpg" }]}
+  publishedAt="2026-06-28T14:30:00.000Z"
+  updatedAt="2026-06-30T09:15:00.000Z"
+/>;
+```
+
+## Content shape
+
+```tsx
+interface BylineAuthor {
+  name: string;
+  href?: string;
+  avatarSrc?: string;
+}
+
+interface BylineProps {
+  authors: BylineAuthor[];
+  publishedAt: string | Date;
+  updatedAt?: string | Date;
+  showAvatar?: boolean;
+  locale?: string;
+}
+```
+
+`authors` takes an array so multi-byline pieces render correctly: one author
+reads "By Jane Doe", two read "Jane Doe and Sam Lee", three or more get an
+Oxford comma ("Jane Doe, Sam Lee, and Omar Torres"). An author without `href`
+renders as plain text instead of a link — useful for wire-service or staff
+credits that don't have an author page.
+
+## Timestamps are always machine-readable
+
+`publishedAt` and `updatedAt` each accept a `Date` or an ISO 8601 string, and
+are always rendered inside a real `<time dateTime="...">` element — never as
+a plain text string. The visible label is a formatted, locale-aware date
+(`Intl.DateTimeFormat`, defaulting to `"en-US"`); the `dateTime` attribute
+always carries the full machine-readable timestamp, regardless of how the
+visible label is formatted. This matters for both screen readers (which can
+announce dates more naturally from `dateTime`) and machine consumers like
+search crawlers.
+
+## Standalone by design
+
+`Byline` does not assume it's rendered inside `ArticleHeader` or any other
+pattern — it takes all its content via props and renders a single, complete
+line. This means it can be dropped into an `ArticleHeader` composition slot,
+a Story Card footer, or anywhere else a credit line is needed, without any
+dependency on a surrounding pattern.
+
+## Accessibility
+
+- The author photo is exposed via `Avatar`'s existing accessible-name
+  handling (a visually-hidden name label); `Byline` doesn't duplicate that
+  work.
+- Author links are real `<a>` elements (via `Link`), so they're keyboard
+  focusable and reachable by assistive tech's link lists.
+- Both timestamps use a real `<time>` element with `dateTime`, never a plain
+  string.
+
+## Do / Don't
+
+- **Do** pass `href` for every author with a profile page — it's what makes
+  the byline a useful navigation aid, not just a static credit.
+- **Do** omit `updatedAt` entirely for pieces that have never been updated
+  post-publish, rather than passing the same value as `publishedAt`.
+- **Don't** pass a plain formatted string (e.g. `"June 28, 2026"`) as
+  `publishedAt` — pass the real `Date`/ISO value so the `dateTime` attribute
+  stays accurate; `Byline` handles the display formatting for you.

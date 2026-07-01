@@ -1,0 +1,50 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as TopicTagsStories from "./TopicTags.stories";
+
+<Meta of={TopicTagsStories} />
+
+# TopicTags
+
+A row of topic/category tags with wrapping and consistent spacing. This is a thin layout
+wrapper around the existing `Tag` component — it doesn't reimplement any of `Tag`'s own
+static/interactive/removable behavior, it just decides which mode each item renders in and
+handles the "show more" affordance for long lists.
+
+<Canvas of={TopicTagsStories.Default} />
+<Controls />
+
+## Links vs. filter chips
+
+Each `TopicTagItem` is either a navigational link or a filter chip, depending on which prop you
+pass:
+
+- Set `href` to render the item as a real anchor (`Link`) wrapping a static `Tag` — use this
+  when clicking the tag should navigate to a topic archive page.
+- Set `onClick` (with no `href`) to render the item as an interactive `Tag` chip button — use
+  this for in-page filtering, where `selected` reflects the active filter via `aria-pressed`.
+
+<Canvas of={TopicTagsStories.InteractiveFilterChips} />
+
+## Show more
+
+Pass `maxVisible` to cap how many tags are shown before a "Show N more"/"Show less" toggle
+appears. Below the cap, no toggle is rendered at all.
+
+<Canvas of={TopicTagsStories.ShowMore} />
+
+## Do's and don'ts
+
+- Do pick one mode per item — `href` and `onClick` represent two different interaction models
+  (navigation vs. toggle) and shouldn't both be wired up to the same tag.
+- Do use stable `id` values as React keys, especially when the list can reorder.
+- Don't use this pattern to implement removable/dismissible tag chips (e.g. "selected filters"
+  summaries) — reach for `Tag`'s own `removable` prop directly for that.
+
+## Accessibility
+
+- Link-mode tags are real `<a>` elements with visible, focusable text — no nested interactive
+  elements.
+- Filter-chip-mode tags reuse `Tag`'s `interactive` mode as-is, including its `aria-pressed`
+  toggle-button semantics.
+- The "Show more"/"Show less" toggle is a real `<button>`, and its label always states the
+  action in words (never an icon alone), so state changes are announced.

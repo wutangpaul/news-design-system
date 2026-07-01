@@ -1,0 +1,88 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as AuthorCardStories from "./AuthorCard.stories";
+
+<Meta of={AuthorCardStories} />
+
+# AuthorCard
+
+A fuller author bio block — photo, name, title/beat, short bio, and optional
+social/contact links. Used on author profile pages and inline "more from
+this author" call-outs. Composes `Card`, `Avatar`, `Heading`, `Text`, and
+`Link`.
+
+<Canvas of={AuthorCardStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { AuthorCard } from "@/patterns/AuthorCard";
+
+<AuthorCard
+  name="Jane Doe"
+  avatarSrc="/authors/jane-doe.jpg"
+  title="Politics Reporter"
+  bio="Jane covers city hall and state politics."
+  href="/authors/jane-doe"
+  socialLinks={[
+    { label: "Twitter", href: "https://twitter.com/janedoe" },
+    { label: "Email", href: "mailto:jane.doe@example.com", external: false },
+  ]}
+/>;
+```
+
+## Content shape
+
+```tsx
+interface AuthorCardSocialLink {
+  label: string;
+  href: string;
+  external?: boolean; // default true
+}
+
+interface AuthorCardContent {
+  name: string;
+  avatarSrc?: string;
+  title?: string;
+  bio?: string;
+  href?: string;
+  socialLinks?: AuthorCardSocialLink[];
+}
+```
+
+## Semantic heading level
+
+`AuthorCard` is used in two very different document contexts: a standalone
+author profile page, where the name is the page's main heading, and an
+inline "more from this author" call-out at the bottom of an article, where
+it's a minor heading nested well below the article's own `h1`. Rather than
+hard-code a level, `headingLevel` (default `2`) lets each call site keep a
+correct document outline — pass `1` on a profile page, `3` or deeper for an
+inline call-out — while the visual size of the name stays constant
+regardless of level, since `Heading`'s `visualSize` is decoupled from its
+semantic level.
+
+## Social links
+
+Each entry in `socialLinks` renders through `Link`. `external` defaults to
+`true`, since most social/profile links point off-site and should open in a
+new tab with `rel="noopener noreferrer"` — set `external: false` for
+same-site or `mailto:`/`tel:` links where that behavior isn't wanted.
+
+## Accessibility
+
+- The card renders as a `<section>` with `aria-label="About {name}"`, so it's
+  reachable as a labeled landmark region for assistive tech, distinct from
+  surrounding article content.
+- The photo is handled by `Avatar`'s existing accessible-name fallback; the
+  name is never announced twice.
+- Social links are real `<a>` elements via `Link`, fully keyboard operable.
+
+## Do / Don't
+
+- **Do** set `headingLevel` to match where the card sits in the page outline.
+- **Do** omit `bio`/`socialLinks` for compact inline call-outs — both are
+  optional and the layout collapses cleanly without them.
+- **Don't** wrap `AuthorCard` in another landmark region with the same
+  accessible name — it already labels itself.

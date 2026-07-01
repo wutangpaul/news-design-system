@@ -1,0 +1,72 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as GlobalHeaderStories from "./GlobalHeader.stories";
+
+<Meta of={GlobalHeaderStories} />
+
+# Global Header
+
+The site-wide top bar: a masthead/logo slot, a primary navigation slot, a search slot, and an
+account/subscribe CTA slot.
+
+<Canvas of={GlobalHeaderStories.Default} />
+<Controls />
+
+## Composition shell, not a nav builder
+
+`GlobalHeader` accepts its content entirely as slots (`logo`, `primaryNavigation`, `search`,
+`actions`) rather than hardcoding nav items or a search field. The real navigation is a separate,
+independently tested pattern — `PrimaryNavigation` from `src/patterns/PrimaryNavigation` — and
+the search UI is `SearchExperience` from `src/patterns/SearchExperience`. This keeps
+`GlobalHeader` a thin layout shell: it only decides where things sit (logo left, nav filling the
+middle, search and actions right), never what they are.
+
+## Usage
+
+```tsx
+import { GlobalHeader } from "@/patterns/GlobalHeader";
+import { PrimaryNavigation } from "@/patterns/PrimaryNavigation";
+import { SearchExperience } from "@/patterns/SearchExperience";
+import { Button } from "@/components/Button";
+
+<GlobalHeader
+  logo={<a href="/">The Daily Ledger</a>}
+  primaryNavigation={<PrimaryNavigation items={sections} />}
+  search={<SearchExperience onSearch={handleSearch} />}
+  actions={
+    <Button variant="primary" size="sm">
+      Subscribe
+    </Button>
+  }
+  sticky
+/>;
+```
+
+## Props
+
+Only `logo` is required — every other slot is optional, so `GlobalHeader` also works for a
+minimal masthead-only header. `sticky` pins the header to the top of the viewport using the
+shared `stickyHeader` z-index layer (`zIndex.stickyHeader` in `tailwind.config.ts`), so it
+layers correctly beneath dropdowns/mega menus/drawers/modals but above ordinary page content
+while scrolling.
+
+## Do
+
+- Pass the real `PrimaryNavigation` (or an equivalent nav) as `primaryNavigation` — don't leave
+  it empty on a real page, since the header alone has no nav landmark of its own beyond whatever
+  slot content provides one.
+- Reserve `actions` for a single high-priority CTA (subscribe, sign in) rather than a long list
+  of buttons.
+
+## Don't
+
+- Don't hardcode section links directly as `logo`/`actions` children meant for navigation — use
+  `primaryNavigation` so the nav stays a single, testable unit.
+- Don't wrap `GlobalHeader` itself in `sticky` positioning from the outside as well — pass
+  `sticky` and let the component apply its own stacking layer.
+
+## Accessibility notes
+
+- Renders a real `<header>` element (the `banner` landmark) rather than a generic `<div>`.
+- Landmark structure for the navigation, search, and actions slots is the responsibility of each
+  slot's own component (`PrimaryNavigation` renders `<nav aria-label="Primary">`, for example) —
+  `GlobalHeader` itself adds no competing landmarks.

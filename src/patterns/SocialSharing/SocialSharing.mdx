@@ -1,0 +1,92 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as SocialSharingStories from "./SocialSharing.stories";
+
+<Meta of={SocialSharingStories} />
+
+# Social Sharing
+
+A row of accessible share controls: a generic "Share" button wired to the Web Share
+API where the browser supports it, a "Copy link" button, and any number of
+consumer-supplied platform buttons (X, Facebook, email, ...).
+
+<Canvas of={SocialSharingStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { SocialSharing } from "@/patterns/SocialSharing";
+
+<SocialSharing
+  url="https://example.com/articles/city-council-approves-transit-overhaul"
+  title="City council approves downtown transit overhaul"
+/>
+```
+
+## Share and Copy link: standard browser APIs only
+
+"Share" calls `navigator.share({ url, title })` directly when the Web Share API is
+available. If it isn't (or the browser rejects the call for a reason other than the
+user cancelling), the optional `onShare` prop is called instead — use it to open your
+own share sheet as a fallback:
+
+<Canvas of={SocialSharingStories.WithFallbackShareHandler} />
+
+"Copy link" writes `url` to the clipboard via `navigator.clipboard.writeText`
+when available, then calls the optional `onCopyLink` prop and briefly swaps its own
+label to a "Link copied" confirmation (also announced through a visually-hidden
+status region, since a button's label changing isn't otherwise announced to screen
+readers).
+
+Neither control depends on a specific social network's SDK or embed — they're built
+entirely on standard Web APIs.
+
+## Platform-specific buttons
+
+Everything else (X, Facebook, email, ...) is driven by the `platforms` prop — an
+array where each entry supplies its own `id`, accessible `label`, `icon`, and
+`onShare` handler:
+
+```tsx
+<SocialSharing
+  url={articleUrl}
+  title={articleTitle}
+  platforms={[
+    {
+      id: "x",
+      label: "Share on X",
+      icon: <YourXIcon />,
+      onShare: ({ url, title }) =>
+        window.open(`https://x.com/intent/post?url=${url}&text=${title}`, "_blank"),
+    },
+  ]}
+/>
+```
+
+This pattern intentionally never hardcodes a specific network's share-intent URL
+format or SDK — that's exactly the kind of thing that changes without notice and
+shouldn't be baked into a shared design-system pattern. It only renders the button
+and calls your handler with the share context (`{ url, title }`); wiring the actual
+share behavior is entirely up to the consumer.
+
+<Canvas of={SocialSharingStories.WithPlatformButtons} />
+
+Note that the curated icon set in `src/components/Icon` has no social-network brand
+marks (by design — see `ReadingTime`'s docs for the same reasoning re: not inventing
+new icons in a pattern's scope). The story above uses generic icons
+(`ExternalLink`, `Bookmark`) as stand-ins; a real integration supplies its own brand
+icon per platform via the `icon` field.
+
+## Accessibility
+
+- The whole row is a labelled `role="group"` ("Share this article"), so assistive tech
+  announces it as a coherent unit rather than a handful of unrelated buttons.
+- Every icon-only button (the platform buttons) has a real accessible name via a
+  required `label` field — rendered as the button's `aria-label`. There is no
+  icon-only control anywhere in this pattern without one.
+- "Share" and "Copy link" render as `Button` with visible text labels, so they need no
+  extra `aria-label` beyond that text.
+- The "Link copied" confirmation is exposed through a visually-hidden `role="status"`
+  region (a polite live region) in addition to the button's own label change, so it's
+  announced without requiring focus to move.

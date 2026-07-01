@@ -1,0 +1,63 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as BlockQuoteStories from "./BlockQuote.stories";
+
+<Meta of={BlockQuoteStories} />
+
+# Block Quote
+
+A real, semantic quotation from a source — an interview quote, cited testimony, or any
+other genuine quoted material where the text shown here is the *only* place it appears.
+Renders a native `<blockquote>` with a `<cite>` for attribution.
+
+<Canvas of={BlockQuoteStories.Default} />
+<Controls />
+
+## Optional attribution
+
+<Canvas of={BlockQuoteStories.WithoutAttribution} />
+
+## Source URL vs. display attribution
+
+The native `cite` HTML attribute (a source URL, invisible to sighted users) and the
+`attribution` prop (a visible name/role rendered in the `<cite>` element) are separate
+and can both be set — `cite` is forwarded straight through via `...rest` since
+`BlockQuoteProps` extends React's `BlockquoteHTMLAttributes`.
+
+<Canvas of={BlockQuoteStories.WithSourceUrl} />
+
+## In context
+
+<Canvas of={BlockQuoteStories.InArticleContext} />
+
+## Dark mode
+
+<Canvas of={BlockQuoteStories.DarkMode} />
+
+## Do's and don'ts
+
+- Do use `BlockQuote` any time the quoted text is the only place that content exists —
+  an interview line, testimony, a public statement — content a screen reader user must
+  be able to reach like any other paragraph.
+- Do keep `quote` verbatim to the source. Unlike `PullQuote`, there's no editorial
+  convention here of trimming or paraphrasing; `BlockQuote` is the record, not a teaser.
+- Don't use `BlockQuote` for a large decorative repeat of a line that already exists
+  elsewhere in the article's body copy purely for visual rhythm — that's exactly what
+  `PullQuote` is for, and using a real `<blockquote>` for a duplicated decorative
+  element would announce the same sentence twice to screen reader users. Use
+  `PullQuote` instead, which is deliberately `aria-hidden`.
+- Don't strip the `<cite>` styling down so far that it's indistinguishable from the
+  quote itself — a citation needs to read as clearly separate attribution, not a
+  continuation of the quoted sentence.
+
+## Accessibility
+
+- Renders a genuine `<blockquote>` — screen readers can announce it as a quotation
+  region, and some assistive tech exposes navigation-by-quote.
+- Never `aria-hidden`. This is the direct contrast with `PullQuote`: `PullQuote` hides
+  itself because it's a decorative *repeat* of body text that's announced elsewhere;
+  `BlockQuote` is the primary (often only) instance of that content, so hiding it would
+  remove real information from assistive tech users.
+- Attribution renders inside a real `<cite>` element (marking it up as the title/source
+  of the work being quoted, per HTML semantics), inside a `<footer>` — the standard
+  `<blockquote><footer><cite>` pattern from the HTML specification for quotes with
+  attribution.

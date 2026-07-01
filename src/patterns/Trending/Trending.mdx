@@ -1,0 +1,49 @@
+import { Meta, Controls, Canvas } from "@storybook/blocks";
+import * as TrendingStories from "./Trending.stories";
+
+<Meta of={TrendingStories} />
+
+# Trending
+
+A numbered list of stories currently picking up attention — structurally the same "ranked
+list" as [Most Read](?path=/docs/patterns-content-discovery-most-read--docs), framed around
+"trending now" rather than a ranked "most read" total.
+
+<Canvas of={TrendingStories.Default} />
+
+## Shared implementation with Most Read
+
+Trending and Most Read render identical markup: rank number, headline link, optional byline/
+timestamp, optional thumbnail. The only real difference between them is framing — what the
+rank represents (recent velocity vs. a longer-running read count) and the default section
+label — not the visual structure. Duplicating that markup across two folders would mean any
+future fix (an a11y tweak, a spacing change) has to be made twice and could drift out of sync.
+
+So the actual rendering lives in one place, `RankedList` (`src/patterns/MostRead/RankedList.tsx`),
+and this pattern is a thin wrapper: `Trending` imports `RankedList` from `../MostRead` (its
+public `index.ts` surface) and only supplies a different default `title` ("Trending Now" vs.
+"Most Read"). It was factored into the Most Read folder rather than duplicated here because
+"most read" was the more literal match for the brief's own "ranked list of top stories"
+description; Trending was built second and imports from it. Both patterns are still
+independently exported from their own `src/patterns/<Name>/` folder per this project's file
+structure — only the internal implementation is shared, not the public export.
+
+Because both wrap the same primitive, every prop documented on Most Read's `RankedListItem`/
+`RankedListProps` (byline, timestamp, `showImages`, `subtitle`, heading levels, etc.) works
+identically here — see Most Read's MDX for the full content-shape and accessibility notes.
+
+## Framing conventions
+
+Use `timestamp` for a "how fresh is this" cue that fits the trending framing, e.g. `"Updated
+12 minutes ago"` rather than Most Read's typical `"3 hours ago"` — the exact copy is up to the
+consuming page, `Trending` has no opinion beyond rendering whatever string it's given.
+
+<Canvas of={TrendingStories.WithThumbnails} />
+
+<Controls />
+
+## Accessibility
+
+Identical to Most Read: the list is a real `<ol>` (so rank order doesn't need to be
+re-announced via the visible numeral, which is `aria-hidden`), the section is labelled via
+`aria-labelledby`, and only the headline itself is a link.

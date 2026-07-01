@@ -15,20 +15,23 @@ const trackVariants = cva("w-full overflow-hidden rounded-full bg-surface-sunken
   },
 });
 
-const fillVariants = cva("h-full rounded-full transition-[width] duration-base ease-standard", {
-  variants: {
-    color: {
-      brand: "bg-masthead-500",
-      success: "bg-success-500",
-      warning: "bg-warning-500",
-      error: "bg-error-500",
-      info: "bg-info-500",
+const fillVariants = cva(
+  "h-full rounded-full transition-[width] duration-base ease-standard motion-reduce:transition-none",
+  {
+    variants: {
+      color: {
+        brand: "bg-masthead-500",
+        success: "bg-success-500",
+        warning: "bg-warning-500",
+        error: "bg-error-500",
+        info: "bg-info-500",
+      },
+    },
+    defaultVariants: {
+      color: "brand",
     },
   },
-  defaultVariants: {
-    color: "brand",
-  },
-});
+);
 
 export type ProgressSize = "sm" | "md" | "lg";
 export type ProgressColor = "brand" | "success" | "warning" | "error" | "info";

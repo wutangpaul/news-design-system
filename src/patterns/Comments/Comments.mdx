@@ -1,0 +1,66 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as CommentsStories from "./Comments.stories";
+
+<Meta of={CommentsStories} />
+
+# Comments
+
+A threaded/flat comment list for an article or live blog. `Comments` accepts an array of
+`CommentData` objects — each with an author, a machine-readable timestamp, a body, and
+optional nested `replies` — and lays out the whole thread. `Comment` (the single-item piece)
+is also exported directly, in case a host page wants to render one comment on its own (e.g. a
+"most-liked comment" pull-out).
+
+<Canvas of={CommentsStories.Default} />
+<Controls />
+
+## Display-only, by design
+
+This pattern renders whatever `comments` it's given and reports intent through two optional
+callbacks — `onReply(commentId)` and `onSubmit(body)` — but it does not fetch data, append the
+submitted draft to the list, or apply any moderation/spam logic itself. A real integration is
+expected to own that state: call an API from inside `onSubmit`, then re-render `Comments` with
+the updated `comments` array once the new comment comes back from the server (or is optimistically
+inserted by the caller).
+
+## Composer
+
+Passing `onSubmit` renders a labelled textarea and a "Post comment" button above the list; the
+button is disabled until the draft has non-whitespace content. Omit `onSubmit` to render a
+read-only thread with no composer at all.
+
+<Canvas of={CommentsStories.WithoutComposer} />
+
+## Reply action
+
+Passing `onReply` adds a "Reply" control (with an accessible name derived from the author, e.g.
+"Reply to Jordan Reyes") to every comment in the thread, including nested replies. Omit it to
+hide the control entirely rather than rendering a Reply button that does nothing.
+
+<Canvas of={CommentsStories.WithoutReply} />
+
+## Empty state
+
+<Canvas of={CommentsStories.Empty} />
+
+## Do's and don'ts
+
+- Do keep `comments` sorted the way you want it displayed — this pattern renders the array
+  as-is and does not sort, paginate, or collapse deep threads on its own.
+- Do supply stable `id` values (e.g. a database key) since they're passed straight back through
+  `onReply`.
+- Don't expect this component to persist a submitted comment. Treat `onSubmit` purely as a
+  signal — update your own data source and pass a new `comments` array back down.
+- Don't use this pattern for moderation UI (approve/flag/delete) — that's product-specific
+  behavior out of scope for a design-system component.
+
+## Accessibility
+
+- Each comment's timestamp is a real `<time dateTime>` element with a machine-readable ISO
+  value, independent of the human-readable text shown to sighted users.
+- The reply control's accessible name includes the author's name (not just the word "Reply"),
+  so screen reader users navigating by control name can tell threads apart.
+- The composer's textarea has a visible, programmatically associated label ("Add a comment")
+  via the underlying `Textarea` component.
+- Nested replies are rendered as a nested ordered list (`ol` inside `li`), preserving both the
+  thread hierarchy and the reply order for assistive technology.

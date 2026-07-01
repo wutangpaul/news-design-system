@@ -1,0 +1,103 @@
+import { Meta, Controls, Canvas } from "@storybook/blocks";
+import * as StoryCardStories from "./StoryCard.stories";
+
+<Meta of={StoryCardStories} />
+
+# Story Card
+
+The foundational content-discovery unit. A Story Card is a thumbnail `Image`, a category
+`Tag`, a headline `Heading`, an optional dek (`Text`), and a byline/timestamp row — composed
+together, not hand-rolled markup. Every other content-discovery pattern in this wave (Featured
+Story Grid, Most Read, Trending) either renders a grid of these directly or was deliberately
+kept separate from it — see each pattern's own MDX for the reasoning.
+
+<Canvas of={StoryCardStories.Default} />
+
+## Content shape
+
+Story Card takes a single `story` prop typed as `StoryCardContent` — plain data, no
+pattern-specific fields:
+
+```tsx
+interface StoryCardContent {
+  headline: string;
+  href?: string;
+  dek?: string;
+  category?: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  byline?: string;
+  timestamp?: string;
+  timestampDateTime?: string;
+}
+```
+
+This shape is intentionally flat and generic so it's easy for other patterns to reuse — if you
+are composing Story Card from another pattern, import `StoryCardContent` and either use it
+directly for your own item type or extend it, which is exactly what Featured Story Grid does:
+
+```tsx
+interface FeaturedStoryGridItem extends StoryCardContent {
+  featured?: boolean;
+}
+```
+
+Avoid adding pattern-specific fields (a rank number, a "trending" flag) directly to this
+interface — extend it in the consuming pattern instead, so Story Card's own props stay stable.
+
+## Layouts
+
+`layout="vertical"` (default) stacks the thumbnail above the text — the tile shape used in
+grids (Featured Story Grid). `layout="horizontal"` places a smaller square thumbnail beside
+the text with tighter padding — meant for compact lists and rails.
+
+<Canvas of={StoryCardStories.Horizontal} />
+
+Omit `imageSrc` entirely for a text-only card (both layouts degrade gracefully — the text
+column simply takes the full width):
+
+<Canvas of={StoryCardStories.TextOnly} />
+
+## Semantic level vs. visual size
+
+`headingLevel` controls the actual `<h1>`-`<h6>` tag rendered (default `3`) — keep this the
+*same* across every card in a given grid or list regardless of how large or small each card
+looks, so the page's document outline stays correct (a grid of ten stories should not produce
+ten different heading levels). `headingVisualSize` controls only the type scale used (see
+`Heading`'s own `visualSize` prop) and defaults to a size appropriate for the chosen `layout` —
+override it independently when one card in a grid needs to look larger (a lead story) without
+becoming a different semantic level. Featured Story Grid does exactly this for its spanning
+item.
+
+## Linking behavior
+
+When `story.href` is set, the entire card — including the dek and the byline/timestamp row —
+is wrapped in a single `<a>`, and `Card`'s own `interactive` prop is enabled for the hover/
+focus affordance. This mirrors the pattern documented in Card's own MDX ("Interactive cards"):
+Card supplies only the visual affordance, the surrounding link owns click and keyboard
+behavior. Omit `href` for a static card (e.g. the currently-open article in a "related
+stories" rail) and it renders as a plain, non-interactive `<article>`.
+
+<Canvas of={StoryCardStories.WithoutLink} />
+
+## Grid usage
+
+Story Card fills its container's height (`h-full`) and pins its byline/timestamp row to the
+bottom via `mt-auto`, so a row of cards with mismatched dek lengths still lines up along the
+bottom edge when placed in an equal-height grid:
+
+<Canvas of={StoryCardStories.EqualHeightRow} />
+
+<Controls />
+
+## Accessibility
+
+- The headline is a real heading element; screen-reader users can navigate a grid of cards by
+  heading just like any other page section.
+- The byline/timestamp separator (`&middot;`) is marked `aria-hidden`, so assistive tech
+  announces "By Jane Doe, 3 hours ago" rather than "By Jane Doe middot 3 hours ago".
+- The machine-readable `timestampDateTime` is rendered as the `dateTime` attribute on a real
+  `<time>` element.
+- Because the whole card becomes one link, avoid putting other interactive elements (buttons,
+  nested links) inside a linked Story Card — that would create nested/adjacent interactive
+  controls, which `Card`'s own docs also call out to avoid.

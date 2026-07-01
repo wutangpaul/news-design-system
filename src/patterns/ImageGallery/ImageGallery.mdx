@@ -1,0 +1,110 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ImageGalleryStories from "./ImageGallery.stories";
+
+<Meta of={ImageGalleryStories} />
+
+# ImageGallery
+
+A multi-image set, presented one image at a time as a carousel, with a
+full-size enlarge view. Composes `Image`, `Caption`, and `Modal`.
+
+<Canvas of={ImageGalleryStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { ImageGallery } from "@/patterns/ImageGallery";
+
+<ImageGallery
+  label="Photos from Tuesday's downtown rally"
+  aspectRatio="16/9"
+  images={[
+    {
+      src: "/uploads/rally-1.jpg",
+      alt: "Marchers holding signs on Main Street",
+      caption: "Marchers gather downtown ahead of Tuesday's rally.",
+      credit: "Jane Doe/Wire Service",
+    },
+    {
+      src: "/uploads/rally-2.jpg",
+      alt: "A speaker addressing the crowd from a small stage",
+      caption: "Organizers addressed the crowd shortly after noon.",
+    },
+  ]}
+/>;
+```
+
+## Why a carousel, not a grid
+
+A plain grid was the other option considered. A grid is simpler and fine for
+a photo essay page where space is generous, but this pattern is meant to sit
+inline within Article Body flow — the same place `InlineImage` sits. A grid
+of many images inline in a story breaks up reading flow and forces every
+image to compete for attention at once. A single-image-at-a-time carousel
+keeps a predictable, article-width footprint (matching `InlineImage`'s full
+width) no matter how many photos are in the set, while still giving every
+photo full-size, full-caption treatment as the reader steps through — closer
+to how a print photo essay presents one image at a time. The trade-off is
+that a carousel needs real interaction to see every image, which is why it
+ships with three separate ways to move: **real** previous/next `<button>`
+elements, **arrow-key** support, and direct-access dot buttons — never only
+one.
+
+## Keyboard operability
+
+- **Previous/Next** are real `<button>` elements (not `div`s with click
+  handlers), always visible whenever there's more than one image, so they're
+  reachable and activatable by keyboard and screen reader users without any
+  extra affordance.
+- **Arrow keys** — `ArrowLeft`/`ArrowRight` also move to the previous/next
+  image, as a convenience once focus is anywhere inside the gallery.
+- **Dot buttons** (one per image) allow jumping directly to a given image;
+  the active dot carries `aria-current="true"`.
+- Position changes are announced via a visually-hidden `aria-live="polite"`
+  region ("Image 2 of 3"), so screen reader users get the same "where am I"
+  feedback sighted users get from the visible dots.
+
+## Enlarge view — composed from `Modal`, not a new lightbox
+
+Clicking (or activating via keyboard) the main image opens it full-size in
+the existing `Modal` component, reusing its focus trap, Escape-to-close,
+backdrop dismissal, and focus-return behavior rather than reimplementing any
+of that dialog logic. The modal keeps the same previous/next controls so
+viewers can keep stepping through the set without closing and reopening it.
+Set `enlargeable={false}` to disable this (the main image then renders
+without a button wrapper).
+
+## Content shape
+
+```tsx
+interface GalleryImage {
+  src: string;
+  alt: string; // required — forwarded straight to Image
+  caption?: string;
+  credit?: string;
+}
+```
+
+## Accessibility
+
+- Every image requires real `alt` text at the type level, via the same
+  mandatory `alt` prop as the underlying `Image` component.
+- The gallery region carries `role="group"` and `aria-roledescription="carousel"`
+  with the caller-supplied `label`, so assistive tech announces both what
+  kind of widget this is and what it contains.
+- All interactive controls (prev/next, dots, enlarge) are real `<button>`
+  elements with descriptive `aria-label`s — never bare `div`s with a click
+  handler.
+
+## Do / Don't
+
+- **Do** pass a `label` that describes the gallery's subject, not a generic
+  "Image gallery" — it's the only context a screen reader user gets before
+  hearing the first image's `alt` text.
+- **Do** keep `aspectRatio` consistent across a gallery's images so
+  stepping through doesn't cause layout jumps.
+- **Don't** rely on the carousel alone for image sets where every photo
+  needs to be visible simultaneously (e.g. a photo essay landing page) — use
+  a plain grid of `InlineImage`s there instead.

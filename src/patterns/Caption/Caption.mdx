@@ -1,0 +1,75 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as CaptionStories from "./Caption.stories";
+
+<Meta of={CaptionStories} />
+
+# Caption
+
+Small text below a piece of media: a description plus an optional photo/video
+credit. Used inside `InlineImage` and `ImageGallery`, and available on its own
+wherever a caption is needed.
+
+<Canvas of={CaptionStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Caption } from "@/patterns/Caption";
+import { Image } from "@/components/Image";
+
+<figure>
+  <Image src="/uploads/fire.jpg" alt="Firefighters battling a blaze on Main Street" />
+  <Caption credit="Jane Doe/Wire Service">
+    Firefighters battling a blaze on Main Street early Tuesday morning.
+  </Caption>
+</figure>;
+```
+
+## Does Caption render the `<figure>` wrapper?
+
+No — this was a deliberate API decision. `Caption` renders only the
+`<figcaption>` element; it expects to be placed inside a `<figure>` by
+whichever pattern owns the surrounding media, rather than wrapping its own
+`<figure>` around just itself.
+
+The reason: a `<figcaption>` is only valid HTML as a direct child of
+`<figure>`, alongside the media it describes — the figure and its caption are
+one semantic unit. If `Caption` rendered its own `<figure>`, composing it next
+to an `Image` would either produce two nested figures or force the consumer to
+reach past `Caption`'s markup to merge them. Instead, `InlineImage` (this
+pattern's first consumer) owns the `<figure>` and renders `Image` and
+`Caption` as siblings inside it. This keeps `Caption` a small, single-purpose
+piece that any media pattern can drop into its own figure.
+
+## Description and credit
+
+Both `children` (the description) and `credit` (a photographer/agency byline)
+are optional. Passing neither renders nothing — no empty `<figcaption>` is
+left in the DOM — so callers can pass through optional CMS fields without an
+extra conditional at the call site.
+
+When both are given, they're joined with a visually-hidden separator so
+screen readers still hear "description, credit" as one coherent caption, not
+two disconnected fragments read back to back without pause.
+
+## Accessibility
+
+- Always a real `<figcaption>`, so assistive tech associates it with the
+  enclosing `<figure>`'s content automatically.
+- The credit is not the only source of information distinguishing it from the
+  description — it's also styled as a distinct, secondary color, but the
+  markup itself keeps both in reading order rather than relying on visual
+  position alone.
+
+## Do / Don't
+
+- **Do** place `Caption` as a direct child of a `<figure>` that also contains
+  the media it describes.
+- **Do** pass a real, specific description, not a repeat of the image's `alt`
+  text — `alt` describes the image for someone who can't see it; the caption
+  adds context a sighted reader wouldn't otherwise have (who, when, why it
+  matters).
+- **Don't** use `Caption` outside a `<figure>` — pair it with `InlineImage` or
+  your own figure wrapper.

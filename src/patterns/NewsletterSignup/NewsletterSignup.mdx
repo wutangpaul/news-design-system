@@ -1,0 +1,88 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as NewsletterSignupStories from "./NewsletterSignup.stories";
+
+<Meta of={NewsletterSignupStories} />
+
+# Newsletter Signup
+
+An email capture form composed from the existing `Input` (email type, with its
+built-in label/error/helper-text contract) and `Button` (submit, with its `isLoading`
+state) — this pattern reimplements neither field validation UI nor a loading spinner,
+it only wires the two together plus its own submit/success flow.
+
+<Canvas of={NewsletterSignupStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { NewsletterSignup } from "@/patterns/NewsletterSignup";
+
+<NewsletterSignup
+  description="Top headlines, delivered every weekday morning."
+  onSubmit={(email) => submitToApi(email)}
+/>
+```
+
+`NewsletterSignup` has no knowledge of any real backend — it's presentational and
+interaction logic only. It manages the email input's value internally and calls your
+`onSubmit(email)` callback on submit (once the native `type="email"`/`required`
+validation on the field passes). Everything about the actual subscription request —
+loading state, errors, success — is reported back in through props:
+
+```tsx
+function Example() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorText, setErrorText] = useState<string>();
+  const [successMessage, setSuccessMessage] = useState<string>();
+
+  return (
+    <NewsletterSignup
+      isLoading={isLoading}
+      errorText={errorText}
+      successMessage={successMessage}
+      onSubmit={async (email) => {
+        setIsLoading(true);
+        setErrorText(undefined);
+        try {
+          await subscribe(email);
+          setSuccessMessage(`Confirmation sent to ${email}.`);
+        } catch {
+          setErrorText("Something went wrong — try again.");
+        } finally {
+          setIsLoading(false);
+        }
+      }}
+    />
+  );
+}
+```
+
+## States
+
+- **Loading** — pass `isLoading`. The submit `Button` shows its built-in spinner and
+  becomes non-interactive; the email field is also disabled so it can't be edited
+  mid-request.
+- **Error** — pass `errorText`. It's forwarded straight to `Input`'s `errorText` prop,
+  which applies `aria-invalid`, switches `aria-describedby` to the error message, and
+  shows the warning icon — the same error contract every other form field in this
+  design system uses.
+- **Success** — pass `successMessage`. The form is replaced entirely by a confirmation
+  message (`role="status"`) rather than left visible alongside it, since there's
+  nothing further for the reader to do.
+
+<Canvas of={NewsletterSignupStories.Loading} />
+<Canvas of={NewsletterSignupStories.WithError} />
+<Canvas of={NewsletterSignupStories.Success} />
+<Canvas of={NewsletterSignupStories.Interactive} />
+
+## Accessibility
+
+- The heading and email field are both real, programmatically associated elements
+  (`aria-labelledby` on the `<form>`, `label`/`htmlFor` on the field via `Input`) — a
+  screen reader announces the form's purpose before landing on the field.
+- The success confirmation uses `role="status"` (a polite live region) so assistive
+  tech announces it without needing focus to move there manually.
+- Error text uses `Input`'s existing `role="alert"` + `aria-invalid` +
+  `aria-describedby` wiring — never color alone.

@@ -1,0 +1,74 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ArticleHeaderStories from "./ArticleHeader.stories";
+
+<Meta of={ArticleHeaderStories} />
+
+# Article Header
+
+The top-of-article block: a real `h1` headline, an optional standfirst/deck, and a
+composition slot for byline/metadata. This is a pattern — it composes `Heading` and
+`Text` from the core component library rather than reimplementing typography.
+
+<Canvas of={ArticleHeaderStories.Default} />
+<Controls />
+
+## Why a composition slot for byline instead of built-in markup
+
+`ArticleHeader` accepts a `byline` prop typed as `ReactNode` rather than `author`,
+`avatarSrc`, `publishDate`, etc. props of its own. Byline/author metadata is a separate
+pattern being built independently, and duplicating its markup here would give two
+sources of truth for the same UI. Pass the rendered Byline pattern (or any other node —
+a plain string, a custom row of `Avatar` + `Text`, whatever the page needs) and
+`ArticleHeader` renders it as-is below the standfirst, with no assumptions about its
+internal shape.
+
+```tsx
+import { ArticleHeader } from "@/patterns/ArticleHeader";
+import { Avatar } from "@/components/Avatar";
+import { Text } from "@/components/Text";
+
+<ArticleHeader
+  title="City council approves record transit budget"
+  standfirst="The $2.4 billion plan funds four new light-rail lines over the next decade."
+  byline={
+    <div className="flex items-center gap-3">
+      <Avatar name="Jordan Reyes" size="sm" />
+      <Text as="span" size="small">Jordan Reyes</Text>
+    </div>
+  }
+/>;
+```
+
+## Title only
+
+A standfirst and byline are both optional — a short news item might only need the
+headline.
+
+<Canvas of={ArticleHeaderStories.TitleOnly} />
+<Canvas of={ArticleHeaderStories.WithoutByline} />
+
+## Dark mode
+
+<Canvas of={ArticleHeaderStories.DarkMode} />
+
+## Do's and don'ts
+
+- Do use `ArticleHeader` once per article page, at the top of the document — its
+  headline is a real `h1` and should be the only `h1` on the page.
+- Do pass a real reading measure wrapper (or let a parent Article template supply the
+  max-width) — `ArticleHeader` itself does not constrain width, since the headline may
+  need to run full-bleed in some layouts while the standfirst stays narrower.
+- Don't pass a heading level other than 1 — there is no `level` prop, deliberately: the
+  article's own headline is always the page's primary heading.
+- Don't build byline markup by hand inside the `byline` slot if the Byline pattern
+  already covers the case you need — reuse it so author presentation stays consistent
+  across the app.
+
+## Accessibility
+
+- Renders a genuine `h1` inside a `header` landmark, so the article's title is
+  discoverable via heading navigation and the page outline.
+- The standfirst is plain reading text (via `Text`, `color="secondary"`), not another
+  heading — it summarizes the piece without adding a spurious outline entry.
+- The `byline` slot is rendered as-is with no `aria-hidden` or other suppression, since
+  author/date metadata is real content, not decorative.

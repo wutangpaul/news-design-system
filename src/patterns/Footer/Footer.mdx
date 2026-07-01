@@ -1,0 +1,83 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as FooterStories from "./Footer.stories";
+
+<Meta of={FooterStories} />
+
+# Footer
+
+The site-wide bottom area: grouped link columns, an optional newsletter signup slot, social
+links, and a bottom copyright/legal bar.
+
+<Canvas of={FooterStories.Default} />
+<Controls />
+
+## Landmark structure
+
+`Footer` renders a real `<footer>` (the `contentinfo` landmark) with a single
+`<nav aria-label="Footer">` wrapping every link group. One nav groups all columns rather than
+giving each column ("Sections", "Company", "Legal", ...) its own separately-labelled `<nav>` —
+per-column landmarks would multiply the number of stops a screen-reader user has to cycle
+through when navigating the page by landmark, for little benefit over a heading (`<h2>`) per
+column, which is what this pattern uses instead.
+
+## Composing a Newsletter Signup
+
+`newsletterSlot` accepts the real Newsletter Signup pattern as a child, the same way
+`GlobalHeader` accepts `PrimaryNavigation` — its form/validation/submission logic is built and
+tested as its own pattern, so `Footer` never duplicates it:
+
+```tsx
+import { Footer } from "@/patterns/Footer";
+import { NewsletterSignup } from "@/patterns/NewsletterSignup";
+
+<Footer groups={groups} newsletterSlot={<NewsletterSignup onSubmit={handleSubmit} />} />;
+```
+
+## Usage
+
+```tsx
+<Footer
+  logo="The Daily Ledger"
+  groups={[
+    {
+      heading: "Sections",
+      links: [
+        { label: "World", href: "/world" },
+        { label: "Politics", href: "/politics" },
+      ],
+    },
+  ]}
+  socialLinks={[{ label: "Follow us on X", href: "https://x.com/example", icon: <ShareIcon /> }]}
+  copyrightText="© 2026 The Daily Ledger. All rights reserved."
+  legalLinks={[{ label: "Privacy Policy", href: "/privacy" }]}
+/>
+```
+
+## Social icons
+
+This design system's curated icon set (`src/components/Icon`) covers UI chrome (close, chevrons,
+search, share, bookmark, etc.) but has no brand/social icons. `socialLinks[].icon` is a plain
+`ReactNode` slot — supply your own brand SVGs (wrapped in the `Icon` component if you want them
+to inherit `size`/`currentColor` behavior) rather than repurposing an unrelated chrome icon in a
+real deployment.
+
+## Do
+
+- Give every `socialLinks` entry a descriptive `label` (e.g. "Follow us on X") — the icon alone
+  is not an accessible name.
+- Keep `legalLinks` short — privacy, terms, and similar required links, not a second nav.
+
+## Don't
+
+- Don't put primary site navigation in the footer's `groups` — those are supplementary links,
+  not a substitute for `PrimaryNavigation`.
+- Don't render `Footer` without a `logo` or `groups` heading text that identifies the site —
+  screen-reader users may jump directly to the `contentinfo` landmark without prior context.
+
+## Accessibility notes
+
+- `<footer>` (`contentinfo`) → `<nav aria-label="Footer">` → per-group `<h2>` + `<ul>` of links.
+- Social links are icon-only `<a>` elements, each given its own `aria-label` via
+  `socialLinks[].label` rather than relying on the icon's appearance.
+- External links (`external: true`) get `target="_blank"` and `rel="noopener noreferrer"`
+  automatically.

@@ -1,0 +1,97 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as MegaMenuStories from "./MegaMenu.stories";
+
+<Meta of={MegaMenuStories} />
+
+# Mega Menu
+
+A large flyout panel triggered from a primary navigation item, showing several columns of
+sub-links (for example, clicking or pressing ArrowDown on "Politics" reveals Elections /
+Congress / White House / States).
+
+<Canvas of={MegaMenuStories.Default} />
+<Controls />
+
+## Composition
+
+Mega Menu is built entirely on top of the generic `Dropdown` menu-button primitive from
+`src/components/Dropdown` — it supplies no open/close/keyboard/focus logic of its own. That
+primitive already implements the WAI-ARIA Authoring Practices Guide "Menu Button" pattern, so
+Mega Menu only adds:
+
+- A multi-column layout inside `DropdownMenu`.
+- Real anchor (`a`) elements for each sub-link, rather than `DropdownItem` buttons — these are
+  navigational links, not menu actions, so they render with `role="menuitem"` directly. The
+  Dropdown's roving-focus logic discovers any `[role="menuitem"]` element in the panel, so
+  arrow-key navigation still moves correctly between them.
+
+## Why click/keyboard only, not hover-to-open
+
+Dropdown's trigger always *toggles* open state on click — that's fixed, built-in behavior this
+pattern doesn't (and shouldn't) override. Layering an independent "open on mouse hover" on top
+of that toggle creates a race: hovering opens the panel, and the click that naturally follows
+(a mouse user hovers, then clicks) immediately toggles it shut again, since the click always
+flips whatever state it currently sees. That would make the panel flash open and instantly close
+on the exact interaction a mouse user is most likely to perform.
+
+Rather than fight Dropdown's contract, Mega Menu sticks to it exactly: click, Enter, Space,
+ArrowDown, and ArrowUp all open/close the panel, identically to every other Dropdown-based
+component in this library. This also sidesteps the WCAG 1.4.13 (Content on Hover or Focus)
+pitfalls of hover-only disclosure — content that only appears on hover isn't reliably
+dismissible or reachable for users who can't hover precisely.
+
+## Usage
+
+```tsx
+import { MegaMenu } from "@/patterns/MegaMenu";
+
+<MegaMenu
+  label="Politics"
+  columns={[
+    {
+      heading: "Coverage",
+      links: [
+        { label: "Elections", href: "/politics/elections" },
+        { label: "Congress", href: "/politics/congress" },
+      ],
+    },
+  ]}
+  featured={{
+    eyebrow: "Featured",
+    label: "Inside the final days of the campaign",
+    href: "/politics/features/final-days",
+  }}
+/>;
+```
+
+## Behavior
+
+- The trigger is a plain disclosure button — it does not itself navigate anywhere, matching the
+  underlying Dropdown's Menu Button semantics. If a section needs its own landing page, add it as
+  an ordinary link inside one of the columns (or as the featured link) rather than making the
+  trigger navigate.
+- Keyboard/click behavior matches Dropdown exactly: click/Enter/Space/ArrowDown on the trigger
+  opens the panel and moves focus to the first link; ArrowUp opens it focused on the last link;
+  ArrowDown/ArrowUp move between links; Escape closes the panel and returns focus to the trigger;
+  clicking outside closes it.
+
+## Do
+
+- Keep column headings short and scannable — they're static labels, not links themselves.
+- Use `featured` sparingly, for a single promoted story or landing page per section.
+
+## Don't
+
+- Don't nest another Dropdown or Mega Menu inside a column — the Dropdown primitive assumes one
+  open menu per trigger.
+- Don't add your own hover-to-open behavior on top of this pattern — see above for why that
+  conflicts with Dropdown's click toggle.
+
+## Accessibility notes
+
+- Inherits Dropdown's `aria-haspopup="menu"` / `aria-expanded` / `aria-controls` wiring on the
+  trigger, and `role="menu"` / `aria-labelledby` on the panel.
+- Every interaction is reachable and operable from the keyboard alone, with no reliance on
+  `:hover`.
+- Column sub-links use native `<a href>` elements, so they behave like ordinary links for
+  right-click, middle-click, and browser history — no JavaScript-only navigation.

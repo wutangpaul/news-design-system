@@ -1,0 +1,89 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as PrimaryNavigationStories from "./PrimaryNavigation.stories";
+
+<Meta of={PrimaryNavigationStories} />
+
+# Primary Navigation
+
+The main site-sections navigation. On desktop it's a horizontal list of links, where some items
+can open a `MegaMenu` flyout of sub-links. Below the `lg` breakpoint it collapses into a single
+toggle button that opens the existing `Drawer` component for a vertical mobile menu — this
+pattern never reimplements a slide-out panel of its own.
+
+<Canvas of={PrimaryNavigationStories.Default} />
+<Controls />
+
+## Content shape
+
+```tsx
+interface PrimaryNavItem {
+  label: string;
+  href: string;
+  current?: boolean; // marks the active section (aria-current="page")
+  megaMenuColumns?: MegaMenuColumn[]; // from the MegaMenu pattern
+  megaMenuFeatured?: MegaMenuFeatured;
+}
+```
+
+`items` is the only required prop — pass the real site sections as data, not children, so the
+same list can drive both the desktop row and the mobile drawer consistently.
+
+## Composition
+
+- Items with `megaMenuColumns` render a `MegaMenu` (from `src/patterns/MegaMenu`), which itself
+  composes the `Dropdown` primitive for its open/close/keyboard/focus behavior.
+- Items without `megaMenuColumns` render a plain `Link` (`tone="standalone"`).
+- The mobile toggle button opens a `Drawer` (`src/components/Drawer`, `side="left"`) containing
+  a vertical list. Items with sub-links are rendered as an `Accordion` item (from
+  `src/components/Accordion`) inside the drawer, so a long list of sub-links doesn't require
+  scrolling through everything to reach the next top-level section; items without sub-links
+  render as plain links, matching the desktop list.
+
+## Usage
+
+```tsx
+import { PrimaryNavigation } from "@/patterns/PrimaryNavigation";
+
+<PrimaryNavigation
+  items={[
+    { label: "Home", href: "/", current: true },
+    {
+      label: "Politics",
+      href: "/politics",
+      megaMenuColumns: [
+        { heading: "Coverage", links: [{ label: "Elections", href: "/politics/elections" }] },
+      ],
+    },
+    { label: "Business", href: "/business" },
+  ]}
+/>;
+```
+
+## Behavior
+
+- The `<nav>` landmark is labelled `"Primary"` by default (override with `ariaLabel`).
+- The currently active section gets `aria-current="page"` on both the desktop link and, if it
+  also appears in the mobile drawer, there too.
+- Desktop mega menu triggers open on hover or on the keyboard interactions documented on the
+  MegaMenu pattern page; the mobile toggle button opens the drawer on click/Enter/Space and the
+  drawer itself handles focus trapping and Escape-to-close.
+
+## Do
+
+- Keep the top-level `items` list short (roughly 5-8 sections) — it's meant for primary site
+  sections, not every possible sub-page.
+- Set `current` on exactly the item matching the page the user is on.
+
+## Don't
+
+- Don't hardcode nav items inside a page — `PrimaryNavigation` is content-agnostic and expects
+  real data through `items` so the same component works across pages.
+- Don't nest a `PrimaryNavigation` inside another one.
+
+## Accessibility notes
+
+- Uses a real `<nav aria-label="Primary">`, not a generic `<div>`.
+- The mobile menu toggle has an accessible name (`mobileMenuLabel`, default `"Open menu"`) since
+  it's icon-only.
+- Focus management for both the mega menu flyouts and the mobile drawer is entirely inherited
+  from `Dropdown` and `Drawer` respectively — no custom focus logic was written for this pattern.

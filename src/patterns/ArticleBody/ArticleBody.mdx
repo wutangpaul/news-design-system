@@ -1,0 +1,60 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ArticleBodyStories from "./ArticleBody.stories";
+
+<Meta of={ArticleBodyStories} />
+
+# Article Body
+
+The long-form reading container for an article page. `ArticleBody` is a typographic/
+layout wrapper, not a rich-text renderer — it renders whatever children you pass
+(paragraphs, headings, inline images, pull quotes, block quotes) as-is, and applies two
+things consistently around them: a readable measure, and vertical rhythm.
+
+<Canvas of={ArticleBodyStories.Default} />
+<Controls />
+
+## Reading measure
+
+Content is constrained to `max-w-[65ch]`, per the reading-measure guidance in the Grid
+& Layout foundations doc — long lines are measurably harder to track for readers
+regardless of viewport width, so `ArticleBody` caps line length even on wide desktop
+layouts rather than letting prose stretch edge-to-edge.
+
+## Composing arbitrary content
+
+`ArticleBody` doesn't expect a fixed content shape — pass any mix of `Text`, `Heading`,
+`Image`, `PullQuote`, `BlockQuote`, or plain HTML. A `gap-6` rhythm applies uniformly
+between direct children, with a bit of extra top margin on headings (`h2`/`h3`/`h4`)
+and images/figures so section breaks read as distinct beats rather than just another
+paragraph in the flow.
+
+<Canvas of={ArticleBodyStories.WithHeadingsAndImage} />
+
+## Dark mode
+
+<Canvas of={ArticleBodyStories.DarkMode} />
+
+## Do's and don'ts
+
+- Do compose `ArticleBody` from the existing typography components (`Text`, `Heading`)
+  for paragraphs and section headings, rather than raw `p`/`h2` tags, so weight/color
+  stay consistent with the rest of the system.
+- Do use `PullQuote` for a decorative repeat of a line already in the body text, and
+  `BlockQuote` for a genuine, non-duplicated quotation — see each pattern's own docs
+  for the accessibility distinction between them.
+- Don't feed `ArticleBody` a CMS content shape directly (e.g. an array of block
+  objects) and expect it to render rich text — it has no renderer of its own. Map your
+  content model to React children (a small loop over blocks, for instance) before
+  passing them in.
+- Don't override `max-w-[65ch]` to stretch body copy full-width — if a layout calls for
+  that, it likely needs a different pattern (e.g. `HeroStory`'s grid measure), not a
+  wider `ArticleBody`.
+
+## Accessibility
+
+- `ArticleBody` renders a plain `div` with no implicit landmark role — the surrounding
+  page/template is expected to provide the `<article>`/`<main>` landmark, with
+  `ArticleHeader` supplying the page's `h1` above it.
+- Because it renders children as-is, heading levels and alt text remain fully under the
+  consumer's control — `ArticleBody` never generates its own heading or strips
+  attributes from what you pass in.

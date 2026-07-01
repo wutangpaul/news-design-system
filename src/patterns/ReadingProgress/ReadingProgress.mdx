@@ -1,0 +1,96 @@
+import { Meta, Canvas, Controls } from "@storybook/blocks";
+import * as ReadingProgressStories from "./ReadingProgress.stories";
+
+<Meta of={ReadingProgressStories} />
+
+# Reading Progress
+
+A thin bar fixed to the top of the viewport showing how far through an article the
+reader has scrolled. This pattern's own job is the scroll-tracking logic — a
+`useScrollProgress` hook that computes a 0-100 percentage from scroll position versus
+document (or element) height — and fixed positioning. The visual bar itself is the
+existing `Progress` component in determinate mode, reused rather than reimplemented.
+
+<Canvas of={ReadingProgressStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { ReadingProgress } from "@/patterns/ReadingProgress";
+
+function ArticlePage() {
+  return (
+    <>
+      <ReadingProgress label="Reading progress" />
+      <article>{/* ... */}</article>
+    </>
+  );
+}
+```
+
+By default, progress is computed against the whole document's scroll height. Pass
+`targetRef` pointing at the article element itself to track progress through just
+that element's bounds instead — useful when a page has substantial content above or
+below the article (nav, related-content rail, footer) that shouldn't count toward
+"done reading".
+
+<Canvas of={ReadingProgressStories.TrackingAnArticleElement} />
+
+```tsx
+function ArticlePage() {
+  const articleRef = useRef<HTMLElement>(null);
+  return (
+    <>
+      <ReadingProgress targetRef={articleRef} />
+      <article ref={articleRef}>{/* ... */}</article>
+    </>
+  );
+}
+```
+
+## Sizes
+
+`size` and `color` pass straight through to the underlying `Progress` bar.
+
+<Canvas of={ReadingProgressStories.Sizes} />
+
+## How progress is computed
+
+- **Document mode** (default): `scrollTop / (scrollHeight - clientHeight) * 100`,
+  clamped to `[0, 100]`. When the document isn't scrollable at all (content shorter
+  than the viewport), progress reports `0` rather than dividing by zero.
+- **Element mode** (`targetRef`): `0%` when the element's top edge reaches the top of
+  the viewport, `100%` when its bottom edge reaches the bottom of the viewport. If the
+  element itself is shorter than the viewport, there's no partial range to report, so
+  it's either `0` (not yet reached) or `100` (already fully visible).
+- Recomputed on both `scroll` and `resize` (a resize can change the scrollable height
+  without a scroll event firing), using passive scroll listeners so tracking never
+  blocks the browser's own scroll handling.
+
+## Reduced motion
+
+`Progress`'s indeterminate mode already falls back to a static, low-opacity bar under
+`prefers-reduced-motion` (see the Progress docs). Its **determinate** mode — the mode
+this pattern always uses — applies a `transition-[width]` CSS transition
+unconditionally, with no `motion-reduce` override, so on every scroll event the fill
+still animates its width change rather than jumping instantly. In practice this is a
+very short (duration-base), 1:1-with-scroll interpolation rather than an independent
+looping animation, but it hasn't been verified against `prefers-reduced-motion` the
+way the indeterminate case has. This is a `Progress` component gap (out of this
+pattern's edit boundary — `src/components/*` isn't ours to change) rather than
+something `ReadingProgress` can fix on its own; flagged for the component owners to
+consider adding a `motion-reduce:transition-none` to the determinate fill.
+
+## Accessibility
+
+- Renders a real `role="progressbar"` (via `Progress`) with `aria-valuenow` /
+  `aria-valuemin` / `aria-valuemax` kept in sync with scroll position — always pass a
+  descriptive `label` (defaults to "Reading progress") so assistive tech announces
+  what's being measured.
+- Purely presentational positioning (`fixed`/`z-stickyHeader`) — it doesn't trap focus,
+  intercept scroll, or otherwise interfere with keyboard or screen-reader navigation of
+  the page underneath it.
+- Color is never the only signal here: the bar length itself conveys progress, and the
+  accessible name/value triplet exposes the same information non-visually.

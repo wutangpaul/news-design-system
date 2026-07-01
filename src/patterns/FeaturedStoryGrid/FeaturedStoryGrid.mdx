@@ -1,0 +1,65 @@
+import { Meta, Controls, Canvas } from "@storybook/blocks";
+import * as FeaturedStoryGridStories from "./FeaturedStoryGrid.stories";
+
+<Meta of={FeaturedStoryGridStories} />
+
+# Featured Story Grid
+
+A responsive grid of [Story Card](?path=/docs/patterns-content-discovery-story-card--docs)s
+for homepage or section-front layouts, with one item optionally spanning a larger area (e.g.
+a lead story spanning 2 columns).
+
+<Canvas of={FeaturedStoryGridStories.Default} />
+
+## Grid conventions
+
+Built directly on Tailwind's grid utilities (`grid-cols-*`, `gap-*`) rather than a custom
+12-column abstraction, per `src/docs/foundations/GridLayout.mdx`: 1 column below `sm`, 2
+columns `sm`-`md`, 3 columns at `lg`+. This matches how content-heavy editorial grids
+typically need irregular spans that a rigid 12-col system fights against.
+
+## Content shape
+
+```tsx
+interface FeaturedStoryGridItem extends StoryCardContent {
+  featured?: boolean;
+}
+```
+
+`FeaturedStoryGridItem` extends Story Card's own `StoryCardContent` with a single additional
+field: `featured`. Mark one item's `featured` `true` for the conventional "one big lead story"
+layout — it spans `sm:col-span-2`, gets a larger visual headline size (`headingVisualSize={2}`
+under the hood, while every card still uses the same semantic `headingLevel`), and a wider
+`16/9` thumbnail crop instead of the grid default `3/2`. The component doesn't enforce a
+single featured item — marking more than one produces more than one enlarged tile — but one
+lead story is the typical usage.
+
+## Uniform grids
+
+Omit `featured` (or set it `false` on every item) for a plain uniform grid with no standout
+item:
+
+<Canvas of={FeaturedStoryGridStories.NoFeaturedItem} />
+
+## Mixed image / text-only items
+
+Items without an `imageSrc` render as text-only Story Cards and still line up correctly in
+the grid, since Story Card fills its grid cell's height and pins its byline row to the bottom:
+
+<Canvas of={FeaturedStoryGridStories.TextOnlyItems} />
+
+## Heading levels
+
+`headingLevel` (default `3`) is applied uniformly to every card, including the featured one —
+see Story Card's own "Semantic level vs. visual size" section for why visual prominence and
+document-outline level are kept independent.
+
+<Controls />
+
+## Accessibility
+
+- Every item is still an individually-focusable Story Card link (or plain article if no
+  `href`); the grid itself adds no additional interactive semantics.
+- Because every card shares one heading level, screen-reader users navigating by heading get a
+  flat, correctly-ordered list of story headlines regardless of visual size differences.
+- Storybook's a11y addon reports no violations on the default story.

@@ -55,6 +55,14 @@ import finished components from `src/components/*`.
 - React Testing Library + Vitest. Test behavior (renders, interactions, keyboard nav, ARIA
   attributes), not implementation details.
 - Place tests in `<Name>.test.tsx` next to the component.
+- Axe checks: use `const results = await axe(container); expect(results.violations).toEqual([])`
+  — **not** `vitest-axe`'s `toHaveNoViolations()` matcher. That matcher doesn't type-check in
+  this repo: `@storybook/test` hoists its own older `@vitest/expect@2.0.5` alongside `vitest`'s
+  own newer nested copy, so any `declare module "@vitest/expect"` augmentation resolves against
+  whichever copy happens to be nearest on disk, not necessarily the one `vitest`'s `expect()`
+  actually uses — a yarn hoisting artifact, not something to hack around per-file. The
+  `.violations` array-assertion pattern works regardless of that and is what every existing
+  component/pattern test already uses.
 
 ## Storybook
 
@@ -109,9 +117,10 @@ not apply here.
 - Patterns take real content via props (title, image src, author name, etc.) — they are not
   content-agnostic the way Templates (Phase 4) are meant to be. Define a small TS interface per
   pattern for its content shape; there's no shared "content model" to conform to yet.
-- `cn()` and the `vitest-axe` matcher are already fixed centrally (see git history) — use them
-  normally, no need for the workarounds Phase 2 components had to invent before those fixes
-  landed.
+- `cn()`'s tailwind-merge classGroup gap is fixed centrally (see git history) — use it normally,
+  no need for the workarounds some Phase 2 components invented before that fix landed. For axe
+  checks, see the "Testing" section above — use the `.violations` array-assertion pattern, not
+  `vitest-axe`'s `toHaveNoViolations()` matcher (which doesn't type-check in this repo).
 
 ## Boundaries — do not edit these as part of building a component
 
