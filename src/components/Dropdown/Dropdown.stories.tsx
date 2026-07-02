@@ -56,18 +56,24 @@ export const AlignedEnd: Story = {
 
 export const CustomTriggerContent: Story = {
   render: () => (
-    <Dropdown>
-      <DropdownTrigger aria-label="User menu">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-masthead-500 text-small font-semibold text-text-on-brand">
-          PM
-        </span>
-      </DropdownTrigger>
-      <DropdownMenu align="end">
-        <DropdownItem onSelect={() => {}}>Profile</DropdownItem>
-        <DropdownItem onSelect={() => {}}>Settings</DropdownItem>
-        <DropdownSeparator />
-        <DropdownItem onSelect={() => {}}>Sign out</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+    // Wrapped and right-aligned like AlignedEnd above: this pattern's real usage (an
+    // account-menu avatar) always sits in a header's top-right corner. Rendered at the
+    // canvas's left edge with align="end" instead, the 12rem-wide menu — which extends
+    // leftward from the trigger's right edge — overflowed off the left of the viewport.
+    <div className="flex justify-end">
+      <Dropdown>
+        <DropdownTrigger aria-label="User menu">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-masthead-500 text-small font-semibold text-text-on-brand">
+            PM
+          </span>
+        </DropdownTrigger>
+        <DropdownMenu align="end">
+          <DropdownItem onSelect={() => {}}>Profile</DropdownItem>
+          <DropdownItem onSelect={() => {}}>Settings</DropdownItem>
+          <DropdownSeparator />
+          <DropdownItem onSelect={() => {}}>Sign out</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
   ),
 };
