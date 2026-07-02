@@ -41,9 +41,28 @@ accessibility into a sealed component API is far more expensive than designing i
 - Component tests assert real DOM behavior (roles, `aria-*` attributes, keyboard interaction),
   not just that something rendered — see any `*.test.tsx` for the pattern.
 
-## Where this is still incomplete
+## Semantic color contrast audit (2026-07-03)
 
-Color contrast for the `success`/`warning`/`error`/`info` semantic tokens has not yet been
-audited against AA contrast ratios in both light and dark mode — see
-[Colors](?path=/docs/design-tokens-colors--docs). Flagged for the next pass before these tokens
-are used in net-new product surfaces beyond Alert/Toast/Badge.
+Every `success`/`warning`/`error`/`info` text/background/icon combination actually used in the
+codebase was checked against its real rendered background (computing WCAG relative luminance
+directly from the token hex values, not eyeballed) in both light and dark mode. Two real
+failures were found and fixed:
+
+- **Toast's warning icon** (`text-warning-500` on `bg-surface-raised`) was 2.97:1 in light
+  mode — just under the 3:1 AA floor for non-text/UI components (1.4.11). Fixed to
+  `text-warning-700 dark:text-warning-500` (the 700 shade clears 4.68:1 in light and still
+  passes 3.55:1 in dark).
+- **The required-field asterisk** (`text-error-500`, used identically across Input, Select,
+  Textarea, Checkbox, DatePicker, and Combobox) was 4.03:1 against `surface-canvas` in dark
+  mode — under the 4.5:1 AA text floor. Fixed with `dark:text-error-400` (7.04:1). This is the
+  same fix Button's destructive variant already used for the identical root cause: `error-500`
+  was tuned for light backgrounds and doesn't have enough luminance contrast against near-black
+  ones.
+- Also removed **Form's error-summary link hover color** (`hover:text-error-500`), which
+  reached only 4.41:1 in light mode and 3.79:1 in dark — both under 4.5:1. The link's
+  persistent underline is affordance enough without a hover color change.
+
+Everything else — Alert's tinted backgrounds/icons in both themes, Badge's fixed pastel
+chips, the Alert dark-mode text-on-tinted-background pairs — passed with real margin (many
+well above 10:1). Method + full numbers available via the contrast-checker script used for
+this pass if another token changes and needs re-verification.

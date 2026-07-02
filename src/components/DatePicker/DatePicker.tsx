@@ -310,7 +310,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           <label htmlFor={inputId} className="text-small font-medium text-text-primary">
             {label}
             {required && (
-              <span className="text-error-500" aria-hidden="true">
+              <span className="text-error-500 dark:text-error-400" aria-hidden="true">
                 {" "}
                 *
               </span>

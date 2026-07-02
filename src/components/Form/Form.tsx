@@ -135,7 +135,10 @@ export const Form = forwardRef<HTMLFormElement, FormProps>(
                 <li key={fieldId}>
                   <a
                     href={`#${fieldId}`}
-                    className="text-small underline underline-offset-2 hover:text-error-500"
+                    // No hover color swap: text-error-500 only reaches 4.41:1 against this
+                    // container's light-mode background and 3.79:1 in dark mode, both under
+                    // the 4.5:1 AA text floor. The persistent underline is affordance enough.
+                    className="text-small underline underline-offset-2"
                     onClick={(event) => {
                       event.preventDefault();
                       jumpToField(fieldId);

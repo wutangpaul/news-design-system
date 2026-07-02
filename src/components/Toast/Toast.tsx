@@ -24,7 +24,10 @@ const toastVariants = cva(
 const iconColor: Record<ToastVariant, string> = {
   info: "text-info-500",
   success: "text-success-500",
-  warning: "text-warning-500",
+  // warning-500 against bg-surface-raised is 2.97:1 in light mode — just under the 3:1 AA
+  // floor for non-text/UI components (1.4.11). warning-700 clears it (4.68:1) and still
+  // passes in dark mode (3.55:1), unlike every other variant here which only needed one shade.
+  warning: "text-warning-700 dark:text-warning-500",
   error: "text-error-500",
 };
 

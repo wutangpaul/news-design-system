@@ -87,7 +87,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           >
             {label}
             {required && (
-              <span className="text-error-500" aria-hidden="true">
+              <span className="text-error-500 dark:text-error-400" aria-hidden="true">
                 {" "}
                 *
               </span>
