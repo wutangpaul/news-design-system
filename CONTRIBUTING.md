@@ -20,27 +20,34 @@ src/components/Button/
 Patterns (Phase 3) live under `src/patterns/<PatternName>/` with the same shape, and may
 import finished components from `src/components/*`.
 
-## Tailwind v4 config — currently in compatibility mode
+## Tailwind v4 — theme lives in src/index.css, not a JS config
 
-The project runs on Tailwind v4, but `tailwind.config.ts` (all of `src/tokens/*`) is still
-loaded as-is via the `@config "../tailwind.config.ts";` compatibility directive in
-`src/index.css`, rather than being rewritten as a native v4 `@theme` CSS block. This was a
-deliberate choice to de-risk the v4 engine upgrade (Lightning CSS, faster builds) from a much
-larger, separate effort: porting the whole token system (colors, the fontSize scale's
-line-height/letter-spacing pairs, spacing, radius, shadow, motion, breakpoints, z-index) into
-CSS custom properties. Do not remove the `@config` line without doing that port first — until
-then, `tailwind.config.ts` is still the real source of truth and should be edited normally.
-One thing that *did* need updating for v4 regardless of the compat shim: the `dark:` variant
-is no longer derived from the JS config's `darkMode` option, so it's declared explicitly via
-`@custom-variant dark (&:where(.dark, .dark *));` in `src/index.css` — keep that in sync with
-`tailwind.config.ts`'s `darkMode: "class"` if either ever changes.
+There is no `tailwind.config.ts` — it was fully ported into a native v4 `@theme` block in
+`src/index.css` and deleted. `src/tokens/*.ts` stays the source of truth for docs (Design
+Tokens pages import directly from there) and for anyone reading token *values* in TS; keep
+both in sync if the palette/scale changes. Two things don't fit the standard `@theme`
+namespace model and are hand-written instead, right below the `@theme` block:
+
+- **z-index** — v4 has no extensible `@theme` namespace for it (the built-in `z-*` scale is a
+  fixed set of numbers), so the named layers (`z-modal`, `z-dropdown`, etc.) are defined via
+  `@utility`.
+- **transition-duration** — same situation; v4 ships only a single `--default-transition-duration`,
+  no named scale. The `duration-*` utilities are also hand-written via `@utility`.
+
+(`transition-timing-function` doesn't have this problem — `--ease-*` *is* a real `@theme`
+namespace, so `ease-standard` etc. are ordinary theme entries.)
+
+Content detection is v4's automatic scanner (no explicit `content: [...]` glob array needed).
+The class-based dark mode variant is declared explicitly via
+`@custom-variant dark (&:where(.dark, .dark *));`, since v4 doesn't derive it from a JS config
+option anymore.
 
 ## Styling
 
 - Tailwind utility classes only — no inline styles, no raw hex values. Every color/spacing/
-  radius/shadow/font value must come from the theme defined in `tailwind.config.ts`, which is
-  generated from `src/tokens/*`. If a token you need doesn't exist, use the closest existing
-  one rather than inventing a one-off value.
+  radius/shadow/font value must come from the `@theme` block in `src/index.css` (mirrored from
+  `src/tokens/*`). If a token you need doesn't exist, use the closest existing one rather than
+  inventing a one-off value.
 - Use `surface-*` / `text-*` color utilities (not raw `ink-*`) for anything that should adapt
   between light and dark mode — they're backed by CSS variables that flip under the `.dark`
   class. Use `ink-*`/`masthead-*` directly only for fixed-brand elements that shouldn't theme.
@@ -194,10 +201,11 @@ passing real pattern instances with sample content into the slots).
 
 ## Boundaries — do not edit these as part of building a component
 
-`package.json`, `tailwind.config.ts`, `src/tokens/*`, `src/index.css`, `.storybook/*`,
-`vite.config.ts`, `tsconfig*.json`, or any other component's folder. If a shared file truly
-needs a change, flag it instead of editing it — these are integrated centrally to avoid
-parallel agents clobbering each other.
+`package.json`, `src/tokens/*`, `src/index.css` (this is where the Tailwind `@theme` block
+lives — see "Tailwind v4" above), `.storybook/*`, `postcss.config.js`, `vite.config.ts`,
+`tsconfig*.json`, or any other component's folder. If a shared file truly needs a change, flag
+it instead of editing it — these are integrated centrally to avoid parallel agents clobbering
+each other.
 
 Each component's `index.ts` is the only cross-component export surface; the top-level
 `src/components/index.ts` / `src/patterns/index.ts` / `src/templates/index.ts` barrels are

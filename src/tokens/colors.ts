@@ -41,8 +41,9 @@ export const semantic = {
   info: { 50: "#eff6ff", 500: "#2563eb", 700: "#1d4ed8" },
 } as const;
 
-// Theme-aware surface/text aliases. Consumed by tailwind.config.ts as CSS-variable-backed
-// utilities (bg-surface, text-ink, etc.) so components don't hardcode light/dark pairs.
+// Theme-aware surface/text aliases. Mirrored into src/index.css's @theme block as
+// CSS-variable-backed utilities (bg-surface-*, text-text-*, etc.) so components don't
+// hardcode light/dark pairs.
 export const surface = {
   light: {
     canvas: ink[0],
