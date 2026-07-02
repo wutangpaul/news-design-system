@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introduction" />
+
+# The Daily Ledger Design System
+
+A component library, pattern library, and set of page templates for a premium
+news-publishing platform — built with React, TypeScript, and Tailwind CSS.
+
+This isn't a generic UI kit with a news skin on top. Every layer exists to answer a
+specific editorial problem: how do you keep hundreds of contributors shipping consistent,
+accessible pages without re-deciding the same typographic, layout, and accessibility
+questions on every story, every day.
+
+## How it's organized
+
+The sidebar to the left is ordered to match how a page actually gets assembled, from raw
+decisions up to full pages:
+
+```
+Design Tokens  →  Foundations  →  Components  →  Patterns  →  Templates
+   (colors,        (accessibility,   (Button,       (StoryCard,   (Homepage,
+    type, space)     dark mode,       Input,         ArticleBody,  Article,
+                      grid, a11y)     Modal, ...)     Byline, ...)  LiveBlog, ...)
+```
+
+- **[Design Tokens](?path=/docs/design-tokens-overview--docs)** — the raw values: colors,
+  type scale, spacing, radius, shadow, motion, breakpoints, z-index.
+- **[Foundations](?path=/docs/foundations-overview--docs)** — the written standards for
+  using those values: accessibility, dark mode, responsive design, grid, iconography,
+  editorial typography.
+- **[Components](?path=/docs/components-overview--docs)** — the primitive building blocks
+  (Button, Input, Modal, Card, Tag, ...).
+- **[Patterns](?path=/docs/patterns-overview--docs)** — editorial, navigation, and
+  content-discovery compositions built from components (StoryCard, HeroStory, GlobalHeader,
+  MegaMenu, Comments, ...).
+- **[Templates](?path=/docs/templates-overview--docs)** — full page layouts (Homepage,
+  Article, LiveBlog, ...), structure-only: each one takes `ReactNode` slots rather than
+  content data, so the same template works for any real page's content.
+
+Each layer only builds on the ones before it — a pattern never invents its own spacing
+value, a template never hardcodes a color.
+
+## If you're building something new
+
+Read **CONTRIBUTING.md** at the repo root first — it's the authoritative spec for file
+structure, styling conventions, the accessibility bar (WCAG 2.2 AA, non-negotiable), and
+testing patterns. Every component and pattern here follows it, so matching it is what
+keeps this system coherent as it grows.

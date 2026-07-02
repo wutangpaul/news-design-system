@@ -30,6 +30,7 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
+          "Introduction",
           "Design Tokens",
           [
             "Overview",
