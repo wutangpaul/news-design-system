@@ -24,12 +24,16 @@ platform. Built with React, TypeScript, and Tailwind CSS, documented in Storyboo
 The system is organized into five layers, matching how a newsroom's product actually gets
 assembled — from raw design decisions up to full pages:
 
-```
-Design Tokens  →  Foundations  →  Components  →  Patterns  →  Templates
-   (colors,        (accessibility,   (Button,       (StoryCard,   (Homepage,
-    type, space)     dark mode,       Input,         ArticleBody,  Article,
-                      grid, a11y)     Modal, ...)     Byline, ...)  LiveBlog, ...)
-```
+| Layer | Contains |
+|---|---|
+| **Design Tokens** | colors, type scale, spacing, radius, shadow, motion, breakpoints, z-index |
+| **Foundations** | accessibility, dark mode, responsive design, grid, iconography, typography |
+| **Components** | Button, Input, Modal, Card, Tag, and other primitives |
+| **Patterns** | StoryCard, HeroStory, GlobalHeader, ArticleBody, Byline, and other compositions |
+| **Templates** | Homepage, Article, LiveBlog, and other full page layouts |
+
+Each layer only builds on the ones before it — a pattern never invents its own spacing value,
+a template never hardcodes a color.
 
 ## Stack
 

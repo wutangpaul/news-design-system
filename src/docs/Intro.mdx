@@ -15,14 +15,7 @@ questions on every story, every day.
 ## How it's organized
 
 The sidebar to the left is ordered to match how a page actually gets assembled, from raw
-decisions up to full pages:
-
-```
-Design Tokens  →  Foundations  →  Components  →  Patterns  →  Templates
-   (colors,        (accessibility,   (Button,       (StoryCard,   (Homepage,
-    type, space)     dark mode,       Input,         ArticleBody,  Article,
-                      grid, a11y)     Modal, ...)     Byline, ...)  LiveBlog, ...)
-```
+decisions up to full pages — each layer only builds on the ones before it:
 
 - **[Design Tokens](?path=/docs/design-tokens-overview--docs)** — the raw values: colors,
   type scale, spacing, radius, shadow, motion, breakpoints, z-index.
@@ -37,9 +30,6 @@ Design Tokens  →  Foundations  →  Components  →  Patterns  →  Templates
 - **[Templates](?path=/docs/templates-overview--docs)** — full page layouts (Homepage,
   Article, LiveBlog, ...), structure-only: each one takes `ReactNode` slots rather than
   content data, so the same template works for any real page's content.
-
-Each layer only builds on the ones before it — a pattern never invents its own spacing
-value, a template never hardcodes a color.
 
 ## If you're building something new
 
