@@ -31,6 +31,26 @@ decisions up to full pages — each layer only builds on the ones before it:
   Article, LiveBlog, ...), structure-only: each one takes `ReactNode` slots rather than
   content data, so the same template works for any real page's content.
 
+## Accessibility
+
+**WCAG 2.2 AA is the target, non-negotiable** — a build constraint every component is
+designed against from the start, not a checklist applied at the end. Concretely, that means:
+
+- Full keyboard operability, following the [WAI-ARIA Authoring Practices
+  Guide](https://www.w3.org/WAI/ARIA/apg/) pattern for the relevant widget (Tabs, Dialog,
+  Menu, ...).
+- Semantic HTML first — a native `<button>` or `<select>` before a `div` plus ARIA.
+- A visible focus ring on every interactive element, never suppressed without an equally
+  visible replacement.
+- Color is never the only signal for status, state, or meaning.
+- Motion respects `prefers-reduced-motion`.
+- Storybook's `addon-a11y` runs axe-core against every story automatically — a clean run is
+  part of "done" for any component, not an optional follow-up.
+
+See **[Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs)** for
+the full bar, including the one place it's currently incomplete (semantic color contrast in
+dark mode, tracked there).
+
 ## If you're building something new
 
 Read **CONTRIBUTING.md** at the repo root first — it's the authoritative spec for file
