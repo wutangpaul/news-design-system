@@ -3,7 +3,7 @@
 [![CI](https://github.com/wutangpaul/news-design-system/actions/workflows/ci.yml/badge.svg)](https://github.com/wutangpaul/news-design-system/actions/workflows/ci.yml)
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Storybook](https://img.shields.io/badge/Storybook-9-FF4785?logo=storybook&logoColor=white)](https://storybook.js.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -32,7 +32,8 @@ Design Tokens  →  Foundations  →  Components  →  Patterns  →  Templates
 ## Stack
 
 - **React 18** + **TypeScript**
-- **Tailwind CSS 3** (class-based dark mode) — theme generated from `src/tokens/*`
+- **Tailwind CSS 4** (class-based dark mode) — native CSS `@theme` block in `src/index.css`,
+  mirrored from `src/tokens/*`
 - **Storybook 9** (with the accessibility addon) for component docs and visual review
 - **Vitest** + **React Testing Library** for tests, **axe-core** for automated a11y checks
 - **Vite** for the app build
@@ -62,10 +63,11 @@ yarn build-storybook   # static Storybook build
 ## What's in here
 
 - **Design tokens** (`src/tokens/`) — colors, typography, spacing, radius, shadow, motion,
-  breakpoints, z-index. Single source of truth, consumed by `tailwind.config.ts`. Color system:
-  `ink` (neutral grayscale), `masthead` (brand red accent), `success`/`warning`/`error`/`info`
-  (semantic). Theme-aware `surface-*`/`text-*` Tailwind utilities are CSS-variable-backed so
-  components using them automatically support dark mode.
+  breakpoints, z-index. Source of truth for docs; mirrored into the `@theme` block in
+  `src/index.css` (there's no `tailwind.config.ts` — Tailwind v4 is configured entirely in
+  CSS). Color system: `ink` (neutral grayscale), `masthead` (brand red accent),
+  `success`/`warning`/`error`/`info` (semantic). Theme-aware `surface-*`/`text-*` Tailwind
+  utilities are CSS-variable-backed so components using them automatically support dark mode.
 - **Foundations** (`src/docs/foundations/`) — written standards for accessibility, responsive
   design, dark mode strategy, grid & layout, iconography, and brand/editorial typography (a
   serif display face for headlines, sans for UI chrome, mono for timestamps/data).
@@ -83,8 +85,8 @@ yarn build-storybook   # static Storybook build
 
 Read **[CONTRIBUTING.md](./CONTRIBUTING.md)** before adding or modifying anything — it's the
 authoritative spec for file structure, styling rules, accessibility bar, testing patterns, and
-the boundaries around shared files (tokens, Tailwind config, Storybook config) that shouldn't be
-edited casually.
+the boundaries around shared files (tokens, the Tailwind `@theme` block, Storybook config) that
+shouldn't be edited casually.
 
 Quick orientation:
 
@@ -104,7 +106,8 @@ Versioning and the changelog are automated with
 for [Conventional Commits](https://www.conventionalcommits.org) prefixes (`feat:`, `fix:`,
 `feat!:`/`BREAKING CHANGE:`, etc.), which release-please uses to keep an always-up-to-date
 release PR with the next version bump and `CHANGELOG.md` entry. Merging that PR cuts the
-GitHub release and tags the version.
+GitHub release and tags the version. See **[CHANGELOG.md](./CHANGELOG.md)** for release
+history.
 
 ## Project status
 
