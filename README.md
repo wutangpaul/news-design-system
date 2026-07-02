@@ -4,12 +4,14 @@
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Storybook](https://img.shields.io/badge/Storybook-9-FF4785?logo=storybook&logoColor=white)](https://storybook.js.org)
+[![Storybook](https://img.shields.io/badge/Storybook-9-FF4785?logo=storybook&logoColor=white)](https://wutangpaul.github.io/news-design-system/)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A component library, pattern library, and set of page templates for a premium news-publishing
 platform. Built with React, TypeScript, and Tailwind CSS, documented in Storybook.
+
+**[View the deployed Storybook →](https://wutangpaul.github.io/news-design-system/)**
 
 | | |
 |---|---|
