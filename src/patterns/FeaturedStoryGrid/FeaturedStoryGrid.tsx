@@ -78,7 +78,10 @@ export const FeaturedStoryGrid = forwardRef<HTMLDivElement, FeaturedStoryGridPro
               story={story}
               layout="vertical"
               headingLevel={headingLevel}
-              headingVisualSize={story.featured ? 2 : undefined}
+              // Regular tiles sit in a 1-of-3 column (~280px at lg): StoryCard's default
+              // visual size 4 sets one word per line there, so step down to 5. The featured
+              // card spans 2 columns and can carry the bigger size.
+              headingVisualSize={story.featured ? 3 : 5}
               imageAspectRatio={story.featured ? "16/9" : undefined}
               className={cn(story.featured && "sm:col-span-2")}
             />

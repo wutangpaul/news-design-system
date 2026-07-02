@@ -111,7 +111,7 @@ export const SocialEmbed = forwardRef<HTMLElement, SocialEmbedProps>(
 
         <Card.Footer className="items-center gap-3">
           {timestamp ? (
-            <Text as="span" size="caption" color="tertiary">
+            <Text as="span" size="caption" color="tertiary" className="font-mono">
               {timestamp}
             </Text>
           ) : null}

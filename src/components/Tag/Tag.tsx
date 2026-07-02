@@ -24,7 +24,11 @@ const tagVariants = cva(
     variants: {
       tone: {
         neutral: "border-surface-border bg-surface-raised text-text-secondary",
-        brand: "border-masthead-200 bg-masthead-50 text-masthead-700",
+        // Brand tone themes explicitly (raw masthead-* utilities don't flip with the theme):
+        // without the dark: variants, the pale masthead-50 chip is the brightest element on a
+        // dark page.
+        brand:
+          "border-masthead-200 bg-masthead-50 text-masthead-700 dark:border-masthead-800 dark:bg-masthead-950 dark:text-masthead-300",
       },
       selected: {
         true: "border-masthead-500 bg-masthead-500 text-text-on-brand",

@@ -116,7 +116,7 @@ export const RankedList = forwardRef<HTMLElement, RankedListProps>(
                     )}
                   </Heading>
                   {hasMeta ? (
-                    <div className="flex flex-wrap items-center gap-x-2 text-caption text-text-tertiary">
+                    <div className="flex flex-wrap items-center gap-x-2 font-mono text-caption text-text-tertiary">
                       {item.byline ? <span>{item.byline}</span> : null}
                       {item.byline && item.timestamp ? (
                         <span aria-hidden="true">&middot;</span>

@@ -102,11 +102,18 @@ export const Byline = forwardRef<HTMLDivElement, BylineProps>(
             <Fragment key={index}>{node}</Fragment>
           ))}
           <span aria-hidden="true"> · </span>
-          <time dateTime={toISOString(publishedAt)}>{formatDate(publishedAt, locale)}</time>
+          {/* Dates take the mono face (names stay sans): labels are prose, values are data —
+              see CONTRIBUTING's "Metadata typography" convention. */}
+          <time dateTime={toISOString(publishedAt)} className="font-mono text-caption">
+            {formatDate(publishedAt, locale)}
+          </time>
           {updatedAt && (
             <>
               <span aria-hidden="true"> · </span>
-              Updated <time dateTime={toISOString(updatedAt)}>{formatDate(updatedAt, locale)}</time>
+              Updated{" "}
+              <time dateTime={toISOString(updatedAt)} className="font-mono text-caption">
+                {formatDate(updatedAt, locale)}
+              </time>
             </>
           )}
         </span>

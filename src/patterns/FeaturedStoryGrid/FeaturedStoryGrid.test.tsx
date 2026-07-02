@@ -59,10 +59,11 @@ describe("FeaturedStoryGrid", () => {
     const featuredHeading = screen.getByRole("heading", {
       name: items[0]!.headline,
     });
-    // className with the grid-span utility lives on the Card root (the anchor's
-    // first child), not on the wrapping <a> itself — see StoryCard's markup.
-    const featuredCardRoot = featuredHeading.closest("a")?.firstElementChild;
-    expect(featuredCardRoot?.className).toContain("sm:col-span-2");
+    // The grid-span utility must land on the <a> wrapper itself: that anchor is the
+    // grid's direct child, so a span class on any nested element (like the Card inside
+    // it) has no layout effect.
+    const featuredGridItem = featuredHeading.closest("a");
+    expect(featuredGridItem?.className).toContain("sm:col-span-2");
   });
 
   it("does not span non-featured items", () => {
@@ -70,8 +71,8 @@ describe("FeaturedStoryGrid", () => {
     const secondHeading = screen.getByRole("heading", {
       name: items[1]!.headline,
     });
-    const secondCardRoot = secondHeading.closest("a")?.firstElementChild;
-    expect(secondCardRoot?.className).not.toContain("col-span-2");
+    const secondGridItem = secondHeading.closest("a");
+    expect(secondGridItem?.className).not.toContain("col-span-2");
   });
 
   it("renders links out to each story's href", () => {

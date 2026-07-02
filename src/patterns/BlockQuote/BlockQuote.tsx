@@ -31,7 +31,10 @@ export const BlockQuote = forwardRef<HTMLQuoteElement, BlockQuoteProps>(
         )}
         {...rest}
       >
-        <p className="font-serif text-lead italic text-text-primary">&ldquo;{quote}&rdquo;</p>
+        {/* Roman, never italic: Gloock ships no italic cut, so `italic` here would render a
+            browser-synthesized shear of the display face. The border rule, indent, and
+            quotation marks carry the "quoted" signal instead. */}
+        <p className="font-serif text-lead text-text-primary">&ldquo;{quote}&rdquo;</p>
         {attribution ? (
           <footer className="mt-3">
             <cite className="font-sans text-small not-italic text-text-secondary">

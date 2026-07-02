@@ -63,7 +63,7 @@ export const Comment = forwardRef<HTMLLIElement, CommentProps>(
               <span className="text-small font-semibold text-text-primary">
                 {comment.author.name}
               </span>
-              <time dateTime={comment.timestamp} className="text-caption text-text-tertiary">
+              <time dateTime={comment.timestamp} className="font-mono text-caption text-text-tertiary">
                 {formatTimestamp(comment.timestamp)}
               </time>
             </div>

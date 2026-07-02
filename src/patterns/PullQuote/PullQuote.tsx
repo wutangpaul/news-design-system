@@ -36,7 +36,9 @@ export const PullQuote = forwardRef<HTMLDivElement, PullQuoteProps>(
         )}
         {...rest}
       >
-        <p className="text-h2 leading-tight text-text-primary">{quote}</p>
+        {/* h4, not h2: a pull quote is an accent within the reading flow — at h2 a
+            multi-line quote out-shouts the article's own headline. */}
+        <p className="text-h4 leading-tight text-text-primary">{quote}</p>
         {attribution ? (
           <p className="mt-4 font-sans text-body font-medium text-text-secondary">
             — {attribution}

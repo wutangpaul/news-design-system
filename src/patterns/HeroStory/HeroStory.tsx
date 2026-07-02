@@ -68,11 +68,15 @@ export const HeroStory = forwardRef<HTMLDivElement, HeroStoryProps>(
           light/dark theme toggle — the same "fixed-brand element" exception
           CONTRIBUTING documents for raw ink/masthead scale usage.
         */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/30 to-transparent"
-        />
-        <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 p-6 sm:p-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-ink-950/25" />
+        {/*
+          The scrim gradient is anchored to the text block (not the image) and stays at full
+          strength until the block's top padding, where it fades out — so however many lines
+          the headline wraps to, every line sits on a ≥85% dark backdrop even over a pure-white
+          image region. A viewport-wide inset-0 gradient can't guarantee that: its fade zone
+          lands wherever the image is tall, not wherever the text is.
+        */}
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 bg-gradient-to-t from-ink-950/85 via-ink-950/85 via-[calc(100%-4rem)] to-transparent p-6 pt-16 sm:p-8 sm:pt-20">
           {category ? (
             <Tag tone="brand" className="w-fit">
               {category}

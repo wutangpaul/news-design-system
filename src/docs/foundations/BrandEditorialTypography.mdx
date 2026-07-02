@@ -25,9 +25,10 @@ calm, not as a generic SaaS dashboard. Concretely that means:
   as a dense-paragraph reading face — it signals "this is the editorial voice," distinguishing
   headlines visually from interface chrome. It ships a single 400 weight; browsers synthesize
   bold for `Heading`'s `weight="bold"` default, which is an acceptable tradeoff for a display
-  face used at headline sizes. Whether Article Body (Phase 3, not yet built) also uses a serif
-  for body-length copy, or stays sans for readability at paragraph scale, is an open decision
-  for when that pattern is built — Gloock itself is not intended for dense body text.
+  face used at headline sizes. Article Body settled this for body copy: it reads in the sans
+  face — Gloock is not intended for dense paragraph text. One consequence of the single cut:
+  never set Gloock in `italic` — there is no italic to load, and the browser-synthesized shear
+  visibly distorts the letterforms (this is why `BlockQuote` is roman).
 - **Sans (`Inter`)** is reserved for UI — navigation, buttons, form labels, metadata chrome. The
   goal is that a reader can tell, just from the typeface, whether they're looking at *the
   story* or *the interface around the story*.

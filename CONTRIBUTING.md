@@ -31,6 +31,12 @@ import finished components from `src/components/*`.
   class. Use `ink-*`/`masthead-*` directly only for fixed-brand elements that shouldn't theme.
 - Use `class-variance-authority` (`cva`) for variant/size props, and `tailwind-merge` + `clsx`
   (via the `cn()` helper in `src/lib/cn.ts`) to let consumers override classes safely.
+- **Metadata typography**: timestamps, publish/updated dates, reading-time estimates,
+  live-blog ticks, and byline/timestamp meta rows render in the mono face (`font-mono`,
+  usually at `text-caption`). Labels around them stay sans ("Updated" is prose; the date is
+  data). This is the system's signature "data of record vs. editorial voice" distinction —
+  see Foundations/Brand & Editorial Typography. Author names in running article context
+  (e.g. `Byline`'s linked names) stay sans.
 
 ## Component API
 

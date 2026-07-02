@@ -71,7 +71,7 @@ describe("Button", () => {
       </Button>,
     );
     const button = screen.getByRole("button", { name: "Delete" });
-    expect(button.className).toContain("bg-error-500");
+    expect(button.className).toContain("border-error-500");
     expect(button.className).toContain("h-12");
   });
 

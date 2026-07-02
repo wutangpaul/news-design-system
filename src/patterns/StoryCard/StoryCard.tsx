@@ -179,7 +179,10 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
         className={cn(
           "h-full overflow-hidden",
           layout === "horizontal" ? "flex flex-row items-stretch gap-4" : "flex flex-col",
-          className,
+          // When href is set the <a> wrapper below is the card's root element (and, in a
+          // grid, the grid item) — className must land there or layout utilities passed by
+          // composing patterns (e.g. FeaturedStoryGrid's col-span) silently do nothing.
+          !href && className,
         )}
         {...rest}
       >
@@ -204,12 +207,10 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
               {category}
             </Tag>
           ) : null}
-          <Heading
-            level={headingLevel}
-            visualSize={visualSize}
-            weight="bold"
-            className="line-clamp-3"
-          >
+          {/* The headline is never clamped: an ellipsized headline is an editorial failure
+              (the headline IS the product). Length is managed by sizing (headingVisualSize)
+              and by the dek clamp below, not by truncating the one thing readers scan. */}
+          <Heading level={headingLevel} visualSize={visualSize} weight="bold">
             {headline}
           </Heading>
           {dek ? (
@@ -217,8 +218,10 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
               {dek}
             </Text>
           ) : null}
+          {/* font-mono: byline/timestamp strips are "data of record" and render in the mono
+              face system-wide — see CONTRIBUTING's "Metadata typography" convention. */}
           {hasMeta ? (
-            <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-text-tertiary">
+            <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-caption text-text-tertiary">
               {byline ? <span>{byline}</span> : null}
               {byline && timestamp ? (
                 <span aria-hidden="true">&middot;</span>
@@ -240,7 +243,7 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
       <a
         ref={ref as Ref<HTMLAnchorElement>}
         href={href}
-        className="block h-full rounded-lg focus-visible:outline-none"
+        className={cn("block h-full rounded-lg focus-visible:outline-none", className)}
       >
         {cardContent}
       </a>

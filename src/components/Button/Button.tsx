@@ -15,7 +15,12 @@ const buttonVariants = cva(
         secondary:
           "border border-surface-border-strong bg-surface-raised text-text-primary hover:bg-surface-sunken active:bg-surface-sunken",
         ghost: "bg-transparent text-text-primary hover:bg-surface-raised active:bg-surface-sunken",
-        destructive: "bg-error-500 text-text-on-brand hover:bg-error-700 active:bg-error-700",
+        // Outlined rather than filled: the brand accent (masthead red) and the error family
+        // are near-identical hues, so a filled destructive button reads as a primary CTA.
+        // The outline is the shape signal that separates "dangerous" from "brand" — it only
+        // fills red at the moment of committed intent (hover/active).
+        destructive:
+          "border border-error-500 bg-transparent text-error-700 hover:bg-error-500 hover:text-ink-0 active:bg-error-700 active:text-ink-0 dark:text-error-400 dark:hover:text-ink-0 dark:active:text-ink-0",
       },
       // NOTE: font-size classes (text-small/text-body/text-lead) are intentionally kept
       // out of this variant group — see the `fontSizeBySize` map below for why.

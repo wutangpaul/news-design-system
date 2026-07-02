@@ -17,7 +17,10 @@ with forms, dialogs, and other native APIs.
 - **primary** — masthead brand color, used for the one primary action on a screen.
 - **secondary** — bordered, neutral surface; for secondary actions alongside a primary.
 - **ghost** — no fill/border until hovered; for low-emphasis actions (toolbar, inline).
-- **destructive** — for irreversible/destructive actions (delete, unsubscribe).
+- **destructive** — for irreversible/destructive actions (delete, unsubscribe). Outlined
+  rather than filled: the brand accent and the error red are near-identical hues, so shape —
+  not color — is what separates a dangerous action from a primary CTA. It fills red on
+  hover/active, at the moment of committed intent.
 
 <Canvas of={ButtonStories.Variants} />
 

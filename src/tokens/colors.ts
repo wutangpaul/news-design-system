@@ -35,7 +35,9 @@ export const masthead = {
 export const semantic = {
   success: { 50: "#f0fdf4", 500: "#16a34a", 700: "#15803d" },
   warning: { 50: "#fffbeb", 500: "#d97706", 700: "#b45309" },
-  error: { 50: "#fef2f2", 500: "#dc2626", 700: "#b91c1c" },
+  // error carries an extra 400 step: it's the only semantic family used as *text on a dark
+  // surface* (Button's outlined destructive variant), and 500 falls short of AA there.
+  error: { 50: "#fef2f2", 400: "#f87171", 500: "#dc2626", 700: "#b91c1c" },
   info: { 50: "#eff6ff", 500: "#2563eb", 700: "#1d4ed8" },
 } as const;
 

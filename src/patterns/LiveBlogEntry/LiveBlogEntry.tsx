@@ -64,7 +64,7 @@ export const LiveBlogEntry = forwardRef<HTMLElement, LiveBlogEntryProps>(
         {...rest}
       >
         <div className="flex flex-wrap items-center gap-2">
-          <time dateTime={timestamp} className="text-caption font-medium text-text-tertiary">
+          <time dateTime={timestamp} className="font-mono text-caption font-medium text-text-tertiary">
             {formatTimestamp(timestamp)}
           </time>
           {label && (

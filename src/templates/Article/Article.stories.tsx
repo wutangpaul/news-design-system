@@ -176,10 +176,6 @@ export const Default: Story = {
           build-out. &ldquo;Now we&apos;re planning for a climate that didn&apos;t really exist
           when most of this equipment was installed. The margin for error is gone.&rdquo;
         </p>
-        <PullQuote
-          quote="We used to plan for a hundred-year storm. Now we're planning for a climate that didn't really exist when most of this equipment was installed."
-          attribution="Renata Cole, grid reliability engineer"
-        />
         <p>
           Not everyone is convinced the spending is being directed where it will matter most.
           Consumer advocates argue that some of the largest line items — new substations sited
@@ -190,6 +186,10 @@ export const Default: Story = {
         <BlockQuote
           quote="Ratepayers are footing the bill for a build-out that is substantially about serving new commercial load, not keeping the lights on in people's homes during a heat wave. Those are related problems, but they are not the same problem, and the difference matters for who pays."
           attribution="Denise Okafor, state utility consumer advocate"
+        />
+        <PullQuote
+          quote="The margin for error is gone."
+          attribution="Renata Cole, grid reliability engineer"
         />
         <p>
           Utilities counter that the two problems are, in practice, inseparable: hardening

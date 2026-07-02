@@ -52,7 +52,7 @@ export const ReadingTime = forwardRef<HTMLElement, ReadingTimeProps>(
         as="span"
         size={size}
         color={color}
-        className={cn("inline-block", className)}
+        className={cn("inline-block font-mono", className)}
         {...rest}
       >
         {resolvedMinutes} min read

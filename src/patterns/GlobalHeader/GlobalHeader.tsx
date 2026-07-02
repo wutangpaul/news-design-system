@@ -40,8 +40,10 @@ export const GlobalHeader = forwardRef<HTMLElement, GlobalHeaderProps>(
         )}
         {...rest}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex shrink-0 items-center font-serif text-h5 font-bold text-text-primary">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
+          {/* min-w-0 + truncate: the wordmark yields and ellipsizes before the actions cluster
+              (search/CTA) can be pushed off-screen on narrow viewports */}
+          <div className="min-w-0 shrink truncate font-serif text-h6 font-bold text-text-primary sm:text-h5">
             {logo}
           </div>
 
