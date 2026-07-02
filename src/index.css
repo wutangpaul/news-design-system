@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/*
+ * v4 compatibility shim: keep the existing tailwind.config.ts (all of src/tokens/*) as the
+ * source of truth for now rather than a wholesale rewrite into a CSS `@theme` block. Tracked
+ * as a follow-up — see CONTRIBUTING.md.
+ */
+@config "../tailwind.config.ts";
+
+/*
+ * v4 no longer derives the `dark:` variant from the JS config's `darkMode` option (that key is
+ * silently ignored under `@config` compat) — it must be declared here explicitly to keep
+ * matching our class-based strategy (`.dark` on a parent, not a media query).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * Theme variables — RGB channel triples (no `rgb()` wrapper) so Tailwind's

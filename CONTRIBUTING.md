@@ -20,6 +20,21 @@ src/components/Button/
 Patterns (Phase 3) live under `src/patterns/<PatternName>/` with the same shape, and may
 import finished components from `src/components/*`.
 
+## Tailwind v4 config — currently in compatibility mode
+
+The project runs on Tailwind v4, but `tailwind.config.ts` (all of `src/tokens/*`) is still
+loaded as-is via the `@config "../tailwind.config.ts";` compatibility directive in
+`src/index.css`, rather than being rewritten as a native v4 `@theme` CSS block. This was a
+deliberate choice to de-risk the v4 engine upgrade (Lightning CSS, faster builds) from a much
+larger, separate effort: porting the whole token system (colors, the fontSize scale's
+line-height/letter-spacing pairs, spacing, radius, shadow, motion, breakpoints, z-index) into
+CSS custom properties. Do not remove the `@config` line without doing that port first — until
+then, `tailwind.config.ts` is still the real source of truth and should be edited normally.
+One thing that *did* need updating for v4 regardless of the compat shim: the `dark:` variant
+is no longer derived from the JS config's `darkMode` option, so it's declared explicitly via
+`@custom-variant dark (&:where(.dark, .dark *));` in `src/index.css` — keep that in sync with
+`tailwind.config.ts`'s `darkMode: "class"` if either ever changes.
+
 ## Styling
 
 - Tailwind utility classes only — no inline styles, no raw hex values. Every color/spacing/
