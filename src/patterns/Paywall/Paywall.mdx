@@ -1,0 +1,94 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as PaywallStories from "./Paywall.stories";
+
+<Meta of={PaywallStories} />
+
+# Paywall
+
+A soft-paywall / subscription-upsell overlay for gating article content. Composes
+`Card` (the upsell CTA container), `Heading`/`Text` (copy), `Button` (primary CTA), and
+`Link` (secondary sign-in link) — it doesn't reimplement any of their markup.
+
+<Canvas of={PaywallStories.Unlocked} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Paywall } from "@/patterns/Paywall";
+
+<Paywall
+  locked={!currentUser?.hasActiveSubscription}
+  onCtaClick={() => router.push("/subscribe")}
+  signInHref="/sign-in"
+>
+  <ArticleBody content={article.body} />
+</Paywall>
+```
+
+`Paywall` has no real entitlement or auth logic — `locked` is a plain boolean the
+surrounding app sets from the result of its own subscription check. Everything about
+what happens next (where the subscribe CTA sends the reader, what a sign-in link points
+to) is supplied by the consumer through props; this pattern only knows how to render the
+gate and call back out.
+
+<Canvas of={PaywallStories.Locked} />
+
+## When content is locked
+
+Setting `locked` visually clamps `children` to `previewHeightClassName` (default
+`max-h-72`), fades the last portion of the visible preview with a gradient, and overlaps
+an upsell `Card` on top of the fade with a heading, description, primary `Button` CTA,
+and an optional secondary "already a subscriber" `Link`.
+
+Customize the copy per placement:
+
+<Canvas of={PaywallStories.CustomCopy} />
+
+A locked/unlocked toggle to see the transition (e.g. after a reader signs in):
+
+<Canvas of={PaywallStories.Interactive} />
+
+## Content stays in the DOM
+
+`children` is always rendered — locking only changes its visual presentation
+(`max-height` + `overflow-hidden` + a gradient fade), never its presence. A real soft
+paywall still ships the full article in the response so search engine crawlers can index
+it; this pattern follows that same convention rather than conditionally rendering
+`children` at all.
+
+## Accessibility
+
+- The upsell heading and description are real `Heading`/`Text` elements, and the
+  primary CTA is a real `Button` — all fully keyboard operable with visible focus
+  indicators inherited from those components.
+- **The clamped content region is given `aria-hidden="true"` while `locked`, even
+  though it's still visually present in the DOM (just faded/clipped).** This is a
+  deliberate trade-off, not an oversight: `overflow-hidden` alone does not remove
+  content from the accessibility tree, so without `aria-hidden` a screen reader would
+  read out the *entire* gated article to a locked-out reader — a strictly better
+  experience than what a sighted reader gets (a few paragraphs fading into a CTA card),
+  and effectively a screen-reader-only bypass of the paywall. `aria-hidden` closes that
+  gap so both audiences hit the same subscribe prompt at the same point. The trade-off
+  is that a screen reader user also loses the handful of lines a sighted reader can
+  still read before the fade starts (since we have no reliable way to know, from a
+  single `children` blob, exactly which portion is "above the fold" of the visual
+  clamp) — in practice that first fragment is usually a partial sentence anyway, so we
+  judged consistent, predictable behavior across both audiences to be the better
+  default. If your content naturally splits into a short teaser and a "rest of article"
+  chunk, consider passing only the teaser as visible, unhidden content ahead of a
+  `Paywall` instance that wraps just the remainder.
+- The gradient fade itself is a purely decorative `aria-hidden="true"` div with
+  `pointer-events-none` — it never intercepts clicks meant for the CTA card above it.
+- Color/fade is never the only signal that content is gated — the upsell card's
+  heading and body copy always explain *why* the article stopped and what to do next.
+
+## Don'ts
+
+- Don't rely on `Paywall` for actual access control — it's presentational only. Gate the
+  real article data server-side (or behind your own auth check) the same way you always
+  would; this pattern just renders the reader-facing UI around that decision.
+- Don't nest a `Paywall` inside another `Paywall` — one gate per content region.
+- Don't omit `onCtaClick` in real usage — with no handler, the subscribe button is
+  inert.

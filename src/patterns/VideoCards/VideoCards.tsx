@@ -4,6 +4,7 @@ import { Card } from "@/components/Card";
 import { Image } from "@/components/Image";
 import { Heading } from "@/components/Heading";
 import { Badge } from "@/components/Badge";
+import { Play } from "@/components/Icon";
 
 /** A single video's summary data. */
 export interface VideoCardItem {
@@ -29,13 +30,17 @@ export interface VideoCardsProps extends Omit<HTMLAttributes<HTMLElement>, "titl
 }
 
 /**
- * Decorative play-button glyph overlaid on a video thumbnail. Purely visual —
+ * Decorative play-button badge overlaid on a video thumbnail. Purely visual —
  * the whole card is the single clickable/focusable unit (the surrounding
  * `<a>`), so this never renders as its own `<button>` or picks up its own
  * interaction handlers. Marked `aria-hidden` for the same reason `Tag`'s
  * interactive+removable variant keeps its label and remove controls as
  * separate real elements rather than nesting one interactive control inside
  * another: a card should have exactly one interactive element, not two.
+ *
+ * The triangle glyph itself is the shared `Play` icon (`@/components/Icon`);
+ * only the circular badge/hover-scale chrome around it is local, since that
+ * styling is specific to this card's thumbnail overlay rather than the icon.
  */
 function PlayGlyph() {
   return (
@@ -44,9 +49,7 @@ function PlayGlyph() {
       className="absolute inset-0 flex items-center justify-center"
     >
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink-950/60 text-ink-0 transition-transform duration-fast group-hover:scale-110">
-        <svg viewBox="0 0 24 24" className="h-5 w-5 translate-x-0.5" fill="currentColor">
-          <path d="M8 5v14l11-7z" />
-        </svg>
+        <Play size="md" className="translate-x-0.5" />
       </span>
     </span>
   );

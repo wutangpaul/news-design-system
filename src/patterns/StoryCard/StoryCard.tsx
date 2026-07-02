@@ -5,6 +5,7 @@ import { Image, type ImageAspectRatio } from "@/components/Image";
 import { Heading, type HeadingProps } from "@/components/Heading";
 import { Text } from "@/components/Text";
 import { Tag } from "@/components/Tag";
+import { Skeleton } from "@/components/Skeleton";
 
 /** Visual arrangement of the thumbnail relative to the text content. */
 export type StoryCardLayout = "vertical" | "horizontal";
@@ -37,8 +38,11 @@ export interface StoryCardContent {
 }
 
 export interface StoryCardProps extends Omit<HTMLAttributes<HTMLElement>, "id"> {
-  /** The story summary content to render. */
-  story: StoryCardContent;
+  /**
+   * The story summary content to render. Required unless `loading` is `true` — a loading
+   * card has no real content yet, so `story` may be omitted entirely in that case.
+   */
+  story?: StoryCardContent;
   /**
    * `"vertical"` stacks the thumbnail above the text (grid/section-front
    * tiles); `"horizontal"` places it beside the text (compact lists/rails).
@@ -61,6 +65,13 @@ export interface StoryCardProps extends Omit<HTMLAttributes<HTMLElement>, "id"> 
   headingVisualSize?: HeadingProps["visualSize"];
   /** Aspect ratio crop applied to the thumbnail. Defaults to a sensible ratio per `layout`. */
   imageAspectRatio?: ImageAspectRatio;
+  /**
+   * When `true`, renders a loading placeholder built from `Skeleton` — matching this
+   * card's own image/headline/dek/meta areas for the chosen `layout` — instead of
+   * `story`'s real content. `story` is ignored (and may be omitted) while `loading` is set.
+   * @default false
+   */
+  loading?: boolean;
 }
 
 const DEFAULT_VISUAL_SIZE: Record<StoryCardLayout, HeadingProps["visualSize"]> = {
@@ -71,6 +82,18 @@ const DEFAULT_VISUAL_SIZE: Record<StoryCardLayout, HeadingProps["visualSize"]> =
 const DEFAULT_ASPECT_RATIO: Record<StoryCardLayout, ImageAspectRatio> = {
   vertical: "3/2",
   horizontal: "1/1",
+};
+
+// Mirrors `Image`'s own static aspect-ratio class map (see its comment for why these are
+// spelled out rather than built dynamically) so the loading skeleton's image placeholder
+// takes up the same box the real thumbnail will occupy once it loads.
+const ASPECT_RATIO_SKELETON_CLASSES: Record<ImageAspectRatio, string> = {
+  "16/9": "aspect-[16/9]",
+  "4/3": "aspect-[4/3]",
+  "3/2": "aspect-[3/2]",
+  "1/1": "aspect-[1/1]",
+  "9/16": "aspect-[9/16]",
+  "21/9": "aspect-[21/9]",
 };
 
 /**
@@ -91,11 +114,47 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
       headingLevel = 3,
       headingVisualSize,
       imageAspectRatio,
+      loading = false,
       className,
       ...rest
     },
     ref,
   ) => {
+    const resolvedAspectRatio = imageAspectRatio ?? DEFAULT_ASPECT_RATIO[layout];
+
+    if (loading) {
+      return (
+        <Card
+          ref={ref}
+          variant="outlined"
+          padding={layout === "horizontal" ? "compact" : "comfortable"}
+          aria-hidden="true"
+          className={cn(
+            "h-full overflow-hidden",
+            layout === "horizontal" ? "flex flex-row items-stretch gap-4" : "flex flex-col",
+            className,
+          )}
+          {...rest}
+        >
+          <div className={cn("shrink-0", layout === "horizontal" ? "w-24 sm:w-32" : "w-full")}>
+            <Skeleton
+              shape="rect"
+              className={cn("h-auto w-full rounded-md", ASPECT_RATIO_SKELETON_CLASSES[resolvedAspectRatio])}
+            />
+          </div>
+          <Card.Body className="min-w-0 flex-1 gap-2">
+            <Skeleton shape="text" className="h-4 w-16" />
+            <Skeleton shape="text" className="h-5 w-full" />
+            <Skeleton shape="text" className="h-5 w-2/3" />
+            <Skeleton shape="text" className={cn("h-4 w-full", layout === "horizontal" && "hidden sm:block")} />
+            <div className="mt-auto flex items-center gap-2 pt-1">
+              <Skeleton shape="text" className="h-3 w-24" />
+            </div>
+          </Card.Body>
+        </Card>
+      );
+    }
+
     const {
       headline,
       href,
@@ -106,10 +165,9 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
       byline,
       timestamp,
       timestampDateTime,
-    } = story;
+    } = story!;
 
     const visualSize = headingVisualSize ?? DEFAULT_VISUAL_SIZE[layout];
-    const resolvedAspectRatio = imageAspectRatio ?? DEFAULT_ASPECT_RATIO[layout];
     const hasMeta = Boolean(byline || timestamp);
 
     const cardContent = (

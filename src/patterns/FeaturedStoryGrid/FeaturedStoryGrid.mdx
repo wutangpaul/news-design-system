@@ -54,6 +54,31 @@ the grid, since Story Card fills its grid cell's height and pins its byline row 
 see Story Card's own "Semantic level vs. visual size" section for why visual prominence and
 document-outline level are kept independent.
 
+## Loading state
+
+Pass `loading` while the real stories for this grid haven't arrived yet — `stories` becomes
+optional in this mode (and is ignored if also passed), since there's nothing real to show:
+
+```tsx
+<FeaturedStoryGrid loading />
+<FeaturedStoryGrid loading loadingCount={3} />
+```
+
+<Canvas of={FeaturedStoryGridStories.Loading} />
+
+Each placeholder tile is a [Story Card](?path=/docs/patterns-content-discovery-story-card--docs)
+rendered with its own `loading` prop — see Story Card's MDX for what the placeholder shape looks
+like. `loadingCount` (default `6`) controls how many are rendered; none of them span 2 columns
+the way a real `featured` item would, since which item (if any) will end up featured isn't known
+before the real data arrives:
+
+<Canvas of={FeaturedStoryGridStories.LoadingCustomCount} />
+
+Unlike a standalone loading `StoryCard` (which is `aria-hidden` and expects its caller to
+announce it — see Story Card's own MDX), the grid itself takes care of this for its whole group:
+while `loading` is set, the grid's root element gets `role="status"` / `aria-live="polite"` and
+a single visually-hidden "Loading stories…" announcement, rather than one announcement per card.
+
 <Controls />
 
 ## Accessibility
@@ -62,4 +87,6 @@ document-outline level are kept independent.
   `href`); the grid itself adds no additional interactive semantics.
 - Because every card shares one heading level, screen-reader users navigating by heading get a
   flat, correctly-ordered list of story headlines regardless of visual size differences.
-- Storybook's a11y addon reports no violations on the default story.
+- While `loading`, the grid announces once via `role="status"`/`aria-live="polite"` instead of
+  once per placeholder card — see "Loading state" above.
+- Storybook's a11y addon reports no violations on the default story or the loading story.

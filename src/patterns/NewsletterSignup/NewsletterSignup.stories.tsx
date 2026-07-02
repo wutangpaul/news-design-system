@@ -69,6 +69,28 @@ export const Success: Story = {
   ),
 };
 
+export const Inline: Story = {
+  name: "Inline (compact, for mid-article/sidebar)",
+  render: () => (
+    <div className="max-w-xl">
+      <NewsletterSignup variant="inline" onSubmit={() => {}} />
+    </div>
+  ),
+};
+
+export const InlineInSidebar: Story = {
+  name: "Inline in a narrow sidebar",
+  render: () => (
+    <div className="max-w-[280px] rounded-lg border border-surface-border p-4">
+      <NewsletterSignup
+        variant="inline"
+        heading="Get the briefing"
+        onSubmit={() => {}}
+      />
+    </div>
+  ),
+};
+
 export const Interactive: Story = {
   name: "Interactive (simulated async submit)",
   render: function InteractiveStory() {

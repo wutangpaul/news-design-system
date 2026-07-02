@@ -4,7 +4,7 @@ import { GlobalHeader, type GlobalHeaderProps } from "@/patterns/GlobalHeader";
 import { Footer, type FooterProps } from "@/patterns/Footer";
 import { Heading } from "@/components/Heading";
 import { Text } from "@/components/Text";
-import { Search as SearchIcon } from "@/components/Icon";
+import { EmptyState } from "@/components/EmptyState";
 
 export interface SearchResultsProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
   /**
@@ -48,20 +48,17 @@ export interface SearchResultsProps extends Omit<HTMLAttributes<HTMLDivElement>,
 
 function DefaultEmptyState({ query }: { query: string }) {
   return (
-    <div
+    <EmptyState
       role="status"
-      className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-surface-border bg-surface-sunken px-6 py-16 text-center"
-    >
-      <SearchIcon size="lg" className="text-text-tertiary" />
-      <Heading level={2} visualSize={5}>
-        No results found
-      </Heading>
-      <Text size="body" color="secondary" className="max-w-md">
-        {query
+      className="bg-surface-sunken"
+      iconVariant="search"
+      heading="No results found"
+      description={
+        query
           ? `We couldn't find any stories matching "${query}". Try different or fewer keywords.`
-          : "Try searching for a topic, story, or author."}
-      </Text>
-    </div>
+          : "Try searching for a topic, story, or author."
+      }
+    />
   );
 }
 

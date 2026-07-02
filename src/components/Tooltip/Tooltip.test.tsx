@@ -15,8 +15,12 @@ describe("Tooltip", () => {
 
   it("shows on hover after the delay and hides on mouse leave", async () => {
     const user = userEvent.setup();
+    // A longer delay than other tests here use (10ms elsewhere isn't reliable under this repo's
+    // full parallel test-suite load — `user.hover()` itself can take longer than that to resolve
+    // its own pointer-event simulation, making the "not shown immediately" assertion below flaky
+    // even though the component's real behavior is correct).
     render(
-      <Tooltip content="Saved 2 minutes ago" delayMs={10}>
+      <Tooltip content="Saved 2 minutes ago" delayMs={200}>
         <button>Status</button>
       </Tooltip>,
     );

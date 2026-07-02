@@ -1,0 +1,104 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TopicLandingStories from "./TopicLanding.stories";
+
+<Meta of={TopicLandingStories} />
+
+# Topic Landing
+
+A page for a specific ongoing topic/theme — think "2026 Midterms: Full Coverage" — rather
+than a permanent site section. Fixed `GlobalHeader`/`Footer` chrome, a plain-text `topicName`
+heading with an optional description, an optional "follow this topic" action, and a single
+`content` slot for whatever curated coverage that topic needs.
+
+<Canvas of={TopicLandingStories.Default} />
+
+## The slot contract
+
+```tsx
+interface TopicLandingProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  topicName: string;
+  description?: ReactNode;
+  content: ReactNode;
+  onFollowTopic?: () => void;
+  isFollowing?: boolean;
+  followLabel?: string;
+  followingLabel?: string;
+  mainId?: string;
+}
+```
+
+- **`topicName`** — the topic's display name (`"2026 Midterms: Full Coverage"`,
+  `"Understanding Interest Rates"`), rendered as the page's own `<h1>`. Same reasoning as
+  `CategoryLanding`'s `categoryName`: it's plain text with no behavior of its own, so it's a
+  plain `string` prop rather than a `ReactNode` slot.
+- **`description`** — an optional supporting sentence shown under the heading. Also plain
+  content, accepted as `ReactNode` only so callers can include inline formatting.
+- **`content`** — the topic page's main content slot. The `Default` story below passes a real
+  [Topic Collections](?path=/docs/patterns-content-discovery-topic-collections--docs)
+  instance with several sample articles, but the prop itself stays a generic `ReactNode` —
+  this template has no opinion on what fills it, matching the templates-are-content-agnostic
+  convention. A future page could pass a plain list, a `FeaturedStoryGrid`, or several
+  `TopicCollections` stacked for sub-themes within the topic.
+- **`onFollowTopic`** / **`isFollowing`** / **`followLabel`** / **`followingLabel`** — an
+  optional "follow this topic" action. See below for why it exists on this template and not
+  `CategoryLanding`.
+
+## Why `TopicLanding` differs from `CategoryLanding`
+
+`CategoryLanding` is for a permanent, always-there part of the site's structure — "Politics"
+is a section a reader can already reach from primary navigation every time they visit, and it
+never really "ends." A topic like "2026 Midterms: Full Coverage" is different: it tracks a
+subject that's actively unfolding over a bounded (if sometimes long) stretch of time, isn't
+necessarily in primary navigation, and eventually stops accumulating new coverage once the
+subject itself is over. That distinction is why this template adds the optional follow
+action `CategoryLanding` has no equivalent for — a reader is far more likely to want proactive
+updates ("tell me when there's new midterms coverage") for a moment-in-time topic than for a
+section they already habitually check.
+
+The follow action is entirely optional, though — some topic pages (a standing explainer hub,
+for instance) don't need it, so the button only renders when `onFollowTopic` is provided:
+
+<Canvas of={TopicLandingStories.WithoutFollowAction} />
+
+<Controls />
+
+## Follow action: a template-owned `Button`, not a slot
+
+Unlike `content`, the follow action is deliberately *not* a `ReactNode` slot. It's simple
+enough — a single toggle button reflecting one boolean — that typing it as a `ReactNode` slot
+would just push every consumer to reimplement the same `Button` + `aria-pressed` wiring
+themselves. Instead, `TopicLanding` renders the `Button` directly and takes the toggle state
+and callback as plain props, the same pattern `Account` uses for its sign-out action: the
+template owns the interactive chrome, the consumer owns what "following" actually does
+(persisting a preference, subscribing to a notification channel, etc.) via `onFollowTopic`.
+
+## Do
+
+- Pass a real `TopicCollections` (or equivalent) into `content` — this template supplies the
+  page's chrome and heading, not the coverage itself.
+- Omit `onFollowTopic` for topics where following genuinely doesn't make sense, rather than
+  wiring it to a no-op — the button's presence is itself a promise to the reader that
+  something happens when they press it.
+
+## Don't
+
+- Don't use `TopicLanding` for a permanent site section — that's `CategoryLanding`. Reach for
+  this template specifically when the page is about a subject that persists across many
+  publish dates but isn't a fixed part of site navigation.
+- Don't put per-story chrome (bylines, timestamps) inside `topicName`/`description` — those
+  belong inside whatever pattern fills `content`.
+
+## Accessibility
+
+- A visually-hidden "Skip to main content" link is the first focusable element, targeting
+  the `<main id={mainId}>` landmark (`mainId` defaults to `"main-content"`).
+- `GlobalHeader`/`Footer` render as the page's `banner`/`contentinfo` landmarks.
+- `content` is wrapped in a `section` labelled with the current `topicName` (e.g. `"Coverage
+  of 2026 Midterms: Full Coverage"`), so screen-reader users navigating by landmark get a
+  topic-specific label instead of a generic one.
+- The follow action uses `aria-pressed` to expose its toggle state, following the WAI-ARIA
+  Authoring Practices Guide's button pattern for a two-state toggle — its label also changes
+  visibly (`"Follow this topic"` → `"Following"`), so state is never communicated by color or
+  icon alone.

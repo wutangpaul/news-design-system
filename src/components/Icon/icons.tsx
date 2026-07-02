@@ -146,3 +146,63 @@ export const ExternalLink = forwardRef<SVGSVGElement, NamedIconProps>((props, re
   </Icon>
 ));
 ExternalLink.displayName = "ExternalLink";
+
+export const Calendar = forwardRef<SVGSVGElement, NamedIconProps>((props, ref) => (
+  <Icon ref={ref} {...props}>
+    <rect x={4} y={5} width={16} height={15} rx={2} stroke="currentColor" strokeWidth={2} />
+    <path d="M4 9.5h16" stroke="currentColor" strokeWidth={2} />
+    <path d="M8 3v3.5M16 3v3.5" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+  </Icon>
+));
+Calendar.displayName = "Calendar";
+
+export const Compass = forwardRef<SVGSVGElement, NamedIconProps>((props, ref) => (
+  <Icon ref={ref} {...props}>
+    <circle cx={12} cy={12} r={9} stroke="currentColor" strokeWidth={2} />
+    <path
+      d="M15 9l-2 5-5 2 2-5 5-2Z"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinejoin="round"
+    />
+  </Icon>
+));
+Compass.displayName = "Compass";
+
+export const Server = forwardRef<SVGSVGElement, NamedIconProps>((props, ref) => (
+  <Icon ref={ref} {...props}>
+    <rect x={4} y={4} width={16} height={7} rx={1.5} stroke="currentColor" strokeWidth={2} />
+    <rect x={4} y={14} width={16} height={7} rx={1.5} stroke="currentColor" strokeWidth={2} />
+    <circle cx={8} cy={7.5} r={1} fill="currentColor" />
+    <circle cx={8} cy={17.5} r={1} fill="currentColor" />
+    <path d="M13 7.5h4M13 17.5h4" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+  </Icon>
+));
+Server.displayName = "Server";
+
+export const WifiOff = forwardRef<SVGSVGElement, NamedIconProps>((props, ref) => (
+  <Icon ref={ref} {...props}>
+    <path d="M6 10a8.5 8.5 0 0112 0" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+    <path
+      d="M8.5 13a5 5 0 017 0"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
+    <path
+      d="M11 16a1.6 1.6 0 012 0"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+    />
+    <path d="M4 4l16 16" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
+  </Icon>
+));
+WifiOff.displayName = "WifiOff";
+
+export const Play = forwardRef<SVGSVGElement, NamedIconProps>((props, ref) => (
+  <Icon ref={ref} {...props}>
+    <path d="M8 5v14l11-7z" fill="currentColor" />
+  </Icon>
+));
+Play.displayName = "Play";

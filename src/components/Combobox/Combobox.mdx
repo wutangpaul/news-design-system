@@ -1,0 +1,93 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ComboboxStories from "./Combobox.stories";
+
+<Meta of={ComboboxStories} />
+
+# Combobox
+
+A typeahead/autocomplete text field: type to filter a list of `label`/`value` options, then pick
+one with the mouse or keyboard. Implements the [WAI-ARIA Authoring Practices Guide Combobox
+pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) — the "select-only" collapsible
+listbox variant, where keyboard focus stays on the text input the whole time and the highlighted
+option is tracked via `aria-activedescendant` rather than moving real DOM focus.
+
+<Canvas of={ComboboxStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { Combobox } from "@/components/Combobox";
+
+const SECTIONS = [
+  { label: "Politics", value: "politics" },
+  { label: "Business", value: "business" },
+  { label: "Technology", value: "technology" },
+];
+
+function SectionField() {
+  const [value, setValue] = useState<string | undefined>(undefined);
+  return (
+    <Combobox label="Section" options={SECTIONS} value={value} onChange={setValue} />
+  );
+}
+```
+
+- `options` is the full `{ label, value }[]` list. By default the component filters it itself
+  (case-insensitive substring match on `label`) as the user types.
+- `value`/`defaultValue`/`onChange` track the selected option's `value`, the same convention as
+  `Select`.
+- Pass `name` to also render a hidden mirror input carrying the selected value, so `Combobox`
+  participates in plain form submission (handy inside this design system's `Form`) without
+  requiring the consumer to wire up their own hidden field.
+
+### Driving filtering yourself (server-side search)
+
+`onInputChange` fires with the raw typed text on every keystroke, independent of the built-in
+filter. For a server-backed search: set `filterOptions={false}` (so the component trusts whatever
+`options` it's given instead of filtering again) and use `onInputChange` to trigger your fetch,
+then pass the results back in as `options`. See the "Server-driven filtering" story for a working
+example (it stands in the fetch with a synchronous filter, but the wiring is the same).
+
+## Keyboard interaction
+
+- **Typing**: filters the list (if `filterOptions` is enabled) and opens it.
+- **Arrow Down/Up**: opens the list if closed; otherwise moves the highlighted option down/up,
+  wrapping at the ends.
+- **Home/End**: jumps the highlight to the first/last visible option.
+- **Enter**: selects the highlighted option, closes the list, and fills the field with its label.
+- **Escape**: closes the list and reverts any unsubmitted typed text back to the currently
+  selected option's label (or clears it if nothing is selected).
+- Clicking an option selects it the same way Enter does. Clicking outside or tabbing away without
+  selecting reverts the typed text the same way Escape does.
+
+## Do
+
+- Always pass a `label` — it labels both the input (via `htmlFor`) and the popup listbox (via
+  `aria-labelledby`).
+- Keep `value` unique per option; it's used both for the controlled selection and to build stable
+  option element ids.
+
+## Don't
+
+- Don't use `Combobox` as a plain multi-select or tag input — it's a single-selection field that
+  always resolves to one `value`.
+- Don't forget to set `filterOptions={false}` when you hand it pre-filtered `options` — otherwise
+  the built-in substring filter runs a second time on top of your own and can hide results your
+  server already matched (e.g. a fuzzy/typo-tolerant match that doesn't contain the literal
+  query text).
+
+## Accessibility notes
+
+- The input is `role="combobox"` with `aria-expanded`, `aria-controls` (pointing at the
+  listbox), and `aria-autocomplete="list"`.
+- The popup is `role="listbox"`, labelled by the same element as the field's visible label.
+  Options are `role="option"` with `aria-selected` reflecting the current selection.
+- The highlighted option is communicated via `aria-activedescendant` on the input rather than by
+  moving DOM focus — screen readers announce the highlighted option while the user keeps typing.
+- When no option matches, a single disabled `role="option"` row announces that, rather than
+  leaving the listbox empty or breaking its required-children structure with non-option markup.

@@ -59,6 +59,41 @@ function Example() {
 }
 ```
 
+## Variants
+
+`variant` controls layout density; both variants share the exact same submission,
+`isLoading`, `errorText`, and `successMessage` logic described above — only the markup
+differs.
+
+- **`"default"`** (the original, unchanged treatment) — a full `Heading`, optional
+  supporting `description`, and a field/button row that stacks below `sm`. Use this for
+  landing pages and dedicated newsletter-signup sections, where there's room for
+  context about what the newsletter is.
+- **`"inline"`** — a compact single row: a short text label, the email field, and the
+  submit button, with no `description` (there's no room for it, and it isn't needed at
+  this size). Use this for embedding mid-article (e.g. between sections of a long
+  read) or in a sidebar module, where a full heading + description block would be too
+  heavy for the surrounding content.
+
+```tsx
+<NewsletterSignup
+  variant="inline"
+  heading="Get the daily briefing"
+  onSubmit={(email) => submitToApi(email)}
+/>
+```
+
+<Canvas of={NewsletterSignupStories.Inline} />
+<Canvas of={NewsletterSignupStories.InlineInSidebar} />
+
+Note that in the `"inline"` variant, `heading` renders as a compact text label next to
+the field rather than a semantic `Heading` element — the form's accessible name (via
+`aria-labelledby`) still points at it, so assistive tech gets the same "what is this
+form for" context either variant provides. The email field's visible `label` (used as
+`Input`'s `label` prop in `"default"`) becomes an `aria-label` in `"inline"` instead, to
+avoid a second, redundant line of copy in an already-compact row — it's still exposed
+as the field's accessible name, just not shown visually.
+
 ## States
 
 - **Loading** — pass `isLoading`. The submit `Button` shows its built-in spinner and

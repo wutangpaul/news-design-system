@@ -11,5 +11,10 @@ export {
   Bookmark,
   ArrowRight,
   ExternalLink,
+  Calendar,
+  Compass,
+  Server,
+  WifiOff,
+  Play,
 } from "./icons";
 export type { NamedIconProps } from "./icons";

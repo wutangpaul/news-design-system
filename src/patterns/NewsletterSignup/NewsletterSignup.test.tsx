@@ -80,3 +80,76 @@ describe("NewsletterSignup", () => {
     expect(results.violations).toEqual([]);
   });
 });
+
+describe("NewsletterSignup (inline variant)", () => {
+  it("renders a compact row with an accessible field and submit button", () => {
+    render(<NewsletterSignup variant="inline" onSubmit={() => {}} />);
+    expect(screen.getByLabelText(/Email address/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign up" })).toBeInTheDocument();
+  });
+
+  it("does not render the description copy, unlike the default variant", () => {
+    render(
+      <NewsletterSignup
+        variant="inline"
+        description="Top headlines, delivered every weekday morning."
+        onSubmit={() => {}}
+      />,
+    );
+    expect(
+      screen.queryByText("Top headlines, delivered every weekday morning."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("still exposes heading as the form's accessible name", () => {
+    render(<NewsletterSignup variant="inline" heading="Get the briefing" onSubmit={() => {}} />);
+    expect(screen.getByRole("form", { name: "Get the briefing" })).toBeInTheDocument();
+  });
+
+  it("calls onSubmit with the entered email when submitted", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<NewsletterSignup variant="inline" onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText(/Email address/), "reader@example.com");
+    await user.click(screen.getByRole("button", { name: "Sign up" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith("reader@example.com");
+  });
+
+  it("puts the button in a loading, disabled state while isLoading is true", () => {
+    render(<NewsletterSignup variant="inline" onSubmit={() => {}} isLoading />);
+    const button = screen.getByRole("button", { name: "Sign up" });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByLabelText(/Email address/)).toBeDisabled();
+  });
+
+  it("shows the errorText via Input's error contract", () => {
+    render(
+      <NewsletterSignup
+        variant="inline"
+        onSubmit={() => {}}
+        errorText="That email is already subscribed."
+      />,
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent("That email is already subscribed.");
+    expect(screen.getByLabelText(/Email address/)).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("renders a compact confirmation (no separate Heading) when successMessage is set", () => {
+    render(
+      <NewsletterSignup variant="inline" onSubmit={() => {}} successMessage="You're subscribed." />,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("You're subscribed.");
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Email address/)).not.toBeInTheDocument();
+  });
+
+  it("has no axe violations", async () => {
+    const { container } = render(<NewsletterSignup variant="inline" onSubmit={() => {}} />);
+    const results = await axe(container);
+    expect(results.violations).toEqual([]);
+  });
+});

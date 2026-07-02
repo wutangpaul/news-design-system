@@ -1,0 +1,125 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as FormStories from "./Form.stories";
+
+<Meta of={FormStories} />
+
+# Form
+
+A lightweight `<form>` wrapper that coordinates a submit-time error summary across several
+fields at once. Every field in this library (`Input`, `Textarea`, `Select`, `DatePicker`,
+`Combobox`, etc.) already handles its own inline error in isolation — none of them know
+anything about the other fields around them. `Form` is the piece that sits above all of them
+and, when a submit fails, gives screen reader and sighted users alike a single place that lists
+everything wrong and jumps them straight to it.
+
+`Form` does **not** validate anything. It has no schema support and no field-registration
+system — it doesn't know your field values exist. You compute an `errors` map yourself (however
+you like: a schema library, hand-rolled checks, a server response) and pass it in; `Form` only
+renders it and manages focus around it.
+
+<Canvas of={FormStories.Default} />
+
+## Props
+
+<Controls />
+
+## The wiring pattern
+
+There's no automatic two-way binding between `Form` and its children — you're responsible for
+keeping two things in sync yourself:
+
+1. Give each field an explicit `id` (don't rely on the auto-generated `useId` fallback, since
+   you need to know the id ahead of time to use it as a key).
+2. Use that same string as the key in the `errors` map you pass to `Form`, **and** pass the
+   matching message to that field's own `errorText` prop.
+
+```tsx
+import { useState, type FormEvent } from "react";
+import { Form } from "@/components/Form";
+import { Input } from "@/components/Input";
+import { Textarea } from "@/components/Textarea";
+import { Button } from "@/components/Button";
+
+function ContactForm() {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const data = new FormData(event.currentTarget);
+    const nextErrors: Record<string, string> = {};
+    if (!String(data.get("email") ?? "").trim()) {
+      nextErrors["contact-email"] = "Enter your email address.";
+    }
+    setErrors(nextErrors);
+    // if nextErrors is empty, go ahead and actually submit here.
+  }
+
+  return (
+    <Form onSubmit={handleSubmit} errors={errors}>
+      <Input
+        id="contact-email"
+        name="email"
+        label="Email address"
+        errorText={errors["contact-email"]}
+      />
+      <Button type="submit">Send</Button>
+    </Form>
+  );
+}
+```
+
+Both reads of `errors["contact-email"]` above are load-bearing: `Form` uses the map's keys to
+build the summary's jump links (each one is an anchor pointing at `#` plus that key, so it must
+equal the field's `id`), and the field's own `errorText` uses the same lookup so its inline
+message shows the same text as the summary entry.
+
+## Behavior
+
+- `Form` renders a real `<form>` with `noValidate` set (so native browser validation bubbles
+  don't fire ahead of your own `onSubmit` logic) and always calls `preventDefault()` on submit —
+  it's a presentation-layer wrapper, not a submission mechanism. Do your real submission (fetch,
+  redirect, whatever) inside the `onSubmit` handler you pass in, once you've confirmed there are
+  no errors.
+- When `errors` is non-empty, an error summary renders above `children`: a heading (default
+  text "There is a problem", overridable via `summaryHeading`) followed by a list of links, one
+  per entry in `errors`, in the order the map's keys were inserted.
+- Clicking (or activating with Enter) a summary link focuses and scrolls to the field whose `id`
+  matches that entry's key.
+- After a submit attempt, if the `errors` you pass back to `Form` is non-empty, focus moves to
+  the summary itself, not to any individual field — that's what makes a screen reader user
+  immediately hear "there is a problem" and the full list, rather than just landing silently on
+  the first invalid field. This only happens right after a submit; if you pass a non-empty
+  `errors` map on first render (e.g. errors restored from a previous page load), `Form` leaves
+  focus alone.
+
+## Do
+
+- Keep field `id`s stable and explicit, and use those same strings as your `errors` keys.
+- Set both the summary entry's message and the field's own `errorText` from the same source of
+  truth (usually the same validation function) so they never drift apart.
+- Perform the real submission (network request, navigation) only once your own validation
+  produces an empty `errors` map.
+
+## Don't
+
+- Don't expect `Form` to validate anything — there's no schema prop and no rule engine. It's
+  a `<form>` element, an error-summary UI, and the focus management around it.
+- Don't set `errors` from something other than a submit attempt (e.g. on every keystroke) unless
+  you also want the summary to potentially reappear/rebuild on every keystroke — it's designed
+  around a "validate on submit" flow, not live validation.
+- Don't reuse a message string as a key; the key must be the target field's `id`, not the
+  message text.
+
+## Accessibility notes
+
+- The summary container is `role="alert"` with `tabIndex={-1}`, so it can receive programmatic
+  focus even though it isn't natively focusable, and its appearance is announced immediately by
+  assistive tech (mirroring the per-field `role="alert"` messages `Input`/`Textarea`/`DatePicker`
+  already use).
+- The heading text is linked to the summary region via `aria-labelledby`, giving the whole
+  region an accessible name.
+- Each error is a real `<a href="#...">`, so it's reachable and activatable with the keyboard
+  alone (Tab, then Enter) without any special handling, in addition to the pointer/click path.
+- This follows the same pattern as the GOV.UK Design System's error summary component and WCAG
+  technique G83 (providing a text description when the user's input doesn't match what's
+  expected) — a well-established approach for multi-field forms, not something invented for
+  this library.

@@ -158,6 +158,19 @@ passing real pattern instances with sample content into the slots).
   page-specific content, so the same template works for real CMS-driven pages later without
   modification.
 
+## Loading and empty states
+
+- Patterns that render a list/grid of real content (e.g. `StoryCard`, `FeaturedStoryGrid`)
+  should accept a `loading?: boolean` prop that renders a placeholder built from the shared
+  `Skeleton` component (`src/components/Skeleton`), matching that pattern's own real layout
+  proportions, instead of requiring every consumer to invent its own loading placeholder shape.
+  Grids should additionally accept a way to control how many loading placeholders to render
+  (e.g. `loadingCount`).
+- Templates/patterns with a genuine "nothing to show" state (zero search results, an empty
+  archive range, etc.) should use the shared `EmptyState` component
+  (`src/components/EmptyState`) rather than hand-rolling bespoke empty-state markup per
+  template — pass it the specific heading/description/action copy for that context.
+
 ## Boundaries — do not edit these as part of building a component
 
 `package.json`, `tailwind.config.ts`, `src/tokens/*`, `src/index.css`, `.storybook/*`,

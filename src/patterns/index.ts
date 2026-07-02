@@ -1,5 +1,6 @@
 // Barrel export for Phase 3 patterns. Assembled centrally during integration rather than by
 // individual pattern agents, to avoid merge collisions.
+export * from "./AdSlot";
 export * from "./ArticleBody";
 export * from "./ArticleHeader";
 export * from "./AuthorCard";
@@ -19,6 +20,7 @@ export * from "./LiveBlogEntry";
 export * from "./MegaMenu";
 export * from "./MostRead";
 export * from "./NewsletterSignup";
+export * from "./Paywall";
 export * from "./PodcastCards";
 export * from "./PrimaryNavigation";
 export * from "./PullQuote";
@@ -28,6 +30,7 @@ export * from "./RecommendedArticles";
 export * from "./RelatedArticles";
 export * from "./SearchExperience";
 export * from "./SecondaryNavigation";
+export * from "./SocialEmbed";
 export * from "./SocialSharing";
 export * from "./StoryCard";
 export * from "./TopicCollections";

@@ -4,7 +4,7 @@ import { GlobalHeader, type GlobalHeaderProps } from "@/patterns/GlobalHeader";
 import { Footer, type FooterProps } from "@/patterns/Footer";
 import { Heading } from "@/components/Heading";
 import { Text } from "@/components/Text";
-import { Search } from "@/components/Icon";
+import { EmptyState } from "@/components/EmptyState";
 
 export interface ArchiveProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
   /** Props forwarded to the site-wide `GlobalHeader` chrome (logo, nav, search, actions). */
@@ -99,15 +99,12 @@ export const Archive = forwardRef<HTMLDivElement, ArchiveProps>(
 
             <div className="mt-8">
               {isEmpty ? (
-                <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-surface-border px-6 py-20 text-center">
-                  <Search size="xl" className="text-text-tertiary" aria-hidden="true" />
-                  <Heading level={2} visualSize={5}>
-                    {emptyStateTitle}
-                  </Heading>
-                  <Text color="secondary" className="max-w-md">
-                    {emptyStateDescription}
-                  </Text>
-                </div>
+                <EmptyState
+                  className="py-20"
+                  iconVariant="calendar"
+                  heading={emptyStateTitle}
+                  description={emptyStateDescription}
+                />
               ) : (
                 listing
               )}

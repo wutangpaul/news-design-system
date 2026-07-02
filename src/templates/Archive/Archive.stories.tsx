@@ -5,7 +5,7 @@ import { PrimaryNavigation, type PrimaryNavItem } from "@/patterns/PrimaryNaviga
 import { SearchExperience } from "@/patterns/SearchExperience";
 import { FeaturedStoryGrid, type FeaturedStoryGridItem } from "@/patterns/FeaturedStoryGrid";
 import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
+import { DatePicker } from "@/components/DatePicker";
 import { Pagination } from "@/components/Pagination";
 
 const navItems: PrimaryNavItem[] = [
@@ -111,9 +111,9 @@ const sampleStories: FeaturedStoryGridItem[] = [
 ];
 
 /**
- * Stand-in for a real date-range/filter control — a page-specific concern outside this
- * design system's current component set. Demonstrates the shape of what typically fills
- * Archive's `filters` slot using existing `Input`/`Button` primitives.
+ * Demonstrates what typically fills Archive's `filters` slot: a date-range control built
+ * from the `DatePicker` component (which exists specifically to fill this gap — it was
+ * added after Archive first shipped with a plain `Input type="date"` placeholder here).
  */
 function SampleDateRangeFilters() {
   return (
@@ -121,8 +121,8 @@ function SampleDateRangeFilters() {
       className="flex flex-wrap items-end gap-4"
       onSubmit={(event) => event.preventDefault()}
     >
-      <Input label="From" type="date" defaultValue="2026-03-01" />
-      <Input label="To" type="date" defaultValue="2026-03-31" />
+      <DatePicker label="From" defaultValue="2026-03-01" />
+      <DatePicker label="To" defaultValue="2026-03-31" min="2026-03-01" />
       <Button type="submit" variant="secondary" size="md">
         Apply
       </Button>

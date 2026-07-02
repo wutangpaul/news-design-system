@@ -23,10 +23,9 @@ pagination, but never decides what fills the listing or what the filter controls
   page heading), not an arbitrary composed pattern.
 - `description` (optional, `ReactNode`) — supporting copy under the title, e.g. a date-range or
   section description.
-- `filters` (optional, `ReactNode`) — reserved space for the actual filter/date-range UI. This
-  design system doesn't yet have a date-picker or filter-form component, so Archive only
-  reserves the slot rather than building filter controls from scratch. The `Default` story fills
-  it with a small sample form built from `Input`/`Button` to demonstrate the shape.
+- `filters` (optional, `ReactNode`) — reserved space for the actual filter/date-range UI.
+  Archive has no opinion on what fills it — the `Default` story demonstrates a small sample
+  form built from `DatePicker`/`Button`, but any filter UI works.
 - `listing` (optional, `ReactNode`) — the story listing itself, typically a
   `<FeaturedStoryGrid stories={...} />` from `src/patterns/FeaturedStoryGrid` (which itself
   composes `StoryCard`). Any list/grid pattern works here — Archive has no opinion on layout
@@ -86,9 +85,9 @@ change the filter, rather than silently showing nothing:
 
 ## Don't
 
-- Don't build bespoke filter UI as a one-off inside a page that uses this template — even
-  though `filters` is a slot today, a real date-range/filter pattern should eventually be built
-  in `src/patterns/*` and reused here, not duplicated per page.
+- Don't build bespoke date-input UI as a one-off inside a page that uses this template — compose
+  the shared `DatePicker` component (`src/components/DatePicker`) for date-range filters rather
+  than a raw `Input type="date"`.
 - Don't pass both `isEmpty` and a non-empty `listing`/`pagination` expecting both to show —
   `isEmpty` always wins and suppresses both.
 

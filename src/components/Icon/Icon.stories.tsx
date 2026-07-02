@@ -11,6 +11,11 @@ import {
   Bookmark,
   ArrowRight,
   ExternalLink,
+  Calendar,
+  Compass,
+  Server,
+  WifiOff,
+  Play,
 } from "./icons";
 
 const meta: Meta<typeof Icon> = {
@@ -69,6 +74,11 @@ export const CuratedSet: Story = {
       { name: "Bookmark", Cmp: Bookmark },
       { name: "ArrowRight", Cmp: ArrowRight },
       { name: "ExternalLink", Cmp: ExternalLink },
+      { name: "Calendar", Cmp: Calendar },
+      { name: "Compass", Cmp: Compass },
+      { name: "Server", Cmp: Server },
+      { name: "WifiOff", Cmp: WifiOff },
+      { name: "Play", Cmp: Play },
     ];
     return (
       <div className="grid grid-cols-5 gap-6 text-text-primary">

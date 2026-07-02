@@ -107,4 +107,43 @@ describe("FeaturedStoryGrid", () => {
     const results = await axe(container);
     expect(results.violations).toEqual([]);
   });
+
+  describe("loading state", () => {
+    it("renders loadingCount loading cards instead of stories", () => {
+      const { container } = render(<FeaturedStoryGrid loading loadingCount={6} />);
+      const skeletonCards = container.querySelectorAll("[aria-hidden='true'].overflow-hidden");
+      expect(skeletonCards.length).toBe(6);
+    });
+
+    it("defaults loadingCount to 6", () => {
+      const { container } = render(<FeaturedStoryGrid loading />);
+      const skeletonCards = container.querySelectorAll("[aria-hidden='true'].overflow-hidden");
+      expect(skeletonCards.length).toBe(6);
+    });
+
+    it("does not render any real story content while loading, even if stories is also passed", () => {
+      render(<FeaturedStoryGrid loading stories={items} />);
+      for (const item of items) {
+        expect(screen.queryByRole("heading", { name: item.headline })).not.toBeInTheDocument();
+      }
+    });
+
+    it("does not require stories while loading", () => {
+      render(<FeaturedStoryGrid loading data-testid="grid" />);
+      expect(screen.getByTestId("grid")).toBeInTheDocument();
+    });
+
+    it("announces the loading state via a single live region on the grid itself", () => {
+      render(<FeaturedStoryGrid loading data-testid="grid" />);
+      const grid = screen.getByTestId("grid");
+      expect(grid).toHaveAttribute("role", "status");
+      expect(grid).toHaveAttribute("aria-live", "polite");
+    });
+
+    it("has no axe violations while loading", async () => {
+      const { container } = render(<FeaturedStoryGrid loading loadingCount={3} />);
+      const results = await axe(container);
+      expect(results.violations).toEqual([]);
+    });
+  });
 });

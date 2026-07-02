@@ -1,0 +1,134 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as EmptyStateStories from "./EmptyState.stories";
+
+<Meta of={EmptyStateStories} />
+
+# EmptyState
+
+A generic "nothing to show" state: an optional icon, a heading, optional supporting copy,
+and an optional action. Every one of those is a prop — EmptyState hardcodes no copy of its
+own — so the same component covers "no search results," "no stories in this archive range,"
+"no comments yet," or any other empty list/collection in the product.
+
+<Canvas of={EmptyStateStories.Default} />
+
+## Why this exists
+
+Before this component, `SearchResults` and `Archive` each hand-rolled their own bespoke
+"nothing here" markup — same shape (icon, heading, description), slightly different
+Tailwind classes, copied by hand. `EmptyState` is the shared version both templates now
+compose, so any other page-level "empty" state gets it too instead of a fourth bespoke copy.
+
+## Props
+
+```tsx
+interface EmptyStateProps {
+  icon?: ReactNode;
+  iconVariant?: "search" | "calendar" | "message" | "inbox";
+  heading: ReactNode;
+  description?: ReactNode;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6; // default 2
+  action?: ReactNode;
+}
+```
+
+<Controls />
+
+## Icon: built-in presets vs. a custom node
+
+EmptyState ships four small hand-drawn presets via `iconVariant`, covering the cases named
+above:
+
+- `"search"` — a magnifying glass, for zero search/filter results.
+- `"calendar"` — a calendar grid, for an empty date range.
+- `"message"` — a speech bubble, for an empty comments/replies list.
+- `"inbox"` — a generic tray, the default fallback for anything else.
+
+<Canvas of={EmptyStateStories.NoSearchResults} />
+<Canvas of={EmptyStateStories.NoStoriesInRange} />
+<Canvas of={EmptyStateStories.NoComments} />
+
+These four cover the common editorial cases without inventing a whole icon library inside
+this component. For anything else, pass a fully custom node via `icon` (any SVG, or a named
+icon from `@/components/Icon` such as `<Bookmark size="xl" />`) — it takes precedence over
+`iconVariant` when both are given:
+
+<Canvas of={EmptyStateStories.CustomIcon} />
+
+`EmptyState` does not import from `@/components/Icon` itself — like every other component
+in this library, it's self-contained, and its own presets are hand-rolled inline SVGs (the
+same approach `Alert`'s status icons and `Button`'s spinner use). Reach for `iconVariant`
+for the common cases; reach for `icon` with a real `Icon` component when you want the rest
+of the system's curated set instead.
+
+Both are optional — omit both for a text-only empty state:
+
+<Canvas of={EmptyStateStories.TextOnly} />
+
+The icon is always rendered inside an `aria-hidden` wrapper. EmptyState has no idea what the
+icon actually depicts; the heading and description carry the real message, so the icon never
+needs (and never gets) its own accessible name.
+
+## Heading level
+
+`headingLevel` (default `2`) controls the real semantic tag rendered (`h1`-`h6`) so
+EmptyState slots correctly into whatever document outline the surrounding page already has.
+Most usages leave it at the default — a template's own `<h1>` lives elsewhere in its chrome,
+so `2` is usually correct for an empty state that's the main content of a page section. Bump
+it if EmptyState is nested deeper (e.g. inside a comments section that already has its own
+`<h2>`):
+
+<Canvas of={EmptyStateStories.HeadingLevel} />
+
+The heading's visual size is fixed (it does not have a separate `visualSize`-style prop the
+way `Heading` does) — EmptyState is meant to look the same wherever it appears, rather than
+scale to its surroundings. Wrap it and adjust via `className` on the root for the rare case
+that needs a different look.
+
+## Action
+
+Pass any node — typically a `Button` or `Link` — via `action` for a next step ("Clear
+filters", "Browse all sections", "Back to homepage"). EmptyState renders it as-is and has no
+opinion on what it does:
+
+<Canvas of={EmptyStateStories.WithAction} />
+
+## Announcing to assistive tech
+
+EmptyState renders no `role` or `aria-live` of its own. Whether an empty result should
+interrupt as a live announcement depends on context only the caller has:
+
+- A search page's empty state appears **after a user action** (submitting a query) — pair
+  it with `role="status"` so screen reader users are told the search completed with no
+  matches, the same way `SearchResults` does it.
+- A comments section's empty state is usually just **part of the initial page** — announcing
+  it as a live region on load would be noise, not help.
+
+Because `EmptyState` accepts and spreads the usual `div` props, add `role="status"` (or
+whatever fits) directly:
+
+```tsx
+<EmptyState
+  role="status"
+  iconVariant="search"
+  heading="No results found"
+  description={`We couldn't find any stories matching your search.`}
+/>
+```
+
+## Accessibility
+
+- The heading is a real heading element (see "Heading level" above), so a page full of
+  empty-state sections is still navigable by screen-reader users browsing by heading.
+- The icon is always `aria-hidden`.
+- `role`/`aria-live` are left to the caller — see "Announcing to assistive tech" above.
+- Storybook's a11y addon reports no violations on every story on this page.
+
+## Do / Don't
+
+- **Do** pass real, specific copy — "No results found for `march-2026-budget`" beats a
+  generic "Nothing here."
+- **Do** use `iconVariant` for the four common cases it covers instead of hand-rolling the
+  same magnifying-glass SVG again in a page-level component.
+- **Don't** rely on `EmptyState` to add a live-region announcement for you — decide that at
+  the call site, based on whether the empty state follows a user action or not.

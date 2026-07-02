@@ -98,6 +98,44 @@ export const SideBySideLayouts: Story = {
   ),
 };
 
+export const Loading: Story = {
+  args: {
+    loading: true,
+  },
+  render: (args) => (
+    <div className="max-w-sm">
+      <StoryCard {...args} />
+    </div>
+  ),
+};
+
+export const LoadingHorizontal: Story = {
+  name: "Loading (horizontal)",
+  args: {
+    loading: true,
+    layout: "horizontal",
+  },
+  render: (args) => (
+    <div className="max-w-lg">
+      <StoryCard {...args} />
+    </div>
+  ),
+};
+
+export const LoadingSideBySide: Story = {
+  name: "Loading: vertical vs horizontal",
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <div className="max-w-sm">
+        <StoryCard loading layout="vertical" />
+      </div>
+      <div className="max-w-lg">
+        <StoryCard loading layout="horizontal" />
+      </div>
+    </div>
+  ),
+};
+
 export const EqualHeightRow: Story = {
   name: "Equal-height row (grid usage)",
   args: {

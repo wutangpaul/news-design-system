@@ -1,0 +1,107 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as AccountStories from "./Account.stories";
+
+<Meta of={AccountStories} />
+
+# Account
+
+A signed-in subscriber's account/subscription-management page: fixed `GlobalHeader`/`Footer`
+chrome, an account summary (name, email, avatar), the current plan status, an optional
+billing/payment-method area, and a sign-out action.
+
+<Canvas of={AccountStories.Default} />
+
+## The prop contract
+
+```tsx
+interface AccountPlanStatus {
+  planName: string;
+  tone?: BadgeProps["variant"];
+  detail?: ReactNode;
+}
+
+interface AccountProps {
+  header: GlobalHeaderProps;
+  footer: FooterProps;
+  name: string;
+  email: string;
+  avatarSrc?: string;
+  plan: AccountPlanStatus;
+  billing?: ReactNode;
+  onSignOut: () => void;
+  signOutLabel?: string;
+  mainId?: string;
+}
+```
+
+- **`name`** / **`email`** — the signed-in subscriber's display name and email. These are
+  plain `string` props rather than a `ReactNode` slot. The rule of thumb established in
+  `CategoryLanding`'s MDX applies here too: `name`/`email` are "genuinely just text" with no
+  markup or behavior of their own, so a slot would add indirection without adding
+  flexibility. If a future page needs to show something richer here (a verified badge, a
+  "member since" date), that's a reason to add more plain props, not to switch to a slot —
+  the template still has no opinion on what a "subscriber" is beyond these two fields.
+- **`avatarSrc`** — optional photo URL, rendered via `Avatar` (which falls back to initials
+  derived from `name` when omitted, so the summary still looks complete without one).
+- **`plan`** — the current subscription status, rendered as a `Badge` (`planName`, with an
+  optional semantic `tone`) plus an optional `detail` line underneath (e.g. `"Renews July
+  15, 2026 — $12.99/month"`). Same "plain data" reasoning as `name`/`email` — a plan
+  name/status is text, not a pattern with its own behavior.
+- **`billing`** — a `ReactNode` slot for the billing/payment-method area. Real billing UI
+  (payment forms, invoice history, a hosted billing-portal iframe) is out of scope for this
+  design system, so this template only reserves the layout space for it — see the
+  `PastDuePlan` story, which omits it entirely for an account that doesn't need it. When
+  provided, it renders under a visible "Payment method" heading.
+- **`onSignOut`** — called when the sign-out action is activated. Like `SocialSharing`'s
+  `onShare`/`onCopyLink` callbacks, this template never implements the actual sign-out
+  behavior (clearing a session cookie, calling an auth provider, redirecting) — that's
+  entirely the consumer's responsibility.
+- **`signOutLabel`** — defaults to `"Sign out"`; override for a different wording (`"Log
+  out"`) if your product copy prefers it.
+
+## Why this template doesn't compose `Paywall`
+
+`Account` manages an *existing* subscription (status, billing, signing out); `Paywall`
+(built separately) *gates* article content for readers who don't have access yet. These are
+different concerns at different points in a reader's lifecycle, so `Account` has no
+dependency on `Paywall` and doesn't import it.
+
+## Past-due plan, no billing slot
+
+Not every account needs the billing area rendered — an account that's comped, staff-only, or
+managed entirely through an external billing portal can simply omit `billing`:
+
+<Canvas of={AccountStories.PastDuePlan} />
+
+<Controls />
+
+## Do
+
+- Pass a semantic `tone` on `plan` that matches the actual state (`"success"` for active,
+  `"warning"` for past-due/expiring, `"error"` for canceled) — the `Badge`'s color is never
+  the only signal, since `plan.detail` also states the status in words.
+- Use `billing` for whatever payment-method summary your billing provider already renders
+  (a hosted element, a simple "Visa ending in 4242" summary) rather than re-implementing
+  billing UI inside this template.
+
+## Don't
+
+- Don't build real sign-out logic inside a story or a consumer of this template's `onSignOut`
+  prop as a placeholder for testing only — always wire it to a real session-clearing call in
+  production, since a no-op sign-out button is a dead end for a subscriber.
+- Don't omit `plan` — every signed-in account has *some* status to show, even if it's a
+  simple `{ planName: "Free" }` with no `detail`.
+
+## Accessibility
+
+- A visually-hidden "Skip to main content" link is the first focusable element, targeting
+  the `<main id={mainId}>` landmark (`mainId` defaults to `"main-content"`).
+- `GlobalHeader`/`Footer` render as the page's `banner`/`contentinfo` landmarks.
+- The account summary, subscription, and payment-method areas are each wrapped in a labelled
+  `section`, so screen-reader users navigating by landmark get distinct, named regions
+  instead of one undifferentiated page.
+- "Subscription" and "Payment method" (when rendered) are real visible `<h2>` headings, not
+  just landmark labels — sighted users scanning the page get the same structure as
+  assistive-tech users navigating by heading.
+- The sign-out control is a real `Button`, so it's keyboard-operable (Enter/Space) and
+  exposes its label in the accessible tree without any extra `aria-label`.

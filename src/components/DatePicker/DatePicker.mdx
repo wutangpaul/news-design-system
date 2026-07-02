@@ -1,0 +1,96 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as DatePickerStories from "./DatePicker.stories";
+
+<Meta of={DatePickerStories} />
+
+# DatePicker
+
+A single-date picker field. Visually and semantically it follows the same label/helperText/
+errorText contract as `Input`, but the field itself is read-only — clicking it (or pressing
+ArrowDown/Enter while it's focused) opens a calendar popup, and a date is only ever set by
+picking a day from that calendar. This keeps `value`/`onChange` limited to a clean, unambiguous
+date string instead of having to parse arbitrary typed text.
+
+Deliberately **not** opened on focus alone: closing the calendar (Escape, outside click, or
+selecting a date) returns focus to this field, which would immediately reopen it if focus itself
+were the trigger — an infinite-loop class of bug. Click and ArrowDown/Enter open it instead.
+
+It fills the "filters" slot in the Archive template, which previously had nothing to offer for
+"browse by date."
+
+<Canvas of={DatePickerStories.Default} />
+
+## Props
+
+<Controls />
+
+## Usage
+
+```tsx
+import { useState } from "react";
+import { DatePicker } from "@/components/DatePicker";
+
+function PublishDateField() {
+  const [value, setValue] = useState<string | undefined>(undefined);
+  return (
+    <DatePicker
+      label="Publish date"
+      value={value}
+      onChange={setValue}
+      min="2026-01-01"
+      max="2026-12-31"
+    />
+  );
+}
+```
+
+- `value`/`defaultValue`/`onChange` all use an ISO 8601 calendar date string in `YYYY-MM-DD`
+  format — the same convention as the native date input. There is no `Date` object in the public
+  API, so consumers don't need to think about time zones or serialization.
+- `min`/`max` bound the selectable range. Days outside the range still render (so the month
+  stays visually complete) but are marked unavailable and can't be selected by mouse or keyboard.
+- Use `helperText` for guidance and `errorText` for validation failures, exactly like `Input` —
+  `errorText` replaces `helperText` in both the visible UI and `aria-describedby`.
+
+## Keyboard interaction
+
+The calendar dialog follows the WAI-ARIA APG "Date Picker Dialog" pattern.
+
+- **Click, or ArrowDown/Enter while focused**: opens the calendar, focused on the selected day
+  (or today if nothing is selected yet).
+- **Arrow Left/Right**: move one day back/forward.
+- **Arrow Up/Down**: move one week back/forward.
+- **Home/End**: jump to the first/last day of the current week.
+- **Page Up/Down**: jump one month back/forward.
+- **Shift+Page Up/Down**: jump one year back/forward.
+- **Enter or Space** on a day: selects it, closes the calendar, and returns focus to the field.
+- **Escape**: closes the calendar without changing the selection and returns focus to the field.
+- **Tab**: closes the calendar (matching this design system's `Dropdown` convention that Tab
+  exits a popup rather than cycling within it) and lets focus continue naturally.
+
+## Do
+
+- Pass `min`/`max` whenever the valid range is known ahead of time (e.g. "last 30 days" for an
+  archive filter) rather than validating the selection after the fact.
+- Pair `DatePicker` with `errorText` for submit-time validation, the same way you would an
+  `Input`.
+
+## Don't
+
+- Don't expect users to type a date directly into the field — it's intentionally read-only. If
+  you need free-text date entry with parsing, that's a different (unbuilt) component.
+- Don't rely on color alone to show the selected day; the selected day also gets a solid fill
+  and `aria-selected` on its grid cell.
+
+## Accessibility notes
+
+- The field has `role="combobox"`, `aria-haspopup="dialog"`, `aria-expanded`, and
+  `aria-controls` pointing at the calendar's `id` — matching the APG "combobox with dialog
+  popup" variant used by date-picker combobox examples.
+- The popup itself is `role="dialog"` with an accessible name ("Choose date"), containing a
+  `role="grid"` of days. Only one day button is ever a Tab stop (roving `tabindex`); arrow keys
+  move both focus and the roving stop together.
+- Out-of-range days use `aria-disabled` rather than the native `disabled` attribute, so they stay
+  perceivable to screen readers (announced as unavailable) instead of disappearing from the
+  accessibility tree.
+- Today's date carries `aria-current="date"` on its grid button.

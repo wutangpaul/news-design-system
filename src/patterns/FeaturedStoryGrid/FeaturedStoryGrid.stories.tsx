@@ -84,3 +84,17 @@ export const TextOnlyItems: Story = {
     ),
   },
 };
+
+export const Loading: Story = {
+  args: {
+    loading: true,
+  },
+};
+
+export const LoadingCustomCount: Story = {
+  name: "Loading (custom count)",
+  args: {
+    loading: true,
+    loadingCount: 3,
+  },
+};

@@ -6,54 +6,10 @@ import { Heading } from "@/components/Heading";
 import { Text } from "@/components/Text";
 import { Button } from "@/components/Button";
 import { Link } from "@/components/Link";
+import { Compass, Server, WifiOff } from "@/components/Icon";
 
 /** Which error condition the page represents. Selects the default code/heading/copy/icon. */
 export type ErrorPagesVariant = "not-found" | "server-error" | "offline";
-
-function CompassIcon() {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" className="h-16 w-16 text-text-tertiary">
-      <circle cx="24" cy="24" r="19" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M30 18l-4.5 10.5L15 33l4.5-10.5L30 18Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ServerWarningIcon() {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" className="h-16 w-16 text-text-tertiary">
-      <rect x="9" y="9" width="30" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <rect x="9" y="27" width="30" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <circle cx="15" cy="15" r="1.5" fill="currentColor" />
-      <circle cx="15" cy="33" r="1.5" fill="currentColor" />
-      <path
-        d="M24 15h9M24 33h9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function OfflineIcon() {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true" className="h-16 w-16 text-text-tertiary">
-      <path
-        d="M12 20a17 17 0 0124 0M17 26a10 10 0 0114 0M22 32a3.2 3.2 0 014 0"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M8 8l32 32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 interface VariantDefaults {
   code: string;
@@ -70,7 +26,7 @@ const VARIANT_DEFAULTS: Record<ErrorPagesVariant, VariantDefaults> = {
     heading: "This page couldn't be found",
     description:
       "The article or section you're looking for may have been moved, renamed, or retired. Check the address, or start again from the homepage.",
-    icon: <CompassIcon />,
+    icon: <Compass size={64} className="text-text-tertiary" />,
     showsTryAgain: false,
   },
   "server-error": {
@@ -78,7 +34,7 @@ const VARIANT_DEFAULTS: Record<ErrorPagesVariant, VariantDefaults> = {
     heading: "Something went wrong on our end",
     description:
       "Our systems hit an unexpected error while loading this page. It isn't something you did — our engineers have been notified. Try again in a moment.",
-    icon: <ServerWarningIcon />,
+    icon: <Server size={64} className="text-text-tertiary" />,
     showsTryAgain: true,
   },
   offline: {
@@ -86,7 +42,7 @@ const VARIANT_DEFAULTS: Record<ErrorPagesVariant, VariantDefaults> = {
     heading: "You're offline",
     description:
       "We couldn't reach The Daily Ledger. Check your connection and try again — anything you already had open will still be here.",
-    icon: <OfflineIcon />,
+    icon: <WifiOff size={64} className="text-text-tertiary" />,
     showsTryAgain: true,
   },
 };

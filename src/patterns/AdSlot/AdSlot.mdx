@@ -1,0 +1,85 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as AdSlotStories from "./AdSlot.stories";
+
+<Meta of={AdSlotStories} />
+
+# Ad Slot
+
+A labeled, standard-sized placeholder container for sponsored content/advertising.
+Real ad content (an ad network SDK, a house-ad image, a native content unit, ...) is
+out of scope for this design system — `AdSlot` only provides the disclosure label and
+the correctly-sized container a consumer mounts real ad content into.
+
+<Canvas of={AdSlotStories.MediumRectangle} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { AdSlot } from "@/patterns/AdSlot";
+
+<AdSlot size="leaderboard">
+  <MyAdNetworkSlot unitId="homepage-top" />
+</AdSlot>
+```
+
+With no `children`, `AdSlot` renders an empty placeholder state at the slot's
+documented dimensions — useful in Storybook, in layout work before an ad network is
+wired up, or anywhere you just need to reserve the right amount of space:
+
+```tsx
+<AdSlot size="medium-rectangle" />
+```
+
+## Sizes
+
+`size` covers three common IAB-style ad units, each expressed as a fixed pixel box
+(the industry-standard dimensions themselves, capped with a responsive `max-w-full` so
+they never overflow a narrow container):
+
+| `size` | Dimensions |
+| --- | --- |
+| `leaderboard` | 728 &times; 90 |
+| `medium-rectangle` (default) | 300 &times; 250 |
+| `sidebar` | 300 &times; 600 |
+
+<Canvas of={AdSlotStories.Leaderboard} />
+<Canvas of={AdSlotStories.Sidebar} />
+<Canvas of={AdSlotStories.AllSizes} />
+
+## Disclosure label
+
+A visible eyebrow label ("Advertisement" by default) always renders above the slot so
+readers can tell sponsored content apart from editorial content — a common disclosure
+convention, and often a legal/regulatory requirement for publications that carry paid
+advertising. Override it for other placements, e.g. native/sponsored-content units:
+
+<Canvas of={AdSlotStories.SponsoredLabel} />
+
+## Injecting real ad content
+
+`children` is the slot for actual ad content — anything from a single `img` to a whole
+ad network's mount-point component:
+
+<Canvas of={AdSlotStories.WithInjectedContent} />
+
+## Accessibility
+
+- The disclosure label is real visible text (not a background image or color-only
+  treatment), so it survives high-contrast modes, browser zoom, and print/reader views.
+- The root element carries `role="complementary"` with an `aria-label` matching the
+  visible disclosure label, so assistive technology gets the same "this is
+  supplementary, not primary editorial content" signal a sighted reader gets from the
+  label and placement — and can skip past it via landmark navigation the same way a
+  sighted reader skips past it visually.
+- `AdSlot` renders no interactive elements of its own; whatever a consumer injects as
+  `children` is responsible for its own accessibility (alt text on ad creative, focus
+  management for interactive/rich-media units, etc.).
+
+## Don'ts
+
+- Don't drop the disclosure label, even for native-style "sponsored content" units —
+  relabel it (e.g. `label="Sponsored"`) rather than removing it.
+- Don't use `AdSlot` for anything that isn't paid/sponsored placement — it's
+  specifically the "this is an ad" signal, not a general-purpose bordered box.

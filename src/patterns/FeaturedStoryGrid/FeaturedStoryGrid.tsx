@@ -19,8 +19,11 @@ export interface FeaturedStoryGridItem extends StoryCardContent {
 }
 
 export interface FeaturedStoryGridProps extends HTMLAttributes<HTMLDivElement> {
-  /** The stories to render, in display order. */
-  stories: FeaturedStoryGridItem[];
+  /**
+   * The stories to render, in display order. Not required while `loading` is set — see
+   * `loadingCount`.
+   */
+  stories?: FeaturedStoryGridItem[];
   /**
    * Semantic heading level applied to every card's headline. Kept as a single value
    * (not per-item) so the grid always produces a consistent, correct document outline —
@@ -28,6 +31,19 @@ export interface FeaturedStoryGridProps extends HTMLAttributes<HTMLDivElement> {
    * @default 3
    */
   headingLevel?: HeadingProps["level"];
+  /**
+   * When `true`, renders `loadingCount` loading `StoryCard`s (see its own `loading` prop)
+   * in place of `stories` — no real data is required yet. Use this while the actual
+   * stories for this grid are still being fetched.
+   * @default false
+   */
+  loading?: boolean;
+  /**
+   * Number of loading placeholder cards to render when `loading` is `true`. Ignored
+   * otherwise.
+   * @default 6
+   */
+  loadingCount?: number;
 }
 
 /**
@@ -36,27 +52,38 @@ export interface FeaturedStoryGridProps extends HTMLAttributes<HTMLDivElement> {
  * abstraction). One item may opt into spanning 2 columns via `featured` for a lead story.
  */
 export const FeaturedStoryGrid = forwardRef<HTMLDivElement, FeaturedStoryGridProps>(
-  ({ stories, headingLevel = 3, className, ...rest }, ref) => {
+  ({ stories, headingLevel = 3, loading = false, loadingCount = 6, className, ...rest }, ref) => {
     return (
       <div
         ref={ref}
+        role={loading ? "status" : undefined}
+        aria-live={loading ? "polite" : undefined}
         className={cn(
           "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
           className,
         )}
         {...rest}
       >
-        {stories.map((story, index) => (
-          <StoryCard
-            key={story.href ?? `${story.headline}-${index}`}
-            story={story}
-            layout="vertical"
-            headingLevel={headingLevel}
-            headingVisualSize={story.featured ? 2 : undefined}
-            imageAspectRatio={story.featured ? "16/9" : undefined}
-            className={cn(story.featured && "sm:col-span-2")}
-          />
-        ))}
+        {loading ? (
+          <>
+            <span className="sr-only">Loading stories…</span>
+            {Array.from({ length: loadingCount }, (_, index) => (
+              <StoryCard key={`loading-${index}`} loading layout="vertical" />
+            ))}
+          </>
+        ) : (
+          (stories ?? []).map((story, index) => (
+            <StoryCard
+              key={story.href ?? `${story.headline}-${index}`}
+              story={story}
+              layout="vertical"
+              headingLevel={headingLevel}
+              headingVisualSize={story.featured ? 2 : undefined}
+              imageAspectRatio={story.featured ? "16/9" : undefined}
+              className={cn(story.featured && "sm:col-span-2")}
+            />
+          ))
+        )}
       </div>
     );
   },

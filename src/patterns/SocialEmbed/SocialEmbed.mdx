@@ -1,0 +1,126 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SocialEmbedStories from "./SocialEmbed.stories";
+
+<Meta of={SocialEmbedStories} />
+
+# Social Embed
+
+A bordered placeholder card for embedding a social post (tweet/Instagram-style) within
+article body content: a platform label, the embedded author's name and handle, the post
+text, an optional timestamp, and a link to view the original post.
+
+<Canvas of={SocialEmbedStories.Default} />
+
+<Controls />
+
+## This is a static representation, not a live embed
+
+Real third-party embed SDKs (X's widgets.js, Instagram's embed script, and so on) are out
+of scope for a design system — they pull in third-party JavaScript, make network requests,
+and render markup this library doesn't control. `SocialEmbed` takes the same approach as
+`SocialSharing` (generic callback props instead of a real platform SDK): it's a plain,
+self-contained card driven entirely by props you already have (`platform`, `authorName`,
+`authorHandle`, `text`, `href`, `timestamp`) rather than an actual iframe or widget script.
+
+A real application swaps in the genuine platform embed component once a post is published,
+and can keep this component around for three things the real embed script usually can't do
+well on its own:
+
+- **Loading state** — render `SocialEmbed` with the post's known text/author while the real
+  embed script is still fetching, instead of a blank box or generic spinner.
+- **Fallback** — if the real embed script fails to load (ad blockers, network issues, the
+  platform being unreachable), fall back to this static card so the post's content is still
+  readable.
+- **Print-friendly rendering** — third-party embed widgets are typically iframes that don't
+  print or export to PDF cleanly; this component is plain, styled HTML that does.
+
+## Usage
+
+```tsx
+import { SocialEmbed } from "@/patterns/SocialEmbed";
+
+<SocialEmbed
+  platform="x"
+  authorName="Priya Nair"
+  authorHandle="priyanair"
+  text="BREAKING: The redistricting commission has released its final proposed map."
+  href="https://x.com/priyanair/status/1234567890"
+  timestamp="3h ago"
+/>;
+```
+
+## Props
+
+```tsx
+interface SocialEmbedProps {
+  platform: "x" | "instagram" | "facebook" | "threads" | "other";
+  platformLabel?: string;
+  icon?: ReactNode;
+  authorName: string;
+  authorHandle: string;
+  authorAvatarSrc?: string;
+  text: ReactNode;
+  href: string;
+  timestamp?: string;
+}
+```
+
+- **`platform`** — drives a default label (`"X"`, `"Instagram"`, `"Facebook"`, `"Threads"`,
+  or `"Social post"` for `"other"`). It does not select a brand icon — see below.
+- **`platformLabel`** — overrides the default label. Use this for `platform="other"` to name
+  a platform that isn't one of the four named ones (see the `OtherPlatform` story, which
+  labels a Bluesky post this way), or to relabel a rebranded platform.
+- **`icon`** — an optional platform mark rendered next to the label. Left empty by default;
+  see the next section for why.
+- **`authorName`** / **`authorHandle`** — the embedded post's author. The handle is rendered
+  with a leading "@" added automatically — pass it without one.
+- **`authorAvatarSrc`** — optional photo URL, falling back to initials via `Avatar` when
+  omitted (or if the image fails to load).
+- **`text`** — the post's text/caption. Typed `ReactNode` rather than `string` so a caller
+  can include inline formatting (a mention, a hashtag styled as a `Link`) if needed.
+- **`href`** — link to the original post. Always rendered as an external link (opens in a
+  new tab with `rel="noopener noreferrer"`, via `Link`'s `external` prop).
+- **`timestamp`** — optional human-readable string (e.g. `"3h ago"`, `"Jun 12"`). Omit it
+  entirely for posts where the original publish time isn't known or isn't relevant.
+
+## Why there's no brand icon by default
+
+The curated icon set in `src/components/Icon` intentionally has no social-network brand
+marks — the same reasoning `SocialSharing`'s docs give for not hardcoding a specific
+network's icon or share-intent URL: brand marks change without notice and shouldn't be
+baked into a shared design-system pattern. The optional `icon` prop is an escape hatch for
+an app that already has its own brand icon set and wants to show one; the `Default` story
+above renders with no icon at all, and that's the expected common case.
+
+## Do
+
+- Use this component for any social post embedded in article body content, regardless of
+  which of the four named platforms it's from, or an unlisted one via `platform="other"`
+  with a `platformLabel`.
+- Keep `text` reasonably close to the original post's actual wording — this card presents
+  itself as a quotation of what was posted, not a paraphrase.
+- Treat the underlying data (`authorName`, `authorHandle`, `text`, `href`, `timestamp`) as
+  the single source of truth a real embed integration would also need, so swapping in an
+  actual platform embed later doesn't require re-deriving any of it.
+
+## Don't
+
+- Don't use this as a substitute for real interactive embed behavior (likes, replies,
+  view counts) — it deliberately doesn't attempt any of that.
+- Don't wire `href` to anything other than the actual original post — the link is the
+  reader's only way to verify the post outside of this static representation.
+
+## Accessibility
+
+- The whole card is a labelled `<figure>` — its `aria-label` combines the resolved platform
+  label with `authorName` (e.g. `"X post by Priya Nair"`) — so assistive tech announces it
+  as a single coherent unit, a quoted social post, not a scattering of unrelated text and a
+  link.
+- The author's name and handle render as visible text (not an icon-only control), so no
+  extra `aria-label` is needed for them.
+- The "View original post" link always has real, visible text — it's not an icon-only
+  control needing an `aria-label`, and it doesn't rely on surrounding context (e.g. just
+  "Read more") to make sense out of order for screen-reader users who navigate by link.
+- Because `href` is always treated as external (via `Link`'s `external` prop), it opens in
+  a new tab and appends a visible external-link icon, so both sighted and assistive-tech
+  users get the same signal that activating it leaves the current page.

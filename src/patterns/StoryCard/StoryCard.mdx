@@ -88,6 +88,43 @@ bottom edge when placed in an equal-height grid:
 
 <Canvas of={StoryCardStories.EqualHeightRow} />
 
+## Loading state
+
+Pass `loading` while the real story data for this card hasn't arrived yet. `story` becomes
+optional in this mode (and is ignored if passed) — a loading card has no content to show:
+
+```tsx
+<StoryCard loading />
+<StoryCard loading layout="horizontal" />
+```
+
+The placeholder is built from [`Skeleton`](?path=/docs/components-skeleton--docs) blocks
+sized to roughly match this card's own proportions for the current `layout`: an image-shaped
+block (using the same aspect ratio the real thumbnail would use), two headline-width lines, a
+dek-width line, and a short meta-row line. Both layouts get their own version:
+
+<Canvas of={StoryCardStories.LoadingSideBySide} />
+
+### Announcing the loading state
+
+A loading `StoryCard` is rendered fully `aria-hidden`, the same way a bare `Skeleton` is —
+see Skeleton's own MDX ("Accessibility — read this before using Skeleton") for the reasoning.
+That means **the code rendering a loading Story Card is responsible for announcing it**, the
+same way it would be responsible for wrapping a bare `Skeleton` group. For a single standalone
+card:
+
+```tsx
+<div role="status" aria-live="polite">
+  <span className="sr-only">Loading story…</span>
+  <StoryCard loading />
+</div>
+```
+
+For a grid of several loading cards, announce once for the whole group rather than once per
+card — [Featured Story Grid](?path=/docs/patterns-content-discovery-featured-story-grid--docs)'s
+own `loading` prop does exactly this for you, so reach for that instead of composing several
+standalone loading `StoryCard`s directly whenever you're rendering more than one.
+
 <Controls />
 
 ## Accessibility
@@ -101,3 +138,5 @@ bottom edge when placed in an equal-height grid:
 - Because the whole card becomes one link, avoid putting other interactive elements (buttons,
   nested links) inside a linked Story Card — that would create nested/adjacent interactive
   controls, which `Card`'s own docs also call out to avoid.
+- The `loading` placeholder is entirely `aria-hidden` — see "Loading state" above for who's
+  responsible for announcing it.

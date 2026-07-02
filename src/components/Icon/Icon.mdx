@@ -15,10 +15,17 @@ surrounding text color and theme automatically.
 
 ## Curated set
 
-Ten hand-written 24x24 icons cover the chrome this design system needs most: `Close`,
+Fifteen hand-written 24x24 icons cover the chrome this design system needs most: `Close`,
 `ChevronDown`, `ChevronRight`, `ChevronLeft`, `Search`, `Menu`, `Share`, `Bookmark`,
-`ArrowRight`, `ExternalLink`. They're built on top of `Icon`, so every prop (`size`,
-`label`, `className`, ...) behaves identically.
+`ArrowRight`, `ExternalLink`, `Calendar`, `Compass`, `Server`, `WifiOff`, `Play`. They're
+built on top of `Icon`, so every prop (`size`, `label`, `className`, ...) behaves identically.
+
+`Calendar`, `Compass`, `Server`, and `WifiOff` were promoted from one-off inline SVGs that
+patterns/templates had hand-rolled locally (date pickers, 404/500/offline error states) —
+extending the curated set here instead of leaving them duplicated per-consumer. `Play` is the
+bare triangle glyph factored out of `VideoCards`' thumbnail overlay; the circular badge/hover
+scale styling around it stays local to `VideoCards` since that chrome is specific to that one
+usage, but the glyph itself is generic enough to share.
 
 <Canvas of={IconStories.CuratedSet} />
 
