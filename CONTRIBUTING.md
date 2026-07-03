@@ -199,6 +199,40 @@ passing real pattern instances with sample content into the slots).
   (`src/components/EmptyState`) rather than hand-rolling bespoke empty-state markup per
   template — pass it the specific heading/description/action copy for that context.
 
+## Charts (data visualization) — additional notes
+
+Charts (`LineChart`, `BarChart`, `Sparkline`, under `src/components/`) are built on
+[visx](https://airbnb.io/visx/) and follow a dedicated data-visualization method — see
+[Foundations/Data Visualization](?path=/docs/foundations-data-visualization--docs) before
+adding a new chart type or touching `src/tokens/chartColors.ts`. In short:
+
+- **Color is computed, not hand-picked.** Every chart color does exactly one job —
+  categorical (series identity), sequential (magnitude), diverging (polarity), or status
+  (state) — and every categorical/ordinal set must be run through the dataviz skill's
+  validator (WCAG contrast + OKLCH lightness band + Machado-2009 CVD simulation) before being
+  added to `chartColors.ts`. Never eyeball a new chart color.
+- **Series identity is a fixed slot, not an array position.** A `ChartSeries`'s `colorIndex`
+  ties its color to *that series*, so a color stays correct even if a consumer re-orders or
+  filters the `series` array. Assign slots in the existing fixed order
+  (`categoricalColor(index)`), never by hue preference.
+- **Chart chrome (gridlines, axis, muted text) reuses the existing theme-aware CSS variables**
+  directly as literal SVG `stroke`/`fill` values (`var(--surface-border)`, etc.) — this is how
+  charts get dark-mode support for free, through the same mechanism every other component
+  uses. Don't reach for JS-based theme detection.
+- **Every chart needs a table-view alternative** (`ChartDataTable` from `src/lib/charts.tsx`,
+  rendered `sr-only`) so a screen reader user reaches the exact same values a sighted user
+  reads off the plot — the interactive tooltip enhances, it never gates.
+- **A legend only for ≥2 series** (`ChartLegend` from the same shared module) — a single
+  series is named by the chart's own `title`, not a one-swatch legend box.
+- **`ParentSize` (responsive width) needs real layout, which jsdom doesn't have** — every
+  chart accepts an explicit `width` prop specifically so tests can bypass it deterministically
+  (see any chart's `.test.tsx`). `useTooltipInPortal`/`ParentSize` also construct a
+  `ResizeObserver` unconditionally on mount; `src/test/setup.ts` stubs one globally so chart
+  tests don't crash on that alone.
+- Shared chart-only pieces (`ChartSeries` the type, `ChartLegend`, `ChartDataTable`) live in
+  `src/lib/charts.tsx`, not as their own component folder — they're internal building blocks
+  for the chart components, not independently documented/tested public components themselves.
+
 ## Boundaries — do not edit these as part of building a component
 
 `package.json`, `src/tokens/*`, `src/index.css` (this is where the Tailwind `@theme` block

@@ -50,6 +50,7 @@ const preview: Preview = {
             "Responsive Design Principles",
             "Dark Mode Strategy",
             "Print Styles",
+            "Data Visualization",
           ],
           "Components",
           ["Overview", "*"],

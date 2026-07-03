@@ -1,0 +1,65 @@
+import { Meta, Controls, Canvas } from "@storybook/addon-docs/blocks";
+import * as SparklineStories from "./Sparkline.stories";
+
+<Meta of={SparklineStories} />
+
+# Sparkline
+
+A compact, chrome-free inline trend line — no axis, gridlines, legend, or tooltip, unlike
+LineChart. Meant for dense contexts (a metadata row, a stat tile) where a full chart would be
+too heavy — see [Data Visualization](?path=/docs/foundations-data-visualization--docs) for
+the broader method this component's color choices follow.
+
+<Canvas of={SparklineStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { Sparkline } from "@/components/Sparkline";
+
+<Sparkline label="7-day pageviews trend" values={[12400, 13100, 12800, 15200, 18900, 21300, 17600]} />
+```
+
+## `label` is required, and it must narrate the trend
+
+Sparkline renders no visible text and no hidden data table (unlike LineChart/BarChart) — the
+`label` prop is the *only* way its meaning reaches a screen reader, so it needs to say the
+takeaway, not just name the metric:
+
+- Do: `"7-day pageviews, up 42% to 17,600"`
+- Don't: `"pageviews sparkline"` — this tells a screen reader user nothing a sighted user
+  doesn't already get from glancing at the line's slope.
+
+## Trend coloring
+
+<Canvas of={SparklineStories.WithTrendColor} />
+
+Pass `showTrend` to color the end point by direction — green if the last value is at or
+above the first, red if it's below — using this system's existing `success`/`error` status
+tokens. The line itself always stays in a muted, de-emphasized tone regardless: identity here
+is the trend direction, not a categorical series, so it deliberately doesn't draw from the
+8-slot categorical palette LineChart/BarChart use.
+
+## In a metadata row
+
+<Canvas of={SparklineStories.InMetadataRow} />
+
+This is the component's intended habitat — beside a stat, inside a card, where a full
+LineChart's axis and legend would be noise.
+
+## Dark mode
+
+<Canvas of={SparklineStories.DarkMode} />
+
+The line and status colors reuse the same theme-aware mechanism as every other chart in this
+system.
+
+## A deliberate departure from the general mark spec
+
+Every other chart component in this system uses a ≥8px (r≥4) end marker — that floor exists
+so a marker stays legible crossing *other* lines and survives as a *hit target* for
+hover/focus. Sparkline's end marker is smaller (r=3) because neither reason applies here: it
+has exactly one line (nothing to cross) and no interaction at all (no hover, no tooltip, no
+hit target to size for). This is a scoped, documented exception, not an oversight.

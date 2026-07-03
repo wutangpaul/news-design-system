@@ -1,0 +1,109 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Data Visualization" />
+
+# Data Visualization
+
+Chart color is **computed, not hand-picked**, and every color does exactly one job:
+categorical (series identity), sequential (magnitude), diverging (polarity), or status
+(state). Each palette below was derived from this system's existing tokens where possible
+and validated — WCAG contrast, OKLCH lightness band, and Machado-2009 colorblind-safety
+simulation — rather than eyeballed. The exact values and validation commands live in
+`src/tokens/chartColors.ts`; this page explains the reasoning behind them.
+
+## Categorical palette (series identity)
+
+8 hues in a **fixed order** — the order itself is the colorblind-safety mechanism, so
+consumers assign slots in sequence (`categoricalColor(seriesIndex)`), never by picking a hue
+they like or re-sorting by value.
+
+| Slot | Hue | Hex | Source |
+|---|---|---|---|
+| 1 | blue | `#2563eb` | reused: `info-500` |
+| 2 | teal | `#0d9488` | new |
+| 3 | amber | `#d97706` | reused: `warning-500` |
+| 4 | green | `#16a34a` | reused: `success-500` |
+| 5 | violet | `#9333ea` | new |
+| 6 | red | `#b91c1c` | reused: `masthead-500` |
+| 7 | magenta | `#db2777` | new |
+| 8 | orange | `#c2410c` | new |
+
+Half the palette reuses this system's existing brand/semantic hues rather than inventing a
+parallel color language; the other four (teal, violet, magenta, orange) fill hue-family gaps
+this system's palette doesn't otherwise cover, chosen and nudged specifically so they pass
+colorblind-safety separation against the reused hues (an early violet/blue pairing and an
+early orange/amber pairing both had to be adjusted — see the token file's comments for the
+exact values that failed and what replaced them).
+
+Validated for **adjacent pairs** — the correct check for ordered series (bar/line/sparkline,
+where only neighbors in a fixed sequence sit next to each other) — in both light and dark
+mode independently, each passing with real margin (worst adjacent separation well above the
+target floor). A chart with any-two-can-be-neighbors geometry (scatter, bubble, choropleth,
+small multiples) needs a re-validation pass with the all-pairs check before reusing this set;
+it hasn't been run, since none of this system's current chart components need it yet.
+
+## Sequential ramp (magnitude)
+
+One hue — blue, matching `info` — light→dark, for continuous magnitude encoding (heatmaps,
+choropleths; not currently used by LineChart/BarChart/Sparkline, which encode magnitude by
+position/length instead). The anchor **flips per mode**: in light mode the lightest step
+reads as "near zero"; in dark mode the *darkest* step reads as "near zero," since a light
+step would vanish into a light background but a dark step recedes correctly into a dark one.
+
+- Light: `#86b6ef` → `#5598e7` → `#2a78d6` → `#1c5cab`
+- Dark: `#184f95` → `#2a78d6` → `#86b6ef` → `#cde2fb`
+
+Never reuse sequential steps for series identity — magnitude and identity are different jobs
+with different rules (a sequential ramp is intentionally *not* colorblind-separated the way a
+categorical palette is, since adjacent steps are meant to blend).
+
+## Diverging pair (polarity)
+
+Reuses this system's existing brand red and info blue directly as opposite poles, with an
+ink-neutral gray midpoint (`ink-100` light / `ink-800` dark) — warm vs. cool poles read as
+genuinely opposite, unlike two hues that are both "cool" (which stops the midpoint from
+reading as neutral).
+
+## Status (state)
+
+Reuses the existing `success`/`warning`/`error` semantic tokens directly — already
+contrast-audited (see [Accessibility Standards](?path=/docs/foundations-accessibility-standards--docs))
+— rather than a new scale. A status color always ships with an icon and a label, never
+color alone; reuse `Badge`/`Alert`'s existing tone system for that pairing rather than
+drawing raw colored dots. This system's semantic scale doesn't have a fourth distinct
+"serious" tier between warning and critical, and one hasn't been invented solely for charts —
+that would be its own inconsistency with the rest of the design system.
+
+## Chart chrome
+
+Gridlines, axis lines, and muted tick/label text reuse the existing theme-aware CSS
+variables directly (`var(--surface-border)`, `var(--text-tertiary)`, etc.) as literal SVG
+`stroke`/`fill` values — they resolve against whatever `:root`/`.dark` currently defines, so
+chart chrome adapts to dark mode through the exact same mechanism every other component
+already uses. No new tokens, no JS-based theme detection.
+
+## Accessibility, beyond color
+
+Charts in this system also follow the interaction and structure rules a colorblind-safe
+palette alone doesn't cover:
+
+- A **legend** (color swatch + text label) whenever there's more than one series — never
+  color-matching alone. A single series needs no legend box; the chart's own title names it.
+- A **visually hidden data table** (`sr-only`, but present in the DOM) on every chart, so a
+  screen reader user reads the exact values a sighted user reads off the plot — the
+  interactive tooltip enhances, it never gates.
+- **Keyboard-operable tooltips**: the same hover detail is reachable on focus, via arrow-key
+  navigation between data points rather than one tab stop per point.
+- **Text never wears the data color** — legend labels, tooltip values, and table cells use
+  text tokens (primary/secondary/tertiary); identity comes from a colored mark *beside* the
+  text, never from coloring the text itself (a light categorical hue like teal or amber is
+  frequently illegible as text against the surface).
+
+## Not yet implemented
+
+**Texture fill** (a hand-drawn pattern as a backup identity channel for full-severity color
+blindness, print, or `forced-colors`) is part of the underlying method this system follows
+but isn't implemented in any chart component yet — it's opt-in/accessibility-triggered by
+design, never on by default, and was scoped out of the initial LineChart/BarChart/Sparkline
+build. Revisit if a chart needs to support more than ~4 simultaneously-visible series, where
+the categorical palette alone starts to lean on direct labels more than is comfortable.

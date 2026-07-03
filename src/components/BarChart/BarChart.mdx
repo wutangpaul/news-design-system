@@ -1,0 +1,70 @@
+import { Meta, Controls, Canvas } from "@storybook/addon-docs/blocks";
+import * as BarChartStories from "./BarChart.stories";
+
+<Meta of={BarChartStories} />
+
+# BarChart
+
+A bar chart for comparing magnitude across categories (pageviews by section, poll results,
+subscriber counts by tier). Colors, chrome, and interaction follow this project's
+data-visualization method in full — see
+[Data Visualization](?path=/docs/foundations-data-visualization--docs) for the underlying
+rules this component (and LineChart/Sparkline) were built against.
+
+<Canvas of={BarChartStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { BarChart } from "@/components/BarChart";
+
+<BarChart
+  title="Pageviews by section, this week"
+  categories={["Politics", "Business", "World", "Culture", "Opinion"]}
+  series={[
+    { label: "Pageviews", values: [42000, 38500, 51200, 29800, 33400], colorIndex: 0 },
+  ]}
+/>
+```
+
+## Grouped series
+
+<Canvas of={BarChartStories.GroupedSeries} />
+
+Pass more than one entry in `series` and bars group side by side within each category, with
+a legend rendering automatically above the chart. As with LineChart, each series' `colorIndex`
+is a fixed categorical slot (0–7), not an array position, so color stays tied to identity even
+if `series` is later re-ordered or filtered.
+
+## Dark mode
+
+<Canvas of={BarChartStories.DarkMode} />
+
+Chart chrome adapts automatically the same way LineChart's does — see its docs page for the
+mechanism (theme-aware CSS variables, no JS theme detection).
+
+## Interaction
+
+Unlike LineChart's shared crosshair, **each bar is its own hit target** — there's no
+continuous sequence to track a pointer along, so every bar gets its own hover/focus tooltip
+showing its category and value, and lifts slightly (a brightness increase) so the reader sees
+it respond. Bars are capped at 24px thick regardless of how wide the category band is, with a
+2px gap separating adjacent bars in the same group — the gap does the visual separation work,
+never a stroke around the bar.
+
+## Accessibility
+
+- Every bar is individually keyboard-focusable (`tabIndex=0`) with an `aria-label` stating its
+  category and value directly — a screen reader user gets the same information Tab-ing through
+  bars that a sighted user gets hovering them, no tooltip required.
+- **Table view**: every value is additionally present in a visually hidden (`sr-only`) data
+  table, exactly like LineChart.
+- **Never color-alone**: a legend accompanies any chart with more than one series; the
+  tooltip and table both render values as plain text.
+
+## Width and responsiveness
+
+Same as LineChart: omit `width` to fill the parent container responsively, or pass an
+explicit `width` for a fixed size or in environments without real layout (tests).

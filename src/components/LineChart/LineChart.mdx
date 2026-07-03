@@ -1,0 +1,79 @@
+import { Meta, Controls, Canvas } from "@storybook/addon-docs/blocks";
+import * as LineChartStories from "./LineChart.stories";
+
+<Meta of={LineChartStories} />
+
+# LineChart
+
+A multi-series line chart built on visx, for magnitude-over-a-sequence data (readership,
+revenue, traffic — anything trending across days/weeks/categories). Colors, chrome, and
+interaction follow this project's data-visualization method in full — see
+[Data Visualization](?path=/docs/foundations-data-visualization--docs) for the underlying
+rules this component (and BarChart/Sparkline) were built against.
+
+<Canvas of={LineChartStories.Default} />
+
+<Controls />
+
+## Usage
+
+```tsx
+import { LineChart } from "@/components/LineChart";
+
+<LineChart
+  title="Daily pageviews, last 7 days"
+  categories={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+  series={[
+    { label: "Pageviews", values: [12400, 13100, 12800, 15200, 18900, 21300, 17600], colorIndex: 0 },
+  ]}
+/>
+```
+
+## Multiple series
+
+<Canvas of={LineChartStories.MultiSeries} />
+
+Pass more than one entry in `series` and a legend renders automatically above the chart — a
+single series never gets a legend box (the `title` already names what's plotted). Each
+series' `colorIndex` is a **fixed categorical slot** (0–7 into `src/tokens/chartColors.ts`'s
+validated 8-hue palette), not an array position — so a color stays tied to that series'
+identity even if a consumer re-orders or filters the `series` array later.
+
+## Dark mode
+
+<Canvas of={LineChartStories.DarkMode} />
+
+Chart chrome (gridlines, axis lines, tick labels) uses this system's existing theme-aware
+CSS variables (`var(--surface-border)`, `var(--text-tertiary)`, etc.) directly, so it adapts
+to dark mode through the exact same mechanism every other component already uses — no
+JS-based theme detection. The categorical/sequential palettes were validated against both
+the light and dark chart surfaces independently (not assumed to just work from one pass);
+see the token file for the exact validation commands.
+
+## Custom value formatting
+
+<Canvas of={LineChartStories.CustomValueFormat} />
+
+`valueFormatter` controls how values render on the y-axis, in the tooltip, and in the hidden
+data table (see below) — pass it once and every representation of the data stays consistent.
+
+## Accessibility
+
+- **Keyboard**: the plot area is a single focusable element (arrow keys move between data
+  points, Home/End jump to the first/last) rather than one tab stop per point — this gives
+  keyboard users the same tooltip detail as a mouse hover without a huge tab-stop count on a
+  long series. The current point's values are also announced via an `aria-live` region.
+- **Table view**: every value is additionally present in a visually hidden (`sr-only`) data
+  table, so a screen reader user can read the exact same numbers a sighted user reads off
+  the plot — never gated behind the interactive tooltip.
+- **Never color-alone**: a legend (color swatch + text label) accompanies any chart with more
+  than one series; values in the tooltip and table are plain text, not color-coded.
+- **Reduced motion**: this component has no entrance/transition animation to begin with, so
+  there's nothing `prefers-reduced-motion` needs to suppress.
+
+## Width and responsiveness
+
+Omit `width` to fill the parent container responsively (measured via `@visx/responsive`'s
+`ParentSize`, which needs real layout to work). Pass an explicit `width` for a fixed-size
+chart, or in any environment without real layout — this is also how the component's own
+tests render it, since jsdom never produces non-zero container measurements.
