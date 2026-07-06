@@ -13,7 +13,7 @@ module.exports = {
   parserOptions: { ecmaVersion: "latest", sourceType: "module", ecmaFeatures: { jsx: true } },
   settings: { react: { version: "detect" } },
   plugins: ["react", "react-hooks", "jsx-a11y", "@typescript-eslint"],
-  ignorePatterns: ["dist", "storybook-static", "node_modules"],
+  ignorePatterns: ["dist", "dist-demo", "storybook-static", "node_modules"],
   rules: {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",

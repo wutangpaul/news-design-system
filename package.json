@@ -1,12 +1,38 @@
 {
   "name": "news-design-system",
-  "private": true,
   "version": "0.2.1",
+  "description": "A React + Tailwind v4 editorial design system: components, patterns, and templates for news publishing sites.",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wutangpaul/news-design-system.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./theme.css": "./dist/theme.css",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "yarn build:lib:js && yarn build:lib:css && yarn build:lib:theme",
+    "build:lib:js": "vite build --config vite.lib.config.ts",
+    "build:lib:css": "tailwindcss -i src/index.css -o dist/style.css --minify",
+    "build:lib:theme": "cp src/theme.css dist/theme.css",
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
@@ -14,6 +40,10 @@
     "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1 || ^19.0.0",
+    "react-dom": "^18.3.1 || ^19.0.0"
   },
   "dependencies": {
     "@visx/axis": "^4.0.0",
@@ -27,8 +57,6 @@
     "@visx/tooltip": "^4.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "tailwind-merge": "3"
   },
   "devDependencies": {
@@ -36,6 +64,7 @@
     "@storybook/addon-docs": "9.1.20",
     "@storybook/addon-links": "9.1.20",
     "@storybook/react-vite": "9.1.20",
+    "@tailwindcss/cli": "^4.3.2",
     "@tailwindcss/postcss": "^4.3.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.5.0",
@@ -55,10 +84,13 @@
     "eslint-plugin-storybook": "9.1.20",
     "jsdom": "^25.0.0",
     "postcss": "^8.4.45",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "storybook": "9.1.20",
     "tailwindcss": "4",
     "typescript": "^5.5.4",
     "vite": "^5.4.5",
+    "vite-plugin-dts": "4.5.4",
     "vitest": "^2.0.5",
     "vitest-axe": "^0.1.0"
   }
