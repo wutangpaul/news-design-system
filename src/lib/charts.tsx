@@ -58,28 +58,37 @@ export function ChartDataTable({
   formatValue?: (value: number) => string;
 }) {
   return (
-    <table className="sr-only">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col">Category</th>
-          {series.map((s) => (
-            <th key={s.label} scope="col">
-              {s.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {categories.map((category, categoryIndex) => (
-          <tr key={category}>
-            <th scope="row">{category}</th>
+    // sr-only goes on this wrapping div, not the <table> itself: a <table>'s <caption>
+    // lives in an anonymous "table wrapper box" the CSS table-layout spec treats somewhat
+    // separately from the table's own grid box, and browsers disagree on whether
+    // position/clip applied directly to <table> actually clips that caption — Firefox
+    // renders it at full size, unclipped, right at the wrapper's static position (which,
+    // with no positioned ancestor in between, landed on top of ChartLegend). A plain div
+    // has no such anonymous-box wrinkle, so hiding it here is reliable everywhere.
+    <div className="sr-only">
+      <table>
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
             {series.map((s) => (
-              <td key={s.label}>{formatValue(s.values[categoryIndex] ?? 0)}</td>
+              <th key={s.label} scope="col">
+                {s.label}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {categories.map((category, categoryIndex) => (
+            <tr key={category}>
+              <th scope="row">{category}</th>
+              {series.map((s) => (
+                <td key={s.label}>{formatValue(s.values[categoryIndex] ?? 0)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

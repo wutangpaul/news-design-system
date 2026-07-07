@@ -57,7 +57,10 @@ describe("LineChart", () => {
       />,
     );
     const table = screen.getByRole("table", { name: "Weekly pageviews" });
-    expect(table).toHaveClass("sr-only");
+    // sr-only lives on the wrapping div, not the table itself — see charts.tsx for why
+    // (a <table>'s <caption> isn't reliably clipped by properties set on <table> directly
+    // in every browser).
+    expect(table.parentElement).toHaveClass("sr-only");
     expect(screen.getByRole("row", { name: /Mon.*10/ })).toBeInTheDocument();
     expect(screen.getByRole("row", { name: /Tue.*20/ })).toBeInTheDocument();
     expect(screen.getByRole("row", { name: /Wed.*15/ })).toBeInTheDocument();
