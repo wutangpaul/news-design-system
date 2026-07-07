@@ -48,7 +48,7 @@ You need the package itself plus React (it's a peer dependency, so your app's co
 what actually runs):
 
 ```bash
-yarn add news-design-system react react-dom
+yarn add @hysterical/news-design-system react react-dom
 ```
 
 ### 2. Import the stylesheet, once
@@ -57,7 +57,7 @@ Add this near the root of your app (e.g. `main.tsx`, or your framework's root la
 needs to happen once, anywhere upstream of where components render:
 
 ```tsx
-import "news-design-system/style.css";
+import "@hysterical/news-design-system/style.css";
 ```
 
 That's a single, fully self-contained CSS file. You don't need Tailwind installed in your own
@@ -66,7 +66,7 @@ project for this to work.
 ### 3. Use components
 
 ```tsx
-import { Button, Card, StoryCard } from "news-design-system";
+import { Button, Card, StoryCard } from "@hysterical/news-design-system";
 
 function App() {
   return (
@@ -97,7 +97,7 @@ Under the hood, every color, font, spacing, radius, and shadow is a plain CSS cu
 stylesheet, and every component picks up the change immediately — no rebuild required:
 
 ```css
-@import "news-design-system/style.css";
+@import "@hysterical/news-design-system/style.css";
 
 :root {
   --color-masthead-500: #0057ff; /* swap the brand accent */
@@ -111,7 +111,7 @@ compiled stylesheet:
 
 ```css
 @import "tailwindcss";
-@import "news-design-system/theme.css";
+@import "@hysterical/news-design-system/theme.css";
 
 @theme {
   --color-brand-500: #ff6600; /* your own tokens, sitting alongside the system's */
@@ -124,8 +124,8 @@ imported.
 
 | Import | Use it when… |
 |---|---|
-| `news-design-system/style.css` | You want it to just work. No Tailwind required. |
-| `news-design-system/theme.css` | You already run Tailwind CSS v4 and want to extend or compose the tokens. |
+| `@hysterical/news-design-system/style.css` | You want it to just work. No Tailwind required. |
+| `@hysterical/news-design-system/theme.css` | You already run Tailwind CSS v4 and want to extend or compose the tokens. |
 
 ---
 

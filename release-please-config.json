@@ -3,7 +3,7 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "package-name": "news-design-system",
+      "package-name": "@hysterical/news-design-system",
       "changelog-path": "CHANGELOG.md"
     }
   }

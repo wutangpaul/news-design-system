@@ -1,5 +1,5 @@
 {
-  "name": "news-design-system",
+  "name": "@hysterical/news-design-system",
   "version": "0.3.0",
   "description": "A React + Tailwind v4 editorial design system: components, patterns, and templates for news publishing sites.",
   "license": "MIT",
