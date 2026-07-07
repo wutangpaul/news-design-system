@@ -1,0 +1,60 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TableStories from "./Table.stories";
+
+<Meta of={TableStories} />
+
+# Table
+
+A data table for the numbers a newsroom publishes as fact: election results, league
+standings, market closes, budget line items. Renders a native `<table>` inside a
+horizontally scrollable wrapper, so wide tables scroll sideways on small screens instead of
+breaking the page layout.
+
+<Canvas of={TableStories.Default} />
+<Controls />
+
+## Numeric columns
+
+Mark data cells with `numeric` (and right-align their header with
+`<TableHeaderCell align="right">`). Numeric cells render right-aligned in the mono face with
+tabular figures, so digits line up down the column and magnitudes can be compared at a
+glance — the same "data of record" treatment timestamps and bylines get system-wide. Text
+columns stay left-aligned in the sans face.
+
+## With a footer
+
+Use `TableFoot` for totals and summary rows — it carries a stronger top rule and bolder
+text to separate arithmetic from data.
+
+<Canvas of={TableStories.WithFooter} />
+
+## Row headers
+
+When the first column names what each row *is* (a team, a district, a company), make it a
+row header: `<TableHeaderCell scope="row">` inside the body. Screen readers then announce
+it alongside each data cell in the row.
+
+<Canvas of={TableStories.RowHeaders} />
+
+## Accessibility
+
+- **Always name the table.** Prefer the `caption` prop — it renders a real `<caption>`,
+  visible to everyone and announced by assistive tech. If the surrounding layout already
+  provides a visible title, pass `aria-label` instead (see below), but don't leave a data
+  table anonymous.
+- Column headers default to `scope="col"`; use `scope="row"` for row headers.
+- The wrapper (not the table) scrolls horizontally, so keyboard users can reach overflow
+  content with arrow keys once the wrapper is focused, and the page itself never scrolls
+  sideways.
+
+<Canvas of={TableStories.WithoutCaption} />
+
+## Do's and don'ts
+
+- **Do** state the period and source in the caption ("92% of precincts reporting") — a
+  results table without context is a rumor with borders.
+- **Do** keep numeric precision consistent down a column; ragged decimals defeat the
+  tabular alignment.
+- **Don't** use Table for page layout or key-value component arrangement — it's for
+  tabular data with meaningful rows and columns.
+- **Don't** center numeric columns; comparison depends on right-aligned digits.

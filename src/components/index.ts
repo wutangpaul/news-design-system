@@ -31,6 +31,7 @@ export * from "./Skeleton";
 export * from "./Sparkline";
 export * from "./Spinner";
 export * from "./Switch";
+export * from "./Table";
 export * from "./Tabs";
 export * from "./Tag";
 export * from "./Text";
