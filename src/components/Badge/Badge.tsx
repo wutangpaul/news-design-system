@@ -5,7 +5,12 @@ import { cn } from "@/lib/cn";
 type BadgeVariant = "neutral" | "success" | "warning" | "error" | "info" | "brand";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full font-sans font-medium leading-none",
+  // No forced line-height here (Tag, the sibling pill component, doesn't force one either):
+  // `leading-none` (line-height: 1) left descenders like the "g" in "Breaking" with nowhere
+  // to go inside the tight py-0.5 padding — Inter's descender depth exceeds a 1.0 line box
+  // at these font sizes. text-caption/text-small's own token line-heights (1.4/1.5) give
+  // descenders the room a badge's thin padding alone can't.
+  "inline-flex items-center gap-1 rounded-full font-sans font-medium",
   {
     variants: {
       variant: {
