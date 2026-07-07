@@ -17,7 +17,10 @@ describe("PullQuote", () => {
 
   it("does not render attribution when omitted", () => {
     const { container } = render(<PullQuote quote="A striking excerpt." />);
-    expect(container.textContent).toBe("A striking excerpt.");
+    // textContent also contains the decorative “ mark, so assert on the attribution's
+    // em-dash prefix rather than exact equality.
+    expect(container.textContent).toContain("A striking excerpt.");
+    expect(container.textContent).not.toContain("—");
   });
 
   it("is hidden from the accessibility tree, since it repeats body content", () => {

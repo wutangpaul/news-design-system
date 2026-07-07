@@ -53,7 +53,15 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
     return (
       <Tag
         ref={ref}
-        className={cn("font-serif", sizeClasses[size], weightClasses[weight], className)}
+        // text-balance: evens out line lengths so multi-line headlines don't break as
+        // "Inside the Multi- / Billion-Dollar Race…" with a near-empty last line. Browsers
+        // only apply it up to ~6 lines and ignore it beyond that, so it's safe at every size.
+        className={cn(
+          "text-balance font-serif",
+          sizeClasses[size],
+          weightClasses[weight],
+          className,
+        )}
         {...rest}
       >
         {children}

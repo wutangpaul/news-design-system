@@ -29,18 +29,29 @@ export const PullQuote = forwardRef<HTMLDivElement, PullQuoteProps>(
         ref={ref}
         aria-hidden="true"
         className={cn(
-          "max-w-[65ch] border-l-4 border-masthead-500 py-2 pl-6 font-serif",
-          align === "center" &&
-            "mx-auto border-l-0 border-t-4 pl-0 pt-6 text-center",
+          "max-w-[65ch] py-4 font-serif",
+          align === "center" && "mx-auto text-center",
           className,
         )}
         {...rest}
       >
-        {/* h4, not h2: a pull quote is an accent within the reading flow — at h2 a
-            multi-line quote out-shouts the article's own headline. */}
-        <p className="text-h4 leading-tight text-text-primary">{quote}</p>
+        {/*
+          No left rule here — that's BlockQuote's device (quoted source material inside the
+          reading flow). A pull quote is the article's one typographic event, and its signal
+          is the oversized Gloock quote mark in the brand red: display-scale punctuation
+          instead of a hairline. leading-[0.5] pulls the mark's line box tight so the quote
+          text tucks up under its bowl rather than floating a full line-height below.
+        */}
+        <span className="block select-none text-display leading-[0.5] text-masthead-500 dark:text-masthead-400">
+          &ldquo;
+        </span>
+        {/* h3, not h2: big enough to read as an event, but a multi-line quote still can't
+            out-shout the article's own h1/display headline. */}
+        <p className="mt-4 text-balance text-h3 text-text-primary">{quote}</p>
         {attribution ? (
-          <p className="mt-4 font-sans text-body font-medium text-text-secondary">
+          /* Attribution is metadata — a name and role, data of record — so it takes the
+             system's mono-caps metadata voice, not the serif of the quote itself. */
+          <p className="mt-5 font-mono text-caption uppercase tracking-wider text-text-tertiary">
             — {attribution}
           </p>
         ) : null}

@@ -50,7 +50,7 @@ export const CategoryNavigation = forwardRef<HTMLElement, CategoryNavigationProp
                   <Link
                     href={item.href}
                     tone="standalone"
-                    className="inline-block rounded-md px-3 py-2 text-small text-text-secondary hover:text-masthead-600"
+                    className="inline-block rounded-md px-3 py-2 text-small text-text-secondary hover:text-masthead-600 dark:hover:text-masthead-400"
                   >
                     {item.label}
                   </Link>

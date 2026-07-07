@@ -10,6 +10,11 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Separate from dist/, which is reserved for the published package build (see
+  // vite.lib.config.ts) — this is just the local scaffold app, not something we ship.
+  build: {
+    outDir: "dist-demo",
+  },
   test: {
     environment: "jsdom",
     globals: true,

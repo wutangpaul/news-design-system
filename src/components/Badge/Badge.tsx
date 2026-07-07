@@ -19,7 +19,10 @@ const badgeVariants = cva(
         warning: "bg-warning-50 text-warning-700",
         error: "bg-error-50 text-error-700",
         info: "bg-info-50 text-info-700",
-        brand: "bg-masthead-50 text-masthead-700",
+        // brand *is* theme-aware (unlike the semantic tones above): it's the one tone built
+        // from the masthead ramp, which has enough steps for a dark pairing — same treatment
+        // as Tag's brand tone.
+        brand: "bg-masthead-50 text-masthead-700 dark:bg-masthead-950 dark:text-masthead-300",
       },
       // NOTE: font-size classes (text-caption/text-small) are intentionally kept out of
       // this variant group — see `fontSizeBySize` below for why.

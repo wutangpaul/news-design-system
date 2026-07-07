@@ -40,10 +40,13 @@ export const GlobalHeader = forwardRef<HTMLElement, GlobalHeaderProps>(
         )}
         {...rest}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
-          {/* min-w-0 + truncate: the wordmark yields and ellipsizes before the actions cluster
-              (search/CTA) can be pushed off-screen on narrow viewports */}
-          <div className="min-w-0 shrink truncate font-serif text-h6 font-bold text-text-primary sm:text-h5">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex-nowrap sm:gap-4 sm:px-6 lg:px-8">
+          {/* The masthead never truncates — a brand that reads "The Dail…" is worse than any
+              layout compromise. It scales down instead (clamp: 1rem at a 375px viewport up to
+              h5 at the xl breakpoint), and when the wordmark + nav + actions genuinely can't
+              share one row, flex-wrap drops the actions cluster to a second right-aligned row
+              (the classic two-tier mobile news header) rather than squeezing the brand. */}
+          <div className="shrink-0 font-serif text-[clamp(1rem,0.45rem+2.35vw,1.5rem)] font-bold text-text-primary">
             {logo}
           </div>
 

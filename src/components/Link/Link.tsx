@@ -16,10 +16,14 @@ const linkVariants = cva(
   {
     variants: {
       tone: {
-        /** Underlined run-in text within a sentence/paragraph. */
-        inline: "text-masthead-600 underline hover:text-masthead-700",
+        /** Underlined run-in text within a sentence/paragraph. Dark mode inverts the hover
+            direction — the red lightens (400 → 300) instead of darkening, because 500+
+            reds fall below AA contrast on the dark canvas. */
+        inline:
+          "text-masthead-600 underline hover:text-masthead-700 dark:text-masthead-400 dark:hover:text-masthead-300",
         /** Stand-alone link (card title, nav item) — underline appears on hover/focus only. */
-        standalone: "text-text-primary no-underline hover:text-masthead-600 hover:underline",
+        standalone:
+          "text-text-primary no-underline hover:text-masthead-600 hover:underline dark:hover:text-masthead-400",
       },
     },
     defaultVariants: { tone: "inline" },

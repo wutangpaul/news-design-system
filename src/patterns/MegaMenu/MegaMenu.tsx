@@ -123,7 +123,7 @@ export const MegaMenu = forwardRef<HTMLDivElement, MegaMenuProps>(
                 className="w-48 shrink-0 border-l border-surface-border pl-6"
               >
                 {featured.eyebrow && (
-                  <p className="mb-1 text-caption font-semibold uppercase tracking-wide text-masthead-600">
+                  <p className="mb-1 text-caption font-semibold uppercase tracking-wide text-masthead-600 dark:text-masthead-400">
                     {featured.eyebrow}
                   </p>
                 )}
@@ -131,7 +131,7 @@ export const MegaMenu = forwardRef<HTMLDivElement, MegaMenuProps>(
                   role="menuitem"
                   tabIndex={-1}
                   href={featured.href}
-                  className="block rounded-sm text-small font-medium text-text-primary hover:text-masthead-600"
+                  className="block rounded-sm text-small font-medium text-text-primary hover:text-masthead-600 dark:hover:text-masthead-400"
                 >
                   {featured.label}
                 </a>

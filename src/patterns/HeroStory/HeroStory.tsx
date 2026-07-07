@@ -53,13 +53,22 @@ export const HeroStory = forwardRef<HTMLDivElement, HeroStoryProps>(
     return (
       <div
         ref={ref}
-        className={cn("group relative isolate overflow-hidden rounded-lg", className)}
+        className={cn("group relative isolate grid overflow-hidden rounded-lg", className)}
         {...rest}
       >
+        {/*
+          Image and text overlay are stacked in the same grid cell rather than the text being
+          absolutely positioned: the container's height is then max(image aspect box, text
+          block), so the aspect ratio acts as a *minimum* and a long headline grows the hero
+          instead of clipping out the top of the text (which is exactly what happened at
+          phone widths — the overlay overflowed a 16/9 box ~211px tall). The img is
+          object-cover, so when text wins it simply crops tighter.
+        */}
         <Image
           src={imageSrc}
           alt={imageAlt}
           aspectRatio={aspectRatio}
+          containerClassName="[grid-area:1/1] h-full w-full"
           className="transition-transform duration-slower motion-reduce:transition-none group-hover:scale-105"
         />
         {/*
@@ -76,7 +85,7 @@ export const HeroStory = forwardRef<HTMLDivElement, HeroStoryProps>(
           image region. A viewport-wide inset-0 gradient can't guarantee that: its fade zone
           lands wherever the image is tall, not wherever the text is.
         */}
-        <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 bg-gradient-to-t from-ink-950/85 via-ink-950/85 via-[calc(100%-4rem)] to-transparent p-6 pt-16 sm:p-8 sm:pt-20">
+        <div className="z-10 [grid-area:1/1] flex flex-col items-start gap-3 self-end bg-gradient-to-t from-ink-950/85 via-ink-950/85 via-[calc(100%-4rem)] to-transparent p-6 pt-16 sm:p-8 sm:pt-20">
           {category ? (
             <Tag tone="brand" className="w-fit">
               {category}

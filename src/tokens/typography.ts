@@ -27,6 +27,11 @@ export const fontFamily = {
 
 // Modular type scale (1.25 ratio), named for editorial intent rather than raw size
 // so headline/body usage stays semantic across templates.
+//
+// h3 and up are fluid: clamp() interpolates from a 375px floor to the full modular-scale
+// size at the 1280px (xl) breakpoint, so a display headline is 40px on a phone and 72px on
+// desktop without per-breakpoint overrides. h4 and below stay fixed — already comfortable
+// at every width. Keep in sync with the @theme block in src/theme.css.
 export const fontSize = {
   caption: ["0.75rem", { lineHeight: "1.4" }],
   small: ["0.875rem", { lineHeight: "1.5" }],
@@ -35,10 +40,10 @@ export const fontSize = {
   h6: ["1.25rem", { lineHeight: "1.4", letterSpacing: "-0.01em" }],
   h5: ["1.5rem", { lineHeight: "1.35", letterSpacing: "-0.01em" }],
   h4: ["1.875rem", { lineHeight: "1.3", letterSpacing: "-0.015em" }],
-  h3: ["2.25rem", { lineHeight: "1.25", letterSpacing: "-0.015em" }],
-  h2: ["2.75rem", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
-  h1: ["3.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
-  display: ["4.5rem", { lineHeight: "1.05", letterSpacing: "-0.025em" }],
+  h3: ["clamp(1.625rem, 1.37rem + 1.1vw, 2.25rem)", { lineHeight: "1.25", letterSpacing: "-0.015em" }],
+  h2: ["clamp(1.875rem, 1.51rem + 1.55vw, 2.75rem)", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
+  h1: ["clamp(2.125rem, 1.56rem + 2.43vw, 3.5rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+  display: ["clamp(2.5rem, 1.67rem + 3.54vw, 4.5rem)", { lineHeight: "1.05", letterSpacing: "-0.025em" }],
 } as const;
 
 export const fontWeight = {
