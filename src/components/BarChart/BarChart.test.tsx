@@ -89,7 +89,10 @@ describe("BarChart", () => {
       />,
     );
     const table = screen.getByRole("table", { name: "Pageviews by section" });
-    expect(table).toHaveClass("sr-only");
+    // sr-only lives on the wrapping div, not the table itself — see charts.tsx for why
+    // (a <table>'s <caption> isn't reliably clipped by properties set on <table> directly
+    // in every browser).
+    expect(table.parentElement).toHaveClass("sr-only");
     expect(screen.getByRole("row", { name: /Politics.*100/ })).toBeInTheDocument();
     expect(screen.getByRole("row", { name: /Business.*200/ })).toBeInTheDocument();
   });
