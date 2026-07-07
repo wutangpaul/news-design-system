@@ -1,6 +1,7 @@
 # News Design System
 
 [![CI](https://github.com/wutangpaul/news-design-system/actions/workflows/ci.yml/badge.svg)](https://github.com/wutangpaul/news-design-system/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40hysterical%2Fnews-design-system?logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@hysterical/news-design-system)
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
@@ -15,10 +16,10 @@ platform. Built with React, TypeScript, and Tailwind CSS, documented in Storyboo
 
 | | |
 |---|---|
-| **Components** | 35 |
+| **Components** | 36 |
 | **Patterns** | 37 |
 | **Templates** | 15 |
-| **Tests** | 798 passing across 87 test files |
+| **Tests** | 827 passing across 91 test files |
 | **Accessibility** | WCAG 2.2 AA, axe-core clean on every default story |
 
 The system is organized into five layers, matching how a newsroom's product actually gets
@@ -37,10 +38,8 @@ a template never hardcodes a color.
 
 ## Using it in your app
 
-> **Not on npm yet.** This package is still being finalized on a packaging branch and isn't
-> published to the registry yet — the steps below are what usage will look like once it is. In
-> the meantime you can `yarn add` it directly from a git branch/commit, or clone this repo and
-> `yarn link` it.
+The package is published on npm as
+[`@hysterical/news-design-system`](https://www.npmjs.com/package/@hysterical/news-design-system).
 
 ### 1. Install
 
@@ -210,8 +209,10 @@ Versioning and the changelog are automated with
 for [Conventional Commits](https://www.conventionalcommits.org) prefixes (`feat:`, `fix:`,
 `feat!:`/`BREAKING CHANGE:`, etc.), which release-please uses to keep an always-up-to-date
 release PR with the next version bump and `CHANGELOG.md` entry. Merging that PR cuts the
-GitHub release and tags the version. See **[CHANGELOG.md](./CHANGELOG.md)** for release
-history.
+GitHub release, tags the version, and publishes
+[`@hysterical/news-design-system`](https://www.npmjs.com/package/@hysterical/news-design-system)
+to npm (with provenance) via the `publish-npm` CI job. See
+**[CHANGELOG.md](./CHANGELOG.md)** for release history.
 
 ## Project status
 
