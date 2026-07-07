@@ -70,7 +70,7 @@ export const TopicTags = forwardRef<HTMLDivElement, TopicTagsProps>(
           <button
             type="button"
             onClick={() => setExpanded((current) => !current)}
-            className="rounded-full px-3 py-1 text-small font-medium text-masthead-600 underline-offset-2 hover:text-masthead-700 hover:underline"
+            className="rounded-full px-3 py-1 text-small font-medium text-masthead-600 underline-offset-2 hover:text-masthead-700 hover:underline dark:text-masthead-400 dark:hover:text-masthead-300"
           >
             {expanded ? showLessLabel : (showMoreLabel ?? `Show ${hiddenCount} more`)}
           </button>

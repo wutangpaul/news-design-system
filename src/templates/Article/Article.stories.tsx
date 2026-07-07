@@ -140,6 +140,11 @@ export const Default: Story = {
               publishedAt="2026-06-28T09:00:00Z"
               updatedAt="2026-06-29T11:15:00Z"
             />
+            {/* Byline and ReadingTime are separate patterns — the composing layout owns the
+                separator between them, matching the "·" Byline uses internally. */}
+            <span aria-hidden="true" className="text-small text-text-secondary">
+              ·
+            </span>
             <ReadingTime wordCount={1150} />
           </div>
         }

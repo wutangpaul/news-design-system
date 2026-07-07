@@ -11,7 +11,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-masthead-500 text-text-on-brand hover:bg-masthead-600 active:bg-masthead-700",
+        // primary/destructive override the global masthead-red focus ring with a neutral
+        // ink one: a red ring around a red-filled (or red-outlined) control is invisible
+        // as a focus signal — the ring must contrast with the control itself, not just
+        // the canvas behind it.
+        primary:
+          "bg-masthead-500 text-text-on-brand hover:bg-masthead-600 active:bg-masthead-700 focus-visible:outline-ink-900 dark:focus-visible:outline-ink-0",
         secondary:
           "border border-surface-border-strong bg-surface-raised text-text-primary hover:bg-surface-sunken active:bg-surface-sunken",
         ghost: "bg-transparent text-text-primary hover:bg-surface-raised active:bg-surface-sunken",
@@ -20,7 +25,7 @@ const buttonVariants = cva(
         // The outline is the shape signal that separates "dangerous" from "brand" — it only
         // fills red at the moment of committed intent (hover/active).
         destructive:
-          "border border-error-500 bg-transparent text-error-700 hover:bg-error-500 hover:text-ink-0 active:bg-error-700 active:text-ink-0 dark:text-error-400 dark:hover:text-ink-0 dark:active:text-ink-0",
+          "border border-error-500 bg-transparent text-error-700 hover:bg-error-500 hover:text-ink-0 active:bg-error-700 active:text-ink-0 dark:text-error-400 dark:hover:text-ink-0 dark:active:text-ink-0 focus-visible:outline-ink-900 dark:focus-visible:outline-ink-0",
       },
       // NOTE: font-size classes (text-small/text-body/text-lead) are intentionally kept
       // out of this variant group — see the `fontSizeBySize` map below for why.

@@ -87,7 +87,7 @@ export const Opinion = forwardRef<HTMLDivElement, OpinionProps>(
           className="mx-auto flex w-full max-w-[65ch] flex-1 flex-col gap-8 px-4 py-10 sm:px-6"
         >
           <div className="flex flex-col gap-4">
-            <span className="w-fit rounded-full border border-masthead-200 bg-masthead-50 px-3 py-1 font-sans text-small font-semibold uppercase tracking-wide text-masthead-700">
+            <span className="w-fit rounded-full border border-masthead-200 bg-masthead-50 px-3 py-1 font-sans text-small font-semibold uppercase tracking-wide text-masthead-700 dark:border-masthead-800 dark:bg-masthead-950 dark:text-masthead-300">
               {eyebrow}
             </span>
             {articleHeader}

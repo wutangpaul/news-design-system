@@ -66,7 +66,9 @@ export const PrimaryNavigation = forwardRef<HTMLElement, PrimaryNavigationProps>
                   aria-current={item.current ? "page" : undefined}
                   className={cn(
                     "inline-block rounded-md px-3 py-2 text-body font-medium",
-                    item.current && "text-masthead-600",
+                    // dark: steps the red up to masthead-400 — 500/600 sit under 3:1 on
+                    // the dark canvas and fail AA as text
+                    item.current && "text-masthead-600 dark:text-masthead-400",
                   )}
                 >
                   {item.label}

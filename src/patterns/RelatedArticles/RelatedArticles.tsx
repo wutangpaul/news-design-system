@@ -95,7 +95,7 @@ export const RelatedArticles = forwardRef<HTMLElement, RelatedArticlesProps>(
                 <Heading
                   level={itemHeadingLevel}
                   visualSize={5}
-                  className="group-hover:text-masthead-600 group-hover:underline"
+                  className="group-hover:text-masthead-600 group-hover:underline dark:group-hover:text-masthead-400"
                 >
                   {article.title}
                 </Heading>

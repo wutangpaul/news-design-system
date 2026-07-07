@@ -193,7 +193,7 @@ export const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTri
           }}
           className={cn(
             "flex w-full items-center justify-between gap-4 py-4 text-left text-body font-semibold text-text-primary",
-            "hover:text-masthead-500 disabled:cursor-not-allowed disabled:opacity-50",
+            "hover:text-masthead-500 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:text-masthead-400",
             className,
           )}
           {...rest}

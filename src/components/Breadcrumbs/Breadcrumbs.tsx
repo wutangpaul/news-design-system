@@ -66,7 +66,7 @@ export const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                 ) : (
                   <a
                     href={item.href}
-                    className="text-text-secondary underline-offset-2 hover:text-masthead-500 hover:underline"
+                    className="text-text-secondary underline-offset-2 hover:text-masthead-500 hover:underline dark:hover:text-masthead-400"
                   >
                     {item.label}
                   </a>

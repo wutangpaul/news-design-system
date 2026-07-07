@@ -147,7 +147,7 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
             <Skeleton shape="text" className="h-5 w-full" />
             <Skeleton shape="text" className="h-5 w-2/3" />
             <Skeleton shape="text" className={cn("h-4 w-full", layout === "horizontal" && "hidden sm:block")} />
-            <div className="mt-auto flex items-center gap-2 pt-1">
+            <div className="flex items-center gap-2 pt-1">
               <Skeleton shape="text" className="h-3 w-24" />
             </div>
           </Card.Body>
@@ -219,9 +219,13 @@ export const StoryCard = forwardRef<HTMLElement, StoryCardProps>(
             </Text>
           ) : null}
           {/* font-mono: byline/timestamp strips are "data of record" and render in the mono
-              face system-wide — see CONTRIBUTING's "Metadata typography" convention. */}
+              face system-wide — see CONTRIBUTING's "Metadata typography" convention.
+              No mt-auto here: in an equal-height grid row it would pin the byline to the
+              card's bottom edge and tear a void open mid-card between dek and byline.
+              Letting content flow top-down pools the leftover space below the byline
+              instead, which reads as breathing room rather than a rendering bug. */}
           {hasMeta ? (
-            <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-caption text-text-tertiary">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-caption text-text-tertiary">
               {byline ? <span>{byline}</span> : null}
               {byline && timestamp ? (
                 <span aria-hidden="true">&middot;</span>
