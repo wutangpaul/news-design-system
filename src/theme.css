@@ -85,7 +85,12 @@
     sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* Typography: modular type scale (1.25 ratio), named for editorial intent rather than size */
+  /* Typography: modular type scale (1.25 ratio), named for editorial intent rather than size.
+     The four headline steps (h3 and up) are fluid — clamp() interpolates from a 375px floor
+     to the full modular-scale size at the 1280px (xl) breakpoint — because a 72px display
+     line can't wrap sanely inside a phone viewport. Body/lead/small/caption and h4–h6 stay
+     fixed: they're already comfortable at every width, and fluid body text makes measure
+     tuning harder for consumers. */
   --text-caption: 0.75rem;
   --text-caption--line-height: 1.4;
   --text-small: 0.875rem;
@@ -103,16 +108,16 @@
   --text-h4: 1.875rem;
   --text-h4--line-height: 1.3;
   --text-h4--letter-spacing: -0.015em;
-  --text-h3: 2.25rem;
+  --text-h3: clamp(1.625rem, 1.37rem + 1.1vw, 2.25rem);
   --text-h3--line-height: 1.25;
   --text-h3--letter-spacing: -0.015em;
-  --text-h2: 2.75rem;
+  --text-h2: clamp(1.875rem, 1.51rem + 1.55vw, 2.75rem);
   --text-h2--line-height: 1.2;
   --text-h2--letter-spacing: -0.02em;
-  --text-h1: 3.5rem;
+  --text-h1: clamp(2.125rem, 1.56rem + 2.43vw, 3.5rem);
   --text-h1--line-height: 1.1;
   --text-h1--letter-spacing: -0.02em;
-  --text-display: 4.5rem;
+  --text-display: clamp(2.5rem, 1.67rem + 3.54vw, 4.5rem);
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.025em;
 
@@ -272,9 +277,16 @@
   }
 }
 
-/* Visible focus ring for keyboard navigation — WCAG 2.2 AA 2.4.11 (Focus Not Obscured). */
+/* Visible focus ring for keyboard navigation — WCAG 2.2 AA 2.4.11 (Focus Not Obscured).
+   Dark mode steps the ring up to masthead-400: 500 is only ~3.0:1 against the dark canvas
+   (the bare minimum for non-text contrast), 400 clears it comfortably at ~5.2:1. */
 @layer base {
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-masthead-500;
+  }
+
+  .dark :focus-visible,
+  .dark:focus-visible {
+    @apply outline-masthead-400;
   }
 }
