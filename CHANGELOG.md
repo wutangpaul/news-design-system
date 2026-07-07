@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/wutangpaul/news-design-system/compare/news-design-system-v0.3.0...news-design-system-v0.3.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* scope package as @hysterical/news-design-system ([d79c603](https://github.com/wutangpaul/news-design-system/commit/d79c6032dc458451f10ddf86d186f82b7039933e))
+
 ## [0.3.0](https://github.com/wutangpaul/news-design-system/compare/news-design-system-v0.2.1...news-design-system-v0.3.0) (2026-07-07)
 
 
