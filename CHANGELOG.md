@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.2](https://github.com/wutangpaul/news-design-system/compare/news-design-system-v0.3.1...news-design-system-v0.3.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* stop Badge's leading-none clipping descenders ([11179fe](https://github.com/wutangpaul/news-design-system/commit/11179fe5625dacbd1249e0406081059770b75af1))
+* stop chart legends overlapping the hidden data table caption in Firefox ([1f3bb71](https://github.com/wutangpaul/news-design-system/commit/1f3bb7113ec28b97134a72f81d35883f2e2481d5))
+* stop chart legends overlapping the hidden data table caption in Firefox ([7f1e19a](https://github.com/wutangpaul/news-design-system/commit/7f1e19a7f055eb032052ef144d0e572960da1052))
+
 ## [0.3.1](https://github.com/wutangpaul/news-design-system/compare/news-design-system-v0.3.0...news-design-system-v0.3.1) (2026-07-07)
 
 
