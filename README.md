@@ -35,6 +35,104 @@ assembled — from raw design decisions up to full pages:
 Each layer only builds on the ones before it — a pattern never invents its own spacing value,
 a template never hardcodes a color.
 
+## Using it in your app
+
+> **Not on npm yet.** This package is still being finalized on a packaging branch and isn't
+> published to the registry yet — the steps below are what usage will look like once it is. In
+> the meantime you can `yarn add` it directly from a git branch/commit, or clone this repo and
+> `yarn link` it.
+
+### 1. Install
+
+You need the package itself plus React (it's a peer dependency, so your app's copy of React is
+what actually runs):
+
+```bash
+yarn add news-design-system react react-dom
+```
+
+### 2. Import the stylesheet, once
+
+Add this near the root of your app (e.g. `main.tsx`, or your framework's root layout) — it only
+needs to happen once, anywhere upstream of where components render:
+
+```tsx
+import "news-design-system/style.css";
+```
+
+That's a single, fully self-contained CSS file. You don't need Tailwind installed in your own
+project for this to work.
+
+### 3. Use components
+
+```tsx
+import { Button, Card, StoryCard } from "news-design-system";
+
+function App() {
+  return (
+    <Card>
+      <Button variant="primary">Subscribe</Button>
+    </Card>
+  );
+}
+```
+
+Every component, pattern, and template in the tables above is exported from the package root —
+same names as in [Storybook](https://wutangpaul.github.io/news-design-system/), so you can use
+the docs site as your API reference.
+
+### 4. Dark mode
+
+Toggle a `dark` class on a parent element (typically `<html>`) — every component built with the
+system's `surface-*`/`text-*` tokens switches automatically:
+
+```tsx
+document.documentElement.classList.toggle("dark");
+```
+
+### 5. Theming
+
+Under the hood, every color, font, spacing, radius, and shadow is a plain CSS custom property
+(e.g. `--color-masthead-500`). Override any of them in your own CSS after importing the
+stylesheet, and every component picks up the change immediately — no rebuild required:
+
+```css
+@import "news-design-system/style.css";
+
+:root {
+  --color-masthead-500: #0057ff; /* swap the brand accent */
+}
+```
+
+**If you already use Tailwind CSS v4** in your own app and want to go further than re-theming —
+adding your own colors, generating new utilities, using the design system's tokens directly in
+your own markup — import the raw token file into your own Tailwind entry point instead of the
+compiled stylesheet:
+
+```css
+@import "tailwindcss";
+@import "news-design-system/theme.css";
+
+@theme {
+  --color-brand-500: #ff6600; /* your own tokens, sitting alongside the system's */
+}
+```
+
+This registers the design system's tokens as native values in *your* Tailwind build, so classes
+like `bg-ink-500` or `text-h2` work in your own components too, not just inside the ones you
+imported.
+
+| Import | Use it when… |
+|---|---|
+| `news-design-system/style.css` | You want it to just work. No Tailwind required. |
+| `news-design-system/theme.css` | You already run Tailwind CSS v4 and want to extend or compose the tokens. |
+
+---
+
+The rest of this README is about developing *this repo* (contributing components, running
+Storybook locally, tests, releases) — not about consuming the package. If you just want to use
+the design system, the section above is all you need.
+
 ## Stack
 
 - **React 18** + **TypeScript**
